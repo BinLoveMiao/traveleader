@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<buildpath>
+	<buildpathentry kind="con" path="org.eclipse.php.core.LANGUAGE"/>
+	<buildpathentry external="true" kind="lib" path="F:/programming/xampp/htdocs/yii"/>
+	<buildpathentry external="true" kind="lib" path="C:/Users/Robeen/php/frameworks/yii"/>
+	<buildpathentry kind="src" path=""/>
+	<buildpathentry external="true" kind="lib" path="F:/programming/xampp/htdocs/yii"/>
+</buildpath>
