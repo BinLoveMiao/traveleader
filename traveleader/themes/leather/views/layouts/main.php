@@ -63,16 +63,16 @@
     <?php echo Chtml::endForm(); ?>
     <a href="<?php echo Yii::app()->createUrl('cart/index'); ?>">
         <div class="shopping_car" >
-            购物车有<span class="cor_red bold"><?php echo count(Yii::app()->cart); ?></span>件商品
+            购物车有<span class="cor_red bold"><?php echo count(Yii::app()->cart); ?></span>个订单
         </div>
     </a>
 </div>
 <div class="nav">
     <?php $this->widget('widgets.leather.WMainMenu') ?>
 </div>
-<?php if (Yii::app()->params['ads']) {
-    echo $this->renderPartial('picture', array('ads' => Yii::app()->params['ads']), true, true);
-} ?>
+<?php //if (Yii::app()->params['ads']) {
+    //echo $this->renderPartial('picture', array('ads' => Yii::app()->params['ads']), true, true);
+//} ?>
 
 <div class="container_24">
     <div class="clearfix"></div>

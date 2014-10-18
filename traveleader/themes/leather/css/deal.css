@@ -104,42 +104,42 @@
     height:21px;
 }
 .deal_add_car{
-    margin-top:30px;
-    font-size: 20px;
+    margin-left: 20px;
+    font-size: 10px;
     border: 1px #000000;
     border-radius: 10px;
-    background-color: red;
-    padding: 10px;
+    background-color: wheat;
+    padding: 8px;
     text-align: center;
     display: inline-block;
 }
 .deal_add_car a{
     /*display:block;*/
     /*background:url(../image/add_s_car.png) no-repeat;*/
-    color: white;
+    color: black;
     /*text-indent:-9999px;*/
 }
 
 .deal_add{
-    margin-left: 10px;
+    margin-top:10px;
     border-radius: 10px;
     margin-top:30px;
-    font-size: 16px;
+    font-size: 15px;
     border: 1px #000000;
-    background-color: wheat;
-    padding: 13px;
+    background-color: red;
+    padding: 10px;
     text-align: center;
     display: inline-block;
 }
 
 .deal_collect{
-    margin-left: 10px;
+    margin-left: 5px;
     margin-top:30px;
     border-radius: 10px;
-    font-size: 16px;
+    font-size: 10px;
     border: 1px #000000;
     background-color: wheat;
-    padding: 13px;
+    padding: 8px;
     text-align: center;
     display: inline-block;
 }

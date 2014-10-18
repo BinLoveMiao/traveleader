@@ -16,6 +16,56 @@ SET time_zone = "+00:00";
 CREATE DATABASE IF NOT EXISTS `traveleader` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 USE `traveleader`;
 
+--
+-- 表的结构 `item`
+--
+
+DROP TABLE IF EXISTS `item`;
+CREATE TABLE IF NOT EXISTS `item` (
+  `item_id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Item ID',
+  `category_id` int(10) unsigned NOT NULL COMMENT 'Category ID',
+  `outer_id` varchar(45) DEFAULT NULL,
+  `title` varchar(255) NOT NULL COMMENT '名称',
+  `stock` int(10) unsigned NOT NULL COMMENT '库存',
+  `min_number` int(10) unsigned NOT NULL DEFAULT '1' COMMENT '最少订货量',
+  `price` decimal(10,2) unsigned NOT NULL COMMENT '价格',
+  `currency` varchar(20) NOT NULL COMMENT '币种',
+  `props` longtext NOT NULL COMMENT '商品属性 格式：pid:vid;pid:vid',
+  `props_name` longtext NOT NULL COMMENT '商品属性名称。标识着props内容里面的pid和vid所对应的名称。格式为：pid1:vid1:pid_name1:vid_name1;pid2:vid2:pid_name2:vid_name2……(注：属性名称中的冒号":"被转换为："#cln#"; 分号";"被转换为："#scln#" )',
+  `desc` longtext NOT NULL COMMENT '描述',
+  `cost_intro` longtext NOT NULL COMMENT '旅行费用描述',
+  `schedule` longtext NOT NULL COMMENT '行程描述',
+  `shipping_fee` decimal(10,2) unsigned NOT NULL DEFAULT '0.00' COMMENT '运费',
+  `is_show` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '是否显示',
+  `is_promote` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '是否促销',
+  `is_new` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '是否新品',
+  `is_hot` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '是否热销',
+  `is_best` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '是否精品',
+  `click_count` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '点击量',
+  `wish_count` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '收藏数',
+  `review_count` int(10) NOT NULL,
+  `deal_count` int(10) NOT NULL,
+  `create_time` int(10) unsigned NOT NULL COMMENT '创建时间',
+  `update_time` int(10) unsigned NOT NULL COMMENT '更新时间',
+  `language` varchar(45) NOT NULL,
+  `country` int(10) unsigned NOT NULL,
+  `state` int(10) unsigned NOT NULL,
+  `city` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`item_id`),
+  KEY `fk_item_category1_idx` (`category_id`),
+  KEY `fk_item_area1_idx` (`country`),
+  KEY `fk_item_area2_idx` (`state`),
+  KEY `fk_item_area3_idx` (`city`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=61 ;
+
+--
+-- 转存表中的数据 `item`
+--
+
+INSERT INTO `item` (`item_id`, `category_id`, `outer_id`, `title`, `stock`, `min_number`, `price`, `currency`, `props`, `props_name`, `desc`, `cost_intro`, `schedule`, `shipping_fee`, `is_show`, `is_promote`, `is_new`, `is_hot`, `is_best`, `click_count`, `wish_count`, `review_count`, `deal_count`, `create_time`, `update_time`, `language`, `country`, `state`, `city`) VALUES
+(28, 110, '123456', '乐不思蜀家纺新品波点素色双拼三、四件套天丝棉磨毛不掉色不起球', 443, 1, '86.00', '￥', '{"1":"1:2","2":["2:4","2:5"],"3":["3:8"]}', '{"\\u54c1\\u724c":"\\u54c1\\u724c:jackjones","\\u5c3a\\u5bf8":["\\u5c3a\\u5bf8:L","\\u5c3a\\u5bf8:XL"],"\\u989c\\u8272":["\\u989c\\u8272:\\u9ec4\\u8272"]}', '<p>这是个美丽的地方</p>\r\n', '<p>费用包含住宿等</p>\r\n', '{"1":"<p>玩杀人游戏</p>\r\n","2":"<p>玩狼人</p>\r\n","3":"<p>打酱油</p>\r\n"}','0.01', 1, 1, 1, 1, 1, 421, 0, 0, 1, 1388133167, 1398063611, 'zh_cn', 100000, 370000, 371400),
+(31, 110, '123456', '特价正品 床上用品四件套 家纺四件套 全棉加厚活性磨毛四件套', 56858, 1, '156.00', '￥', '{"1":"1:1","2":["2:5","2:6"],"3":["3:8","3:9"]}', '{"\\u54c1\\u724c":"\\u54c1\\u724c:GXG","\\u5c3a\\u5bf8":["\\u5c3a\\u5bf8:XL","\\u5c3a\\u5bf8:XXL"],"\\u989c\\u8272":["\\u989c\\u8272:\\u9ec4\\u8272","\\u989c\\u8272:\\u84dd\\u8272"]}', '<p>这是个美丽的地方</p>\r\n', '<p>费用包含住宿等</p>\r\n', '{"1":"<p>玩杀人游戏</p>\r\n","2":"<p>玩狼人</p>\r\n","3":"<p>打酱油</p>\r\n"}', '0.01', 1, 1, 1, 1, 1, 513, 0, 0, 4, 1388133378, 1397711098, 'zh_cn', 100000, 130000, 130700),
+
 -- --------------------------------------------------------
 --
 -- 表的结构 `menu`

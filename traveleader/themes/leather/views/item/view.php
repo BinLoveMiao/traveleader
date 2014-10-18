@@ -45,24 +45,24 @@ $imageHelper=new ImageHelper();
                         if(!empty($itemImg->pic)){
                             $picUrl=$imageHelper->thumb('70','70',$itemImg->pic);
                         }else $picUrl=$item->getHolderJs('70','70');
-                        echo '<li><img src="' .$picUrl . '" width="70" height="70"></li>';
+                        echo '<li><img src="' .Yii::app()->baseUrl.$picUrl . '" width="70" height="70"></li>';
                     } ?>
                 </ul>
             </div>
-            <div style="width: 450px; height: 450px; overflow: hidden; position: relative;" id=idTransformView >
+            <div style="width: 450px; height: 350px; overflow: hidden; position: relative;" id=idTransformView >
                 <ul id=idSlider class=slider>
                     <?php foreach ($item->itemImgs as $itemImg) {
                         if($itemImg->pic){
-                            $picUrl=$imageHelper->thumb('450','450',$itemImg->pic);
-                        }else $picUrl=$item->getHolderJs('450','450');
+                            $picUrl=$imageHelper->thumb('450', '350',$itemImg->pic);
+                        }else $picUrl=$item->getHolderJs('450','350');
                         //                        echo '<li><img src="' .$picUrl . '" width="450" height="450"></li>';
-                        echo'<div><a href="javascript:void(0)" target="_blank" rel="nofollow"><img position=absolute   alt="' . $item->title . '" src="'  .$picUrl . '" width="450" height="450"/></a></div>';
+                        echo'<div><a href="javascript:void(0)" target="_blank" rel="nofollow"><img position=absolute   alt="' . $item->title . '" src="'  .Yii::app()->baseUrl.$picUrl . '" width="450" height="350"/></a></div>';
                     } ?>
                 </ul>
             </div>
         </div>
         <script language=javascript>
-            mytv("idNum", "idTransformView", "idSlider", 450, 5, true, 2000, 5, true, "onmouseover");
+            mytv("idNum", "idTransformView", "idSlider", 350, 5, true, 2000, 5, true, "onmouseover");
             //按钮容器aa，滚动容器bb，滚动内容cc，滚动宽度dd，滚动数量ee，滚动方向ff，延时gg，滚动速度hh，自动滚动ii，
         </script>
 
@@ -71,7 +71,8 @@ $imageHelper=new ImageHelper();
             <div class="deal_price">
                 <span class="cor_red bold font30"><?php echo $item->currency . $item->price ?></span>
             </div>
-            <div class="deal_sold">月销售量 <span class="cor_red bold"><?php echo $item->deal_count;?></span>&nbsp;件</div>
+            <div class="deal_sold">本月有 <span class="cor_red bold"><?php echo $item->deal_count;?></span>&nbsp;人出游</div>
+            <!-- 
             <?php
             $skus = array();
             foreach ($item->skus as $sku) {
@@ -134,20 +135,29 @@ $imageHelper=new ImageHelper();
                     }
                 } ?>
             </div>
+            -->
             <div class="deal_num">
-                <span>我要买</span><span class="deal_num_c">
+                <span class="deal_num_c">
                     <a href="javascript:void(0)" class="minus"></a>
                     <label class="qty_num" id="num"><?php echo $item->min_number; ?></label>
                     <input type="hidden" id="qty" name="qty" value="<?php echo $item->min_number; ?>" />
-                    <a href="javascript:void(0)" class="add"></a></span>
+                    <a href="javascript:void(0)" class="add"></a></span>  <span>成人</span>
+                    
+                   <span class="deal_num_c">
+                    <a href="javascript:void(0)" class="minus"></a>
+                    <label class="qty_num" id="num"><?php echo '0'; ?></label>
+                    <input type="hidden" id="qty" name="qty" value="<?php echo '0'; ?>" />
+                    <a href="javascript:void(0)" class="add"></a></span>  <span>儿童</span> 
 
-                <span>（库存剩余 <label id="stock"><?php echo $item->stock; ?></label> 台)</span>
+               <!-- <span>（库存剩余 <label id="stock"><?php echo $item->stock; ?></label> 台)</span> --> 
             </div>
             <input type="hidden" id="item_id" name="item_id" value="<?php echo $item->item_id; ?>" />
             <input type="hidden" id="props" name="props" value="" />
+            
+            <div class="deal_add" data-url="<?php echo Yii::app()->createUrl('user/user/isLogin'); ?>" ><?php echo CHtml::link("立即预定", 'javascript:void(0);')?></div>
             <div  class="deal_add_car" data-url="<?php echo Yii::app()->createUrl('cart/add'); ?>"><a href="javascript:void(0)" id="addToShopCart" >加入购物车</a></div>
-            <div class="deal_add" data-url="<?php echo Yii::app()->createUrl('user/user/isLogin'); ?>" ><?php echo CHtml::link("立即购买", 'javascript:void(0);')?></div>
             <div  class="deal_collect" data-url="<?php echo Yii::app()->createUrl('member/wishlist/addWish'); ?>" ><a href="javascript:void(0)">立即收藏</a></div>
+            
             <!-- Modal -->
             <div tabindex="-1" class="modal fade in" id="myModal" role="dialog" aria-hidden="false" aria-labelledby="myModalLabel" style="display: none;">
                 <div class="modal-dialog">
@@ -156,7 +166,7 @@ $imageHelper=new ImageHelper();
                         <form role="form" id="log-out-box">
                             <button type="button" class="close" data-dismiss="modal" aria-hidden="true" id="log-out-close">×</button>
                             <div id="warning-load" >
-                                <div id="logo">演示商城</div>
+                                <div id="logo">领贤旅游</div>
 
                                 <div class="user">
                                     <div> 用户名：</div>
@@ -177,8 +187,25 @@ $imageHelper=new ImageHelper();
                     </div>
                 </div>
             </div>
-
-
+            
+                <?php   
+    $this->widget('zii.widgets.jui.CJuiDatePicker',array(  
+        'attribute'=>'visit_time',  
+        'language'=>'zh_cn',  
+        'name'=>'visit_time',  
+        'options'=>array(  
+            'showAnim'=>'fold',  
+            'showOn'=>'both',  
+            'buttonImage'=>Yii::app()->request->baseUrl.'/images/calendar.gif',  
+            'buttonImageOnly'=>true,  
+            'minDate'=>'new Date()',  
+            'dateFormat'=>'yy-mm-dd',  
+        ),  
+        'htmlOptions'=>array(  
+            'style'=>'height:18px',  
+        ),  
+    ));  
+    ?>  
         </form>
     </div><!-- /.modal-content -->
 </div><!-- /.modal-dialog -->

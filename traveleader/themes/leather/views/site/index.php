@@ -12,6 +12,7 @@ Yii::app()->plugin->render('Hook_Login');
             <a href="/basic/page/contact?key=help">联系<br/>在线客服</a>
         </div>
     </div>
+    <!-- 
     <div class="warp_tab contaniner_24">
         <div class="warp_tab_con">
             <div class="warp_tab_t">
@@ -61,6 +62,7 @@ Yii::app()->plugin->render('Hook_Login');
                 </div>
             <?php } ?>
         </div>
+         -->
         <div class="warp_news">
             <div class="news_tit"><?php echo CHtml::link('更多>>', Yii::app()->createUrl('post/index', array())); ?></div>
             <div class="news_c">

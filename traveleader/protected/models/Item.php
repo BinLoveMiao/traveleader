@@ -109,6 +109,8 @@ class Item extends YActiveRecord
             'props' => 'Props',
             'props_name' => 'Props Name',
             'desc' => 'Desc',
+        	'cost_info' => 'Cost Information',
+        	'schedule' => 'Travel Schedule',
             'shipping_fee' => 'Shipping Fee',
             'is_show' => 'Is Show',
             'is_promote' => 'Is Promote',
@@ -144,28 +146,28 @@ class Item extends YActiveRecord
 
         $criteria = new CDbCriteria;
 
-        $criteria->compare('item_id', $this->item_id, true);
-        $criteria->compare('category_id', $this->category_id, true);
-        $criteria->compare('outer_id', $this->outer_id, true);
+        //$criteria->compare('item_id', $this->item_id, true);
+       // $criteria->compare('category_id', $this->category_id, true);
+       // $criteria->compare('outer_id', $this->outer_id, true);
         $criteria->compare('title', $this->title, true);
         $criteria->compare('stock', $this->stock, true);
         $criteria->compare('min_number', $this->min_number, true);
         $criteria->compare('price', $this->price, true);
-        $criteria->compare('currency', $this->currency, true);
+        //$criteria->compare('currency', $this->currency, true);
         $criteria->compare('props', $this->props, true);
         $criteria->compare('props_name', $this->props_name, true);
-        $criteria->compare('desc', $this->desc, true);
+        //$criteria->compare('desc', $this->desc, true);
         $criteria->compare('shipping_fee', $this->shipping_fee, true);
         $criteria->compare('is_show', $this->is_show);
         $criteria->compare('is_promote', $this->is_promote);
         $criteria->compare('is_new', $this->is_new);
         $criteria->compare('is_hot', $this->is_hot);
         $criteria->compare('is_best', $this->is_best);
-        $criteria->compare('click_count', $this->click_count, true);
-        $criteria->compare('wish_count', $this->wish_count, true);
-        $criteria->compare('create_time', $this->create_time, true);
-        $criteria->compare('update_time', $this->update_time, true);
-        $criteria->compare('language', $this->language, true);
+        //$criteria->compare('click_count', $this->click_count, true);
+        //$criteria->compare('wish_count', $this->wish_count, true);
+        //$criteria->compare('create_time', $this->create_time, true);
+        //$criteria->compare('update_time', $this->update_time, true);
+        //$criteria->compare('language', $this->language, true);
         $criteria->compare('country', $this->country, true);
         $criteria->compare('state', $this->state, true);
         $criteria->compare('city', $this->city, true);
