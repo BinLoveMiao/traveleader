@@ -5,6 +5,9 @@ $cs->registerCssFile(Yii::app()->theme->baseUrl . '/css/deal.css');
 $cs->registerScriptFile(Yii::app()->theme->baseUrl . '/js/pptBox.js');
 $cs->registerScriptFile(Yii::app()->theme->baseUrl . '/js/lrtk.js');
 $cs->registerScriptFile(Yii::app()->baseUrl . '/js/jquery-ui.min.js');
+$cs->registerScriptFile(Yii::app()->baseUrl . '/js/bootstrap.min.js');
+//$cs->registerCssFile(Yii::app()->baseUrl . '/css/bootstrap.min.css');
+//$cs->registerCssFile(Yii::app()->baseUrl . '/css/bootstrap-theme.min.css');
 $cs->registerScriptFile(Yii::app()->baseUrl . '/js/jquery.qtip.min.js');
 $cs->registerCssFile(Yii::app()->baseUrl . '/css/jquery.qtip.min.css');
 Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl.'/css/cart/review.css');
@@ -63,10 +66,7 @@ $imageHelper=new ImageHelper();
                         echo'<div><a href="javascript:void(0)" target="_blank" rel="nofollow"><img position=absolute   alt="' . $item->title . '" src="'  .Yii::app()->baseUrl.$picUrl . '" width="350" height="250"/></a></div>';
                     } ?>
                 </ul>
-            </div>
-            <?php 
-            
-            ?>
+            </div> 
              <div  class="deal_price_calendar">
                 <?php
                 $criteria = new CDbCriteria;
@@ -127,8 +127,8 @@ $imageHelper=new ImageHelper();
           								    show: { ready: true }
        									})
 									}'),
-								'eventMouseout'=>new CJavaScriptExpression('function(calEvent,jsEvent) {
-									$("#tooltip").remove();}'),
+								//'eventMouseout'=>new CJavaScriptExpression('function(calEvent,jsEvent) {
+								//	$("#tooltip").remove();}'),
 						)
                 ));
                 ?>
@@ -166,7 +166,7 @@ $imageHelper=new ImageHelper();
             		$priceArr,
             		array('empty' => '请选择出行日期'));
             ?>
-            </div>
+            </div>  
             <!--
             <?php
             $skus = array();
@@ -726,17 +726,17 @@ $(function () {
         }
        	else{
             //Here update the div where you need to see the selected value
-        	$('#deal').submit();
+            $('.deal_price_list').removeClass('prop-div-select');
+            $.post($(this).data('url'), function(response){
+                if (response.status == 'login') {
+                    $('#deal').submit();
+                } else {
+//                     $('#loginPage')
+                    $('#myModal').modal('show');
+                }
+            }, 'json');
        	}
-            //$.post($(this).data('url'), function(response){
-             //   if (response.status == 'login') {
-            //        $('#deal').submit();
-            //    } else {
-//          //           $('#loginPage')
-           //         $('#myModal').modal('show');
-           //     }
-          //  }, 'json');
-       // }
+        
     });
 
 
