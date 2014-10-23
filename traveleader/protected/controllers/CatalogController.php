@@ -13,6 +13,16 @@ class CatalogController extends YController
         $descendantIds = $category->getDescendantIds();
         $criteria = new CDbCriteria();
         $criteria->addInCondition('category_id', $descendantIds);
+        
+        if(!empty($_GET['country'])){
+        	$criteria->addCondition("t.country = '{$_GET['country']}'");
+        }
+        if(!empty($_GET['state'])){
+        	$criteria->addCondition("t.state = '{$_GET['state']}'");
+        }
+        if(!empty($_GET['city'])){
+        	$criteria->addCondition("t.city = '{$_GET['city']}'");
+        }
 
         if (!empty($_GET['key'])) {
             $criteria->addCondition("(t.title LIKE '%{$_GET['key']}%')");

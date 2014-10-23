@@ -68,6 +68,24 @@ INSERT INTO `item` (`item_id`, `category_id`, `outer_id`, `title`, `stock`, `min
 
 -- --------------------------------------------------------
 --
+-- 表的结构 `item_price`
+--
+
+DROP TABLE IF EXISTS `item_price`;
+CREATE TABLE IF NOT EXISTS `item_price` (
+	`item_price_id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Item ID',
+	`item_id` int(10) unsigned NOT NULL COMMENT 'Item ID',
+	`date`  Date Not NULL COMMENT 'Date of Price',
+	`price_adult` decimal(10,2) unsigned NOT NULL COMMENT '成人价格',
+	`price_child` decimal(10,2) unsigned NOT NULL COMMENT '儿童价格',
+	`create_time` int(10) unsigned NOT NULL COMMENT '创建时间',
+	PRIMARY KEY (`item_price_id`),
+	KEY `fk_item_price_item1_idx` (`item_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=60 ;
+
+
+-- --------------------------------------------------------
+--
 -- 表的结构 `menu`
 --
 

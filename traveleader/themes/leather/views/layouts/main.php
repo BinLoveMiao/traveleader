@@ -56,7 +56,7 @@
     </div>
     <div class="search_hot">
         热门搜索：
-        <?php foreach (array('皮雕', '软皮', '压花') as $v) {
+        <?php foreach (array('海南三亚', '马尔代夫', '西藏', '云南') as $v) {
             echo CHtml::link($v, Yii::app()->createUrl('catalog/index', array('key' => $v)));
         } ?>
     </div>

@@ -86,6 +86,7 @@ class Item extends YActiveRecord
             'stateArea' => array(self::BELONGS_TO, 'Area', 'state'),
             'cityArea' => array(self::BELONGS_TO, 'Area', 'city'),
             'itemImgs' => array(self::HAS_MANY, 'ItemImg', 'item_id'),
+        	'itemPrices' => array(self::HAS_MANY, 'ItemPrice', 'item_id'),
             'orderItems' => array(self::HAS_MANY, 'OrderItem', 'item_id'),
             'propImgs' => array(self::HAS_MANY, 'PropImg', 'item_id'),
             'skus' => array(self::HAS_MANY, 'Sku', 'item_id'),
@@ -165,8 +166,8 @@ class Item extends YActiveRecord
         $criteria->compare('is_best', $this->is_best);
         //$criteria->compare('click_count', $this->click_count, true);
         //$criteria->compare('wish_count', $this->wish_count, true);
-        //$criteria->compare('create_time', $this->create_time, true);
-        //$criteria->compare('update_time', $this->update_time, true);
+        $criteria->compare('create_time', $this->create_time, true);
+        $criteria->compare('update_time', $this->update_time, true);
         //$criteria->compare('language', $this->language, true);
         $criteria->compare('country', $this->country, true);
         $criteria->compare('state', $this->state, true);
