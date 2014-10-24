@@ -4,12 +4,6 @@ $cs->registerCssFile(Yii::app()->theme->baseUrl . '/css/product.css');
 $cs->registerCssFile(Yii::app()->theme->baseUrl . '/css/deal.css');
 $cs->registerScriptFile(Yii::app()->theme->baseUrl . '/js/pptBox.js');
 $cs->registerScriptFile(Yii::app()->theme->baseUrl . '/js/lrtk.js');
-$cs->registerScriptFile(Yii::app()->baseUrl . '/js/jquery-ui.min.js');
-$cs->registerScriptFile(Yii::app()->baseUrl . '/js/bootstrap.min.js');
-//$cs->registerCssFile(Yii::app()->baseUrl . '/css/bootstrap.min.css');
-//$cs->registerCssFile(Yii::app()->baseUrl . '/css/bootstrap-theme.min.css');
-$cs->registerScriptFile(Yii::app()->baseUrl . '/js/jquery.qtip.min.js');
-$cs->registerCssFile(Yii::app()->baseUrl . '/css/jquery.qtip.min.css');
 Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl.'/css/cart/review.css');
 Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl.'/js/review.js');
 
@@ -32,12 +26,11 @@ $imageHelper=new ImageHelper();
 </script>
 
 <div class="warp_contant">
-<!--  
     <div class="float">
         <div class="float_button">
             <a href="">联系<br/>在线客服</a>
         </div>
-    </div>-->
+    </div>
     <div class="deal container_24">
         <div class="deal_tip">
             <a href="<?php echo Yii::app()->baseUrl; ?>">首页>></a>
@@ -45,144 +38,40 @@ $imageHelper=new ImageHelper();
                 echo '<a href="' . $breadcrumb['url'] . '">' . $breadcrumb['name'] . '</a>';
             } ?>
         </div>
-        <div class="deal_tit"><?php echo $item->title; ?></div>
         <div class="deal_pic clearfix">
             <div>
                 <ul id="idNum" class="hdnum">
                     <?php foreach ($item->itemImgs as $itemImg) {
                         if(!empty($itemImg->pic)){
-                            $picUrl=$imageHelper->thumb('59','59',$itemImg->pic);
-                        }else $picUrl=$item->getHolderJs('59','59');
-                        echo '<li><img src="' .Yii::app()->baseUrl. $picUrl . '" width="59" height="59"></li>';
+                            $picUrl=$imageHelper->thumb('70','70',$itemImg->pic);
+                        }else $picUrl=$item->getHolderJs('70','70');
+                        echo '<li><img src="' .$picUrl . '" width="70" height="70"></li>';
                     } ?>
                 </ul>
             </div>
-            <div style="width: 380px; height: 250px; overflow: hidden; position: relative;" id=idTransformView >
+            <div style="width: 450px; height: 450px; overflow: hidden; position: relative;" id=idTransformView >
                 <ul id=idSlider class=slider>
                     <?php foreach ($item->itemImgs as $itemImg) {
                         if($itemImg->pic){
-                            $picUrl=$imageHelper->thumb('380','250',$itemImg->pic);
-                        }else $picUrl=$item->getHolderJs('380','250');
+                            $picUrl=$imageHelper->thumb('450','450',$itemImg->pic);
+                        }else $picUrl=$item->getHolderJs('450','450');
                         //                        echo '<li><img src="' .$picUrl . '" width="450" height="450"></li>';
-                        echo'<div><a href="javascript:void(0)" target="_blank" rel="nofollow"><img position=absolute   alt="' . $item->title . '" src="'  .Yii::app()->baseUrl.$picUrl . '" width="380" height="250"/></a></div>';
+                        echo'<div><a href="javascript:void(0)" target="_blank" rel="nofollow"><img position=absolute   alt="' . $item->title . '" src="'  .$picUrl . '" width="450" height="450"/></a></div>';
                     } ?>
                 </ul>
-            </div> 
-             <div  class="deal_price_calendar">
-                <?php
-                $criteria = new CDbCriteria;
-				$now = new CDbExpression("NOW()");
-				$criteria->addCondition('date > '.$now);
-                $itemPrices = ItemPrice::model()->findAllByAttributes
-					(array('item_id' => $item->item_id), $criteria);
-                $today =  date("Y-m-d");
-                
-                foreach($itemPrices as $item_price){
-                	$days = round((strtotime($item_price->date)-strtotime($today))/3600/24);                	
-                	if( $days < 90){
-                		$prices[]=array(
-                				'title'=>''.$item->currency.$item_price->price_adult,
-                				'start'=>''.$item_price->date,
-                				'color'=>'lightgreen',
-								'description'=>'成人：'.$item->currency.$item_price->price_adult. '<br />儿童：'.$item->currency.$item_price->price_child,
-                		);
-                	}
-                }
-                $this->widget('ext.EFullCalendar.EFullCalendar', array(
-                		// polish version available, uncomment to use it
-                		 'lang'=>'cn',
-                		// you can create your own translation by copying locale/pl.php
-                		// and customizing it
-                
-                		// remove to use without theme
-                		// this is relative path to:
-                		// themes/<path>
-                		'themeCssFile'=>'cupertino/theme.css',
-                
-                		// raw html tags
-                		'htmlOptions'=>array(
-                				// you can scale it down as well, try 80%
-                				'style'=>'width:95%'
-                		),
-                		// FullCalendar's options.
-                		// Documentation available at
-                		// http://arshaw.com/fullcalendar/docs/
-                		'options'=>array(
-                				'header'=>array(
-                						'left'=>'prev',
-                						'center'=>'title',
-                						'right'=>'today,next'
-                				),
-								'selectable'=>true,
-								'fixedWeekCount'=>false,
-                				'lazyFetching'=>true,
-                				//'events'=>Yii::app()->createUrl('item/CalendarEvents?id='.$item->item_id), // action URL for dynamic events, or
-                				'events'=>$prices, // pass array of events directly
-                				
-                				// event handling
-                				// mouseover for example
-                				'eventMouseover'=>new CJavaScriptExpression('function(calEvent,jsEvent, view) {
-										$(this).qtip({
-           									overwrite: false,
-           									content: calEvent.description,
-          								    show: { ready: true }
-       									})
-									}'),
-								//'eventMouseout'=>new CJavaScriptExpression('function(calEvent,jsEvent) {
-								//	$("#tooltip").remove();}'),
-						)
-                ));
-                ?>
-       		 </div>
+            </div>
         </div>
-            
         <script language=javascript>
-            mytv("idNum", "idTransformView", "idSlider", 250, 4, true, 2000, 5, true, "onmouseover");
+            mytv("idNum", "idTransformView", "idSlider", 450, 5, true, 2000, 5, true, "onmouseover");
             //按钮容器aa，滚动容器bb，滚动内容cc，滚动宽度dd，滚动数量ee，滚动方向ff，延时gg，滚动速度hh，自动滚动ii，
         </script>
 
-        <form action="<?php echo Yii::app()->createUrl('order/checkout'); ?>" method="post" class="deal_info" id="deal">     
+        <form action="<?php echo Yii::app()->createUrl('order/checkout'); ?>" method="post" class="deal_info" id="deal">
+            <div class="deal_tit"><?php echo $item->title; ?></div>
             <div class="deal_price">
-               <span class="font15"> 价格：</span> <span class="cor_red bold font30"><?php echo $item->currency . $item->price ?></span><span>起</span>
+                <span class="cor_red bold font30"><?php echo $item->currency . $item->price ?></span>
             </div>
-            <div class="deal_coupon">
-            <span class="font15"> 优惠券：</span>
-            </div>
-            <div class="deal_sat">
-            <span class="font15"> 满意度：</span> <span class="cor_red">100%</span>
-            </div>
-            <div class="deal_advance">
-             <span class="font15"> 提前报名：</span> <span class="font15">建议提前60天以上</span>
-            </div>
-            <div class="deal_destination">
-            <span class="font15"> 出发地/目的地：</span> 
-            <span> <?php echo Area::model()->findByPk($item->departure)->name;?> 至 
-           	 <?php echo Area::model()->findByPk($item->city)->name;?></span>
-            </div>
-            <div class="deal_sold">已有 <span class="cor_red bold"><?php echo $item->deal_count;?></span>&nbsp;人出游</div>
-            <div class="deal_book">
-            <div class="deal_price_list">
-            <?php 
-            	//$list = CHtml::listData($itemPrices, 'item_price_id', 'price_adult');
-            	$priceArr = array();
-            	foreach($itemPrices as $item_price){
-            		$days = round((strtotime($item_price->date)-strtotime($today))/3600/24);
-            		if( $days < 20){
-						$priceArr[$item_price->item_price_id] =  
-							$item_price->date. " " 
-		                     .$item->currency . $item_price->price_adult . "/人 ; "
-		                     .$item->currency . $item_price->price_child . "/儿童"; 
-            		}
-           		}
-            	//echo CHtml::dropDownList('item_prices', $itemPrices,
-            	//		$list,
-            	//		array('empty' => '请选择出行日期'));
-            echo CHtml::dropDownList('listname', $select,
-            		$priceArr,
-            		array('empty' => '请选择出行日期'));
-            ?>
-            </div>  
-            <!--
+            <div class="deal_sold">月销售量 <span class="cor_red bold"><?php echo $item->deal_count;?></span>&nbsp;件</div>
             <?php
             $skus = array();
             foreach ($item->skus as $sku) {
@@ -244,29 +133,22 @@ $imageHelper=new ImageHelper();
                     <?php
                     }
                 } ?>
-            </div>  -->
+            </div>
             <div class="deal_num">
-                <span class="deal_num_c">
+                <span>我要买</span><span class="deal_num_c">
                     <a href="javascript:void(0)" class="minus"></a>
                     <label class="qty_num" id="num"><?php echo $item->min_number; ?></label>
                     <input type="hidden" id="qty" name="qty" value="<?php echo $item->min_number; ?>" />
-                    <a href="javascript:void(0)" class="add"></a></span> <span>成人</span>
-                      
-                    <span class="deal_num_c2">
-                    <a href="javascript:void(0)" class="minus2"></a>
-                    <label class="qty_num2" id="num2">0</label>
-                    <input type="hidden" id="qty2" name="qty2" value="0" />
-                    <a href="javascript:void(0)" class="add2"></a></span> <span>儿童</span>
+                    <a href="javascript:void(0)" class="add"></a></span>
 
-               <!--  <span>（库存剩余 <label id="stock"><?php echo $item->stock; ?></label> 台)</span> -->
+                <span>（库存剩余 <label id="stock"><?php echo $item->stock; ?></label> 台)</span>
             </div>
             <input type="hidden" id="item_id" name="item_id" value="<?php echo $item->item_id; ?>" />
             <input type="hidden" id="props" name="props" value="" />
-            <div class="deal_add" data-url="<?php echo Yii::app()->createUrl('user/user/isLogin'); ?>" ><?php echo CHtml::link("立即预定", 'javascript:void(0);')?></div>
-            <!-- <div  class="deal_add_car" data-url="<?php echo Yii::app()->createUrl('cart/add'); ?>"><a href="javascript:void(0)" id="addToShopCart" >加入购物车</a></div>--> 
+            <div  class="deal_add_car" data-url="<?php echo Yii::app()->createUrl('cart/add'); ?>"><a href="javascript:void(0)" id="addToShopCart" >加入购物车</a></div>
+            <div class="deal_add" data-url="<?php echo Yii::app()->createUrl('user/user/isLogin'); ?>" ><?php echo CHtml::link("立即购买", 'javascript:void(0);')?></div>
             <div  class="deal_collect" data-url="<?php echo Yii::app()->createUrl('member/wishlist/addWish'); ?>" ><a href="javascript:void(0)">立即收藏</a></div>
             <!-- Modal -->
-            </div>
             <div tabindex="-1" class="modal fade in" id="myModal" role="dialog" aria-hidden="false" aria-labelledby="myModalLabel" style="display: none;">
                 <div class="modal-dialog">
                     <div class="modal-content" >
@@ -274,7 +156,7 @@ $imageHelper=new ImageHelper();
                         <form role="form" id="log-out-box">
                             <button type="button" class="close" data-dismiss="modal" aria-hidden="true" id="log-out-close">×</button>
                             <div id="warning-load" >
-                                <div id="logo">领贤旅游</div>
+                                <div id="logo">演示商城</div>
 
                                 <div class="user">
                                     <div> 用户名：</div>
@@ -295,9 +177,14 @@ $imageHelper=new ImageHelper();
                     </div>
                 </div>
             </div>
-      </form>
+
+
+        </form>
     </div><!-- /.modal-content -->
 </div><!-- /.modal-dialog -->
+
+
+
 </form>
 </div>
 <!-- Modal -->
@@ -603,7 +490,7 @@ $(function () {
     $('.deal_size a').click(function () {
         var selectClass = $(this).find('img').length ? 'img-prop-select' : 'prop-select';
         if($(this).attr('class') !='disable'){
-            if ($(this).attr('class') && $(this).attr('class').indexOf(selectClass) != -1) {
+            if ($(this).attr('class') && $(this).attr('class').indexOf(selectClass) !== -1) {
                 $(this).removeClass(selectClass);
             } else {
                 $(this).parent().find('a').removeClass(selectClass);
@@ -665,20 +552,6 @@ $(function () {
             $('#qty').val(parseInt($('#qty').val()) + 1);
         }
     });
-    $('.add2').click(function () {
-        $('#num2').text(parseInt($('#num2').text()) + 1);
-        $('#qty2').val(parseInt($('#qty2').val()) + 1);
-    });
-    $('.minus2').click(function () {
-        $('#num2').text(parseInt($('#num2').text()) - 1);
-        $('#qty2').val(parseInt($('#qty2').val()) - 1);
-        var num2 = $('input[name = qty2]').val();
-        if(num2 < 0){
-            alert('预定值不能为负！');
-            $('#num2').text(parseInt($('#num2').text()) + 1);
-            $('#qty2').val(parseInt($('#qty2').val()) + 1);
-        }
-    });
     $('.deal_add_car').click(function() {
         $("#log-btn-div").click(function() {carLogin();});
         $("#buy-without-login").hide();
@@ -731,18 +604,12 @@ $(function () {
     $('.deal_add').click(function() {
         $("#log-btn-div").click(function() {llogin();});
         $("#buy-without-login").show();
-       // var selectProps = $('.prop-select,.img-prop-select');
-        //if (selectProps.length < $('.deal_size p').length) {
-          //  $('.deal_size').addClass('prop-div-select');
-        //} else {
-           // $('.deal_size').removeClass('prop-div-select');
-        var value = $('.deal_price_list :selected').text();
-       	if (value.localeCompare("请选择出行日期") == 0){
-       		$('.deal_price_list').addClass('prop-div-select');
-        }
-       	else{
-            //Here update the div where you need to see the selected value
-            $('.deal_price_list').removeClass('prop-div-select');
+        var selectProps = $('.prop-select,.img-prop-select');
+        if (selectProps.length < $('.deal_size p').length) {
+            $('.deal_size').addClass('prop-div-select');
+        } else {
+            $('.deal_size').removeClass('prop-div-select');
+//                $('#deal').submit();
             $.post($(this).data('url'), function(response){
                 if (response.status == 'login') {
                     $('#deal').submit();
@@ -751,8 +618,7 @@ $(function () {
                     $('#myModal').modal('show');
                 }
             }, 'json');
-       	}
-        
+        }
     });
 
 

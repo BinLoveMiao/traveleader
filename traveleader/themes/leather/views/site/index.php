@@ -63,6 +63,7 @@ Yii::app()->plugin->render('Hook_Login');
             <?php } ?>
         </div>
          -->
+         <!-- 
         <div class="warp_news">
             <div class="news_tit"><?php echo CHtml::link('更多>>', Yii::app()->createUrl('post/index', array())); ?></div>
             <div class="news_c">
@@ -120,6 +121,7 @@ Yii::app()->plugin->render('Hook_Login');
             </div>
         </div>
     </div>
+     -->
     <div class="warp_product">
         <?php $isFrist = true;
         $num = 0;
