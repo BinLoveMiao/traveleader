@@ -15,8 +15,10 @@
  * @property string $props
  * @property string $props_name
  * @property string $desc
- * @property string $sched
- * @property string $payment_desc
+ * @property string $schedule
+ * @property string $cost_incl
+ * @property string $cost_excl
+ * @property string $departure
  * @property string $shipping_fee
  * @property integer $is_show
  * @property integer $is_promote
@@ -62,14 +64,14 @@ class Item extends YActiveRecord
         return array(
             array('category_id, title, price, currency, props, props_name, desc, language, country, state, city', 'required'),
             array('is_show, is_promote, is_new, is_hot, is_best', 'numerical', 'integerOnly' => true),
-            array('category_id, stock, min_number, price, shipping_fee, click_count, wish_count, review_count,deal_count,create_time, update_time, country, state, city', 'length', 'max' => 10),
+            array('category_id, stock, min_number, price, discount_price, departure, shipping_fee, click_count, wish_count, review_count,deal_count,create_time, update_time, country, state, city', 'length', 'max' => 10),
             array('outer_id, language', 'length', 'max' => 45),
             array('title', 'length', 'max' => 255),
             array('currency', 'length', 'max' => 20),
             array('create_time, update_time', 'safe'),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            array('title, stock, min_number, price, props, props_name, is_show, is_promote, is_new, is_hot, is_best, click_count, wish_count, create_time, update_time, language, country, state, city', 'safe', 'on' => 'search'),
+            array('title, stock, min_number, price, discount_price, props, props_name, is_show, is_promote, is_new, is_hot, is_best, click_count, wish_count, create_time, update_time, language, country, state, city', 'safe', 'on' => 'search'),
         );
     }
 
@@ -82,6 +84,7 @@ class Item extends YActiveRecord
         // class name for the relations automatically generated below.
         return array(
             'category' => array(self::BELONGS_TO, 'Category', 'category_id'),
+        	'departure' => array(self::BELONGS_TO, 'Area', 'state'),
             'countryArea' => array(self::BELONGS_TO, 'Area', 'country'),
             'stateArea' => array(self::BELONGS_TO, 'Area', 'state'),
             'cityArea' => array(self::BELONGS_TO, 'Area', 'city'),
@@ -106,11 +109,14 @@ class Item extends YActiveRecord
             'stock' => 'Stock',
             'min_number' => 'Min Number',
             'price' => 'Price',
+        	'discount_price' => "Price on Discount",
             'currency' => 'Currency',
             'props' => 'Props',
             'props_name' => 'Props Name',
             'desc' => 'Desc',
-        	'cost_info' => 'Cost Information',
+        	'cost_incl' => 'Cost Include',
+        	'cost_excl' => 'Cost Not Include',
+        	'departure' => 'Place of Departure',
         	'schedule' => 'Travel Schedule',
             'shipping_fee' => 'Shipping Fee',
             'is_show' => 'Is Show',
@@ -154,6 +160,7 @@ class Item extends YActiveRecord
         $criteria->compare('stock', $this->stock, true);
         $criteria->compare('min_number', $this->min_number, true);
         $criteria->compare('price', $this->price, true);
+        $criteria->compare('discount_price', $this->discount_price, true);
         //$criteria->compare('currency', $this->currency, true);
         $criteria->compare('props', $this->props, true);
         $criteria->compare('props_name', $this->props_name, true);

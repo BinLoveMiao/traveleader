@@ -21,7 +21,6 @@ $this->breadcrumbs = array(
                     'filter' => Tbfunction::ReturnOrderStatus(),
                 ),
                 'total_fee',
-                'ship_fee',
                 'pay_fee',
                 array(
                     'name' => 'create_time',
@@ -31,11 +30,6 @@ $this->breadcrumbs = array(
                     'name' => 'pay_status',
                     'value' => 'Tbfunction::showPayStatus($data->pay_status)',
                     'filter' => Tbfunction::ReturnPayStatus(),
-                ),
-                array(
-                    'name' => 'ship_status',
-                    'value' => 'Tbfunction::showShipStatus($data->ship_status)',
-                    'filter' => Tbfunction::ReturnShipStatus(),
                 ),
                 array(
                     'name' => 'payment_method_id',

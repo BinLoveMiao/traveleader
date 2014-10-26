@@ -7,7 +7,7 @@
     </div>
     <div class="pd_l">
         <div class="pd_l_fl">
-            <div class="pd_l_nv">
+            <div class="pd_l_nv_2">
                 <div class="pd_l_ti">
                     <a href="<?php echo Yii::app()->baseUrl; ?>">首页>></a>
                     <?php foreach ($this->breadcrumbs as $breadcrumb) {
@@ -61,7 +61,7 @@
                                             $picUrl=$value->getHolderJs('180','178');
                                         }
                                   ?>
-                                         box.add({"url": "<?php echo $picUrl?>", "href": "<?php echo $this->createUrl('item/view', array('id' => $value->item_id)) ?>", "title": "<?php echo $value->title?>"});
+                                         box.add({"url": "<?php echo Yii::app()->baseUrl. $picUrl?>", "href": "<?php echo $this->createUrl('item/view', array('id' => $value->item_id)) ?>", "title": "<?php echo $value->title?>"});
                                     <?php
                                             }
                                         }else echo 'box.add({"url": "image/tu2.jpg", "href": "'.$this->createUrl('item/view', array('id' => $value->item_id)).'", "title": "no data"});';
@@ -88,11 +88,12 @@
                             $params['cat'] = $cate->getUrl();
                             echo '<li><a href="' . Yii::app()->createUrl('catalog/index', $params) . '">' . $cate->name . '</a></li>';
                         } ?>
-                    </ul>
-                    
-                    
+                    </ul>                 
                 <?php
                 }
+                ?>
+               <!-- 
+                <?php 
                 $params = $_GET;
                 $getprops = empty($params['props']) ? array() : array_flip(explode(';', $params['props']));
 
@@ -119,6 +120,7 @@
                     }
                 }
                 ?>
+                -->    
             </div>
             <div class="pd_sort" id="pd-sort" data-sort="<?php echo $sort?>">
                 <a href="<?php echo Yii::app()->createUrl('catalog/index', array_merge($_GET, array('sort' => 'soldd'))); ?>">
@@ -152,12 +154,14 @@
                         } ?>
                     </form>
                 </div>
+                <!-- 
                 <div class="pd_check">
                     <label><input id="has_stock" name="has_stock" type="checkbox"
                                   <?php echo !empty($_GET['has_stock']) && $_GET['has_stock'] ? 'checked' : ''; ?>
                                   data-url="<?php echo Yii::app()->createUrl('catalog/index', array_merge($_GET, array('has_stock' => !empty($_GET['has_stock']) && $_GET['has_stock'] ? 0 : 1))) ?>"/>
                         仅显示有货</label>
                 </div>
+                 -->
                 <div class="pd_page">
                     <?php if ($pager->pageCount > 1 || true) {
                         if ($pager->currentPage == 0 && false) {

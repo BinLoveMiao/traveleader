@@ -12,8 +12,22 @@
 
 .pd_l_nv{
 	border:1px solid #e2dfdf;
+	width: 240px;
 	padding-bottom:10px;
-	margin-bottom:15px;
+	margin-bottom:10px;
+	margin-top: 10px;
+	overflow:hidden;
+	float:left;
+}
+
+.pd_l_nv_2{
+	border:1px solid #e2dfdf;
+	width: 190px;
+	padding-bottom:10px;
+	margin-bottom:10px;
+	margin-top: 10px;
+	overflow:hidden;
+	float:left;
 }
 .pd_l_nv h2{
 	margin:0 5px;
@@ -42,6 +56,7 @@
 }
 .pd_l_slider{
 	border:1px solid #e2dfdf;
+	margin-top: 10px;
 }
 .pd_l_slider h2{
 	border-bottom:2px solid #a35f23;

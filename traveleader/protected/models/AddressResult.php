@@ -15,6 +15,7 @@
  * @property string $address
  * @property string $phone
  * @property string $mobile_phone
+ * @property string $email
  * @property string $memo
  * @property integer $is_default
  * @property string $create_time
@@ -45,11 +46,11 @@ class AddressResult extends CActiveRecord {
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
         return array(
-            array('contact_name, state, city, district, zipcode, address, mobile_phone,', 'required'),
+            array('contact_name, mobile_phone, email', 'required'),
             array('is_default', 'numerical', 'integerOnly' => true),
             array('user_id, create_time, update_time', 'length', 'max' => 10),
             array('country, state, city, district,', 'length', 'max' => 11),
-            array('contact_name, zipcode, phone, mobile_phone', 'length', 'max' => 45),
+            array('contact_name, zipcode, phone, mobile_phone, email', 'length', 'max' => 45),
             array('mobile_phone','length','is' => 11),
             array('address', 'length', 'max' => 255),
             array('memo', 'safe'),
@@ -91,6 +92,7 @@ class AddressResult extends CActiveRecord {
             'address' => '详细地址',
             'phone' => '电话',
             'mobile_phone' => '手机',
+        	'email' => '电子邮件',
             'memo' => '备注',
             'is_default' => '默认',
             'create_time' => '创建时间',

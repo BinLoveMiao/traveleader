@@ -14,7 +14,7 @@ $this->breadcrumbs=array(
 ?>
 
 <div class="box">
-    <div class="box-title">查看收货地址#<?php echo $model->contact_id; ?></div>
+    <div class="box-title">查看联系人信息<?php echo $model->contact_id; ?></div>
     <div class="box-content">
 <?php $this->widget('bootstrap.widgets.TbDetailView', array(
 	'data'=>$model,
@@ -26,11 +26,12 @@ $this->breadcrumbs=array(
 		's.name',
 		'c.name',
 		'd.name',
-		'zipcode',
-		'address',
+		//'zipcode',
+		//'address',
 		'phone',
+		'email',
 		'mobile_phone',
-		'memo',
+		//'memo',
 		'is_default',
 		'create_time',
 		'update_time',

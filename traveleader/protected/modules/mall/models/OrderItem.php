@@ -13,8 +13,23 @@
  * @property string $props_name
  * @property string $price
  * @property string $quantity
+ * 
+ * // Add for travel agency
+ * @property string $adult_number
+ * @property string $child_number
+ * @property string $adult_price
+ * @property string $child_price
+ * //Remains for future use
+ * @property string $flight_info
+ * @property string $insurance_info
+ * 
+ * @property integer $is_childen  // All members are children
+ * @property integer $has_old_man
+ * @property integer $has_foreigner
+ * @property integer $is_invoice
+ * 
  * @property string $total_price
- *
+ * 
  * The followings are the available model relations:
  * @property Item $item
  * @property Order $order
@@ -37,14 +52,15 @@ class OrderItem extends CActiveRecord
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
         return array(
-            array('order_id, item_id, title, desc, props_name, price, quantity, total_price', 'required'),
+            array('order_id, item_id, title, desc, price, child_number, adult_number, 
+            			child_price, adult_price, total_price', 'required'),
             array('order_id', 'length', 'max'=>20),
             array('pic','safe'),
-            array('item_id, price, quantity, total_price', 'length', 'max'=>10),
-            array('title, pic', 'length', 'max'=>255),
+            array('item_id, price, quantity, child_number, adult_number, child_price, adult_price, total_price', 'length', 'max'=>10),
+            array('title, pic, flight_info, insurance_info', 'length', 'max'=>255),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            array('order_item_id, order_id, item_id, title, desc, pic, props_name, price, quantity, total_price', 'safe', 'on'=>'search'),
+            array('order_item_id, order_id, item_id, title, desc, pic, props_name, price, total_price', 'safe', 'on'=>'search'),
         );
     }
 
@@ -76,6 +92,12 @@ class OrderItem extends CActiveRecord
             'props_name' => 'Props Name',
             'price' => 'Price',
             'quantity' => 'Quantity',
+        	'adult_number' => 'Number of Adults',
+        	'child_number' => 'Number of Children',
+        	'adult_price' => 'Price for Adults',
+        	'child_price' => 'Price for Children',
+        	'flight_info' => 'Flight Information',
+        	'insurance_info' => 'Insurance Information',	
             'total_price' => 'Total Price',
         );
     }
@@ -137,17 +159,28 @@ class OrderItem extends CActiveRecord
             return parent::afterSave();
     }
 
-    public function saveOrderItem($OrderItem,$order_id,$item,$props_name,$quantity)
+    public function saveOrderItem($OrderItem,$order_id,$item,$adult_number, $adult_price, 
+            $child_number, $child_price)
     {
         $OrderItem->order_id = $order_id;
         $OrderItem->item_id = $item->item_id;
         $OrderItem->title = $item->title;
         $OrderItem->desc = $item->desc;
         $OrderItem->pic = $item->getMainPic();
-        $OrderItem->props_name = $props_name;
         $OrderItem->price = $item->price;
-        $OrderItem->quantity = $quantity;
-        $OrderItem->total_price = $OrderItem->quantity * $OrderItem->price;
+        $OrderItem->quantity = 0;
+        $OrderItem->adult_number = $adult_number;
+        $OrderItem->adult_price = $adult_price;
+        $OrderItem->child_number = $child_number;
+        $OrderItem->child_price = $child_price;
+        // This reserves for future use
+        $OrderItem->flight_info = "";
+        $OrderItem->insurance_info = "";
+        //$item_price = $ItemPrice::model()->findByPk($OrderItem->item_price);        
+        //$OrderItem->total_price = $OrderItem->adult_num * $item_price->price_adult + 
+        //			$OrderItem->child_num * $item_price->price_child;
+        //$OrderItem->total_price = $item->price * $quantity;
+        $OrderItem->total_price = $adult_number * $adult_price + $child_number * $child_price;
         if (!$OrderItem->save()) {
 //            throw new Exception('save order item fail');
             throw new Exception($OrderItem->getError());

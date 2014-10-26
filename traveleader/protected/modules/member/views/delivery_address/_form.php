@@ -18,7 +18,7 @@
     }
  ?>
 
-	<p class="note">Fields with <span class="required">*</span> are required.</p>
+	<p class="note">带<span class="required">*</span>必须填写！</p>
 
 	<?php echo $form->errorSummary($model); ?>
 
@@ -79,7 +79,7 @@
                          );
                          ?>
     </div>
-
+	<!-- 
     <div class="form-group">
         <?php echo $form->labelEx($model,'zipcode',array('class'=>'col-xs-2 control-label')); ?>
         <div class="col-xs-7">
@@ -95,6 +95,7 @@
         </div>
         <?php echo $form->error($model,'address'); ?>
     </div>
+     -->
 
     <div class="form-group">
         <?php echo $form->labelEx($model,'mobile_phone',array('class'=>'col-xs-2 control-label')); ?>
@@ -102,6 +103,14 @@
             <?php echo $form->textField($model,'mobile_phone',array('size'=>45,'maxlength'=>45,'class'=>'form-control')); ?>
         </div>
         <?php echo $form->error($model,'mobile_phone'); ?>
+    </div>
+    
+     <div class="form-group">
+        <?php echo $form->labelEx($model,'email',array('class'=>'col-xs-2 control-label')); ?>
+        <div class="col-xs-7">
+            <?php echo $form->textField($model,'email',array('size'=>45,'maxlength'=>45,'class'=>'form-control')); ?>
+        </div>
+        <?php echo $form->error($model,'email'); ?>
     </div>
 
     <div class="form-group">
@@ -119,7 +128,8 @@
         </div>
 		<?php echo $form->error($model,'is_default'); ?>
 	</div>
-
+	
+	<!-- 
     <div class="form-group">
         <?php echo $form->labelEx($model,'memo',array('class'=>'col-xs-2 control-label')); ?>
         <div class="col-xs-7">
@@ -127,6 +137,7 @@
         </div>
         <?php echo $form->error($model,'memo'); ?>
     </div>
+     -->
 
 	<div class="row buttons">
 		<?php echo

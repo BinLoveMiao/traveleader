@@ -45,7 +45,7 @@ Yii::app()->clientScript->registerCoreScript('jquery');
 <?php if (Yii::app()->user->id) { ?>
     <div class="box address-panel">
         <div class="box-title container_24"><span
-                style="float:right"><?php echo CHtml::link('管理收货地址', array('/member/delivery_address/admin'),array('target'=>'_blank')) ?></span>收货地址
+                style="float:right"><?php echo CHtml::link('联系人不在列表中? 添加新联系人', array('/member/delivery_address/admin'),array('target'=>'_blank')) ?></span>联系人
         </div>
         <div class="box-content">
             <?php
@@ -59,14 +59,14 @@ Yii::app()->clientScript->registerCoreScript('jquery');
                     echo '<li class=' . $default_address . '>' . CHtml::radioButton('delivery_address', $address->is_default == 1 ? TRUE : FALSE, array('value' => $address->contact_id, 'class' => 'delivery-address', 'id' => 'delivery_address' . $address->contact_id));
                     echo CHtml::tag('span', array(
                             'class' => 'buyer-address shop_selection'),
-                        $address->s->name . '&nbsp;' . $address->c->name . '&nbsp;' . $address->d->name . '&nbsp;' . $address->address . '&nbsp;(' . $address->contact_name . '&nbsp;收)&nbsp;' . $address->mobile_phone);
+                        $address->s->name . '&nbsp;' . $address->c->name . '&nbsp;' . $address->d->name . '&nbsp;' . $address->address . '&nbsp;(' . $address->contact_name . '&nbsp;)&nbsp;' . $address->mobile_phone .', ' . $address->email);
                     echo '</li>';
                 }
             } else {
 
             ?>
             <div>
-                <?php echo CHtml::link('请添加收货地址', array('/member/delivery_address/create'),array('target'=>'_blank')) ?>
+                <?php echo CHtml::link('请添加联系人', array('/member/delivery_address/create'),array('target'=>'_blank')) ?>
             </div>
             <?php } ?>
         </div>
@@ -74,7 +74,7 @@ Yii::app()->clientScript->registerCoreScript('jquery');
 
 <?php } else { ?>
     <div class="box">
-        <div class="box-title">收货地址：</div>
+        <div class="box-title">联系人：</div>
         <div class="box-content">
             <?php $model = new AddressResult;
             ?>
@@ -142,9 +142,10 @@ Yii::app()->clientScript->registerCoreScript('jquery');
                                 </div>
                                </div>
 
-
-
+					
+					<!--  
                     <div class="form-group" style="height:35px; border:1px solid white">
+                       	
                         <label for="AddressResult_zipcode" class=" col-xs-2 control-label">邮政编号 <span class="required">*</span></label>
                          <div class="col-xs-10">
                          <input
@@ -157,7 +158,7 @@ Yii::app()->clientScript->registerCoreScript('jquery');
                          <input
                             name="AddressResult[address]" id="AddressResult_address" type="text" class="form-control" />
                             </div>
-                    </div>
+                    </div> -->
 
                     <div class="form-group" style="height:35px;border:1px solid white">
 
@@ -166,7 +167,14 @@ Yii::app()->clientScript->registerCoreScript('jquery');
                         <input  name="AddressResult[mobile_phone]" id="AddressResult_mobile_phone" class="form-control"
                                type="text"/>
                                </div>
+                    <div class="form-group" style="height:35px;border:1px solid white">
+
+                        <label for="AddressResult_email" class="col-xs-2 control-label">电子邮件 <span class="required">*</span></label>
+                        <div class="col-xs-10">
+                        <input  name="AddressResult[email]" id="AddressResult_email" class="form-control"
+                               type="text"/>
                                </div>
+                    </div>
                     <div class="form-group" style="height:35px;border:1px solid white">
                         <label for="AddressResult_phone" class="col-xs-2 control-label">电话</label>
                          <div class=" col-xs-10">
@@ -209,7 +217,7 @@ Yii::app()->clientScript->registerCoreScript('jquery');
                 <tr style="background:#F3F3F3;">
                     <th class="col-xs-3">图片</th>
                     <th class="col-xs-3">名称</th>
-                    <th class="col-xs-3">属性</th>
+                    <!--  <th class="col-xs-3">属性</th>-->
                     <th class="col-xs-1">价格</th>
                     <th class="col-xs-1">数量</th>
                     <th class="col-xs-1">小计</th>
@@ -221,22 +229,28 @@ Yii::app()->clientScript->registerCoreScript('jquery');
                     if($keys==null)
                     {
                         echo CHtml::hiddenField('sku_id', $item->sku->sku_id);
-                        echo CHtml::hiddenField('item_id', $item->sku->item_id);
+                        echo CHtml::hiddenField('item_id', $item->item_id);
+                        //echo $item->sku->item_id;
+                        //echo $item->item_id;
                         echo CHtml::hiddenField('quantity', $item->getQuantity());
+                        echo CHtml::hiddenField('adult_number', $item->getAdultNumber());
+                        echo CHtml::hiddenField('child_number', $item->getChildNumber());
+                        echo CHtml::hiddenField('child_price', $item->getChildPrice());
+                        echo CHtml::hiddenField('adult_price', $item->getAdultPrice());
                     }
                     ?>
                     <tr><?php
                         if($item->getMainPic()){
-                            $picUrl=$imageHelper->thumb('70','70',$item->getMainPic());
+                            $picUrl=$imageHelper->thumb('58','58',$item->getMainPic());
                         ?>
-                        <td><?php echo CHtml::image($picUrl, $item->title, array('width' => '80px', 'height' => '80px'));
+                        <td><?php echo CHtml::image(Yii::app()->baseUrl. $picUrl, $item->title, array('width' => '60px', 'height' => '60px'));
                             } else {
-                                echo Yii::t('leather','该商品没有上传图片');
+                                echo Yii::t('leather','该产品没有上传图片');
                             } ?></td>
                         <td><?php echo $item->title; ?></td>
-                        <td><?php echo  empty($item->sku) ? '' : implode(';', json_decode($item->sku->props_name, true)); ?></td>
-                        <td><?php echo $item->getPrice(); ?></td>
-                        <td><?php echo $item->getQuantity(); ?></td>
+                        <!-- <td><?php echo  empty($item->sku) ? '' : implode(';', json_decode($item->sku->props_name, true)); ?></td> -->
+                        <td>成人：<?php echo $item->getAdultPrice(); ?> <br>儿童：<?php echo $item->getChildPrice();?></td>
+                        <td>成人：<?php echo $item->getAdultNumber(); ?> <br>儿童：<?php echo $item->getChildNumber(); ?> </td>
                         <td><?php echo $item->getSumPrice() ?>元</td>
                         <?php $price += $item->getSumPrice() ?>
                     </tr>
@@ -260,13 +274,13 @@ Yii::app()->clientScript->registerCoreScript('jquery');
                             <tr><?php
                                 ?>
                                 <td><?php
-                                    $picUrl=$imageHelper->thumb('70','70',$item->getMainPic());
-                                    echo CHtml::image($picUrl, $item->title, array('width' => '80px', 'height' => '80px')); ?></td>
+                                    $picUrl=$imageHelper->thumb('58','58',$item->getMainPic());
+                                    echo CHtml::image($picUrl, $item->title, array('width' => '70px', 'height' => '70px')); ?></td>
                                 <td><?php echo $item->title; ?></td>
-                                <td><?php echo empty($item->sku) ? '' : implode(';', json_decode($item->sku->props_name, true)); ?></td>
-                                <td><?php echo $item->getPrice(); ?></td>
-                                <td><?php echo $item->getQuantity(); ?></td>
-                                <td><?php echo $item->getSumPrice() ?>元</td>
+                               <!--  <td><?php echo empty($item->sku) ? '' : implode(';', json_decode($item->sku->props_name, true)); ?></td> -->
+                                 <td>成人：<?php echo $item->getAdultPrice(); ?> <br>儿童：<?php echo $item->getChildPrice();?></td>
+                       			 <td>成人：<?php echo $item->getAdultNumber(); ?> <br>儿童：<?php echo $item->getChildNumber(); ?> </td>
+                        		<td><?php echo $item->getSumPrice() ?>元</td>
                                 <?php $price += $item->getSumPrice() ?>
                             </tr>
                         <?php
@@ -281,8 +295,8 @@ Yii::app()->clientScript->registerCoreScript('jquery');
         </div>
         <div class="box-content">
             <div class="memo" style="float:left"><h3>
-                    给卖家留言：</h3>
-                    <textarea id="memo" name="memo" placeholder="选填，可以告诉卖家您对商品的特殊要求，如：颜色、尺码等" rows="5"></textarea>
+                    给我们留言：</h3>
+                    <textarea id="memo" name="memo" placeholder="选填，可以告诉卖家您对商品的特殊要求，如：需要接送等" rows="5"></textarea>
             </div>
         </div>
 

@@ -1,6 +1,6 @@
 <?php Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/login_nav.js'); ?>
 <div class="top_right" id="top_right">
-    <span>您好，欢迎来到演示商城！</span>
+    <span>您好，欢迎来到领贤旅游！</span>
     <?php if (Yii::app()->user->isGuest) { ?>
         <div class="login-nav"><?php echo CHtml::link('登录', array('/user/login')) ?>
             |<?php echo CHtml::link('注册', array('/user/registration')) ?></div>

@@ -59,8 +59,19 @@ class OrderController extends Controller
             $item->detachBehavior("CartPosition");
             $item->attachBehavior("CartPosition", new ECartPositionBehaviour());
             $item->setRefresh(true);
-            $quantity = empty($_POST['qty']) ? 1 : intval($_POST['qty']);
-            $item->setQuantity($quantity);
+            //$quantity = empty($_POST['qty']) ? 1 : intval($_POST['qty']);
+            $adult_num = empty($_POST['qty']) ? 1 : intval($_POST['qty']);
+            $child_num = empty($_POST['qty2']) ? 0 : intval($_POST['qty2']);
+            $item_price_id = empty($_POST['item_price']) ? 0 : intval($_POST['item_price']);
+            if($item_price_id != 0){
+            	$item_price = ItemPrice::model()->findByPk($item_price_id);
+            	$item->setChildPrice($item_price->price_child);
+            	$item->setAdultPrice($item_price->price_adult);
+            }
+            
+            //$item->setQuantity($quantity);
+            $item->setAdultNumber($adult_num);
+            $item->setChildNumber($child_num);
             $this->render('checkout', array('item' => $item));
         }
     }
@@ -92,10 +103,10 @@ class OrderController extends Controller
                  echo '<script type="text/javascript">history.go(-1)</script>';
                  } else {
             if (isset($_POST)) {
-
                 $transaction = $model->dbConnection->beginTransaction();
                 try {
                     $cart = Yii::app()->cart;
+                    $model->status = 1;  //设置成提交状态
                     if(!Yii::app()->user->isGuest)
                     {
                         $model->attributes = $_POST;
@@ -109,9 +120,10 @@ class OrderController extends Controller
                         $model->receiver_state = $address->state;
                         $model->receiver_city = $address->city;
                         $model->receiver_district = $address->district;
-                        $model->receiver_address = $address->address;
-                        $model->receiver_zip = $address->zipcode;
+                        $model->receiver_address = "";
+                        $model->receiver_zip = "";
                         $model->receiver_mobile = $address->mobile_phone;
+                        $model->receiver_email = $address->email;
                         $model->receiver_phone = $address->phone;
                     }
                     else
@@ -122,9 +134,10 @@ class OrderController extends Controller
                         $model->receiver_state = $address['state'];
                         $model->receiver_city = $address['city'];
                         $model->receiver_district = $address['district'];
-                        $model->receiver_address = $address['address'];
-                        $model->receiver_zip = $address['zipcode'];
+                        $model->receiver_address = "";
+                        $model->receiver_zip = "";
                         $model->receiver_mobile = $address['mobile_phone'];
+                        $model->receiver_email = $address['email'];
                         $model->receiver_phone = $address['phone'];
                         $model ->payment_method_id= $_POST['payment_method_id'];
                         $model ->memo = $_POST['memo'];
@@ -136,22 +149,25 @@ class OrderController extends Controller
                     {
                         foreach ($_POST['keys'] as $key){
                             $item= $cart->itemAt($key);
-                            $model->total_fee += $item['quantity'] * $item['price'];
+                            //$model->total_fee += $item['quantity'] * $item['price'];
+                            $model->total_fee += $item['adult_number'] * $item['adult_price'] +
+                            	$item['child_number'] * $item['child_price'];
                         }
-                    }else
+                    }else // Have no idea what is this going on
                     {
-                        $item = Item::model()->findBypk($_POST['item_id']);
-                        $model->total_fee = $item->price * $_POST['quantity'];
+                        //$item = Item::model()->findBypk($_POST['item_id']);
+                        $model->total_fee = $_POST['adult_number'] * $_POST['adult_price'] +
+                        		$_POST['child_number'] * $_POST['child_price'];
                     }
                     if ($model->save()) {
                         if(empty($_POST['keys']))
                         {
                             $item = Item::model()->findBypk($_POST['item_id']);
-                            $sku = Sku::model()->findByPk($_POST['sku_id']);
-                            if($sku->stock < $_POST['quantity'])
-                            {
-                                throw new Exception('stock is not enough!');
-                            }
+                           // $sku = Sku::model()->findByPk($_POST['sku_id']);
+                            //if($sku->stock < $_POST['quantity'])
+                            //{
+                            //    throw new Exception('stock is not enough!');
+                           // }
                             $OrderItem = new OrderItem;
 
 //                            $OrderItem->order_id = $model->order_id;
@@ -163,7 +179,8 @@ class OrderController extends Controller
 //                            $OrderItem->price = $item->price;
 //                            $OrderItem->quantity = $_POST['quantity'];
 //                            $OrderItem->total_price = $OrderItem->quantity * $OrderItem->price;
-                            if (!$OrderItem::model()->saveOrderItem($OrderItem,$model->order_id,$item,$sku->props_name,$_POST['quantity'])) {
+                            if (!$OrderItem::model()->saveOrderItem($OrderItem,$model->order_id,$item,$_POST['adult_number'],
+                        			$_POST['adult_price'], $_POST['child_number'], $_POST['child_price'])) {
                                 throw new Exception('save order item fail');
                             }
                         }
@@ -171,14 +188,14 @@ class OrderController extends Controller
                         {
                              foreach ($_POST['keys'] as $key){
                                 $item= $cart->itemAt($key);
-                                 $sku=Sku::model()->findByPk($item['sku']['sku_id']);
-                                if($sku->stock<$item['quantity']){
-                                 throw new Exception('stock is not enough!');
-                                }
-                                 $sku->stock-=$item['quantity'];
-                                if(!$sku->save()) {
-                                 throw new Exception('cut down stock fail');
-                                 }
+                                // $sku=Sku::model()->findByPk($item['sku']['sku_id']);
+                                //if($sku->stock<$item['quantity']){
+                                // throw new Exception('stock is not enough!');
+                               // }
+                                // $sku->stock-=$item['quantity'];
+                               // if(!$sku->save()) {
+                                // throw new Exception('cut down stock fail');
+                               //  }
                                 $OrderItem = new OrderItem;
                                 $OrderItem->order_id = $model->order_id;
                                 $OrderItem->item_id = $item['item_id'];
@@ -187,8 +204,9 @@ class OrderController extends Controller
                                 $OrderItem->pic = $item->getMainPic();
                                 $OrderItem->props_name = $sku['props_name'];
                                 $OrderItem->price = $item['price'];
-                                $OrderItem->quantity = $item['quantity'];
-                                $OrderItem->total_price = $OrderItem->quantity * $OrderItem->price;
+                                $OrderItem->quantity = 0;
+                                $OrderItem->total_price = $item['adult_number'] * $item['adult_price'] +
+                                		$item['child_number'] * $item['child_price'];
                                 if (!$OrderItem->save()) {
                                     throw new Exception('save order item fail');
                                 }

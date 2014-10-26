@@ -38,13 +38,43 @@ $imageHelper=new ImageHelper();
             <a href="">联系<br/>在线客服</a>
         </div>
     </div>-->
-    <div class="deal container_24">
+    <div class="container_24">
         <div class="deal_tip">
             <a href="<?php echo Yii::app()->baseUrl; ?>">首页>></a>
             <?php foreach ($this->breadcrumbs as $breadcrumb) {
                 echo '<a href="' . $breadcrumb['url'] . '">' . $breadcrumb['name'] . '</a>';
             } ?>
         </div>
+        <div class="pd_l_nv">
+        <!-- 
+            <div class="pd_l_ti">
+                <a href="<?php echo Yii::app()->baseUrl; ?>">首页>></a>
+                <?php foreach ($this->breadcrumbs as $breadcrumb) {
+                    echo '<a href="' . $breadcrumb['url'] . '">' . $breadcrumb['name'] . '</a>';
+                } ?>
+            </div>
+             -->
+            <h2>所有分类</h2>
+            <?php
+            $root = Category::model()->findByPk(3);
+            $children = $root->children()->findAll();
+            $params = array();
+            if (!empty($_GET['key'])) {
+                $params['key'] = $_GET['key'];
+            }
+            foreach ($children as $child) {
+                $params['cat'] = $child->getUrl();
+                echo '<div class="pd_l_ca"><a href="' . Yii::app()->createUrl('catalog/index', $params) . '">' . $child->name . '</a></div>';
+                echo '<ul class="pd_ca_list" >';
+                $leafs = $child->children()->findAll();
+                foreach ($leafs as $leaf) {
+                    $params['cat'] = $leaf->getUrl();
+                    echo '<li><a href="' . Yii::app()->createUrl('catalog/index', $params) . '">' . $leaf->name . '</a></li>';
+                }
+                echo '</ul>';
+            } ?>
+        </div>
+        <div class="deal">
         <div class="deal_tit"><?php echo $item->title; ?></div>
         <div class="deal_pic clearfix">
             <div>
@@ -83,7 +113,7 @@ $imageHelper=new ImageHelper();
                 		$prices[]=array(
                 				'title'=>''.$item->currency.$item_price->price_adult,
                 				'start'=>''.$item_price->date,
-                				'color'=>'lightgreen',
+                				'color'=>'orange',
 								'description'=>'成人：'.$item->currency.$item_price->price_adult. '<br />儿童：'.$item->currency.$item_price->price_child,
                 		);
                 	}
@@ -246,13 +276,13 @@ $imageHelper=new ImageHelper();
                 } ?>
             </div>  -->
             <div class="deal_num">
-                <span class="deal_num_c">
+                <span class="deal_num_c" content="no_cache">
                     <a href="javascript:void(0)" class="minus"></a>
                     <label class="qty_num" id="num"><?php echo $item->min_number; ?></label>
                     <input type="hidden" id="qty" name="qty" value="<?php echo $item->min_number; ?>" />
                     <a href="javascript:void(0)" class="add"></a></span> <span>成人</span>
                       
-                    <span class="deal_num_c2">
+                    <span class="deal_num_c2" content="no_cache">
                     <a href="javascript:void(0)" class="minus2"></a>
                     <label class="qty_num2" id="num2">0</label>
                     <input type="hidden" id="qty2" name="qty2" value="0" />
@@ -296,6 +326,7 @@ $imageHelper=new ImageHelper();
                 </div>
             </div>
       </form>
+      </div>
     </div><!-- /.modal-content -->
 </div><!-- /.modal-dialog -->
 </form>
@@ -401,33 +432,6 @@ $imageHelper=new ImageHelper();
 
 <div class="pd_l container_24">
     <div class="pd_l_fl grid_5">
-        <div class="pd_l_nv">
-            <div class="pd_l_ti">
-                <a href="<?php echo Yii::app()->baseUrl; ?>">首页>></a>
-                <?php foreach ($this->breadcrumbs as $breadcrumb) {
-                    echo '<a href="' . $breadcrumb['url'] . '">' . $breadcrumb['name'] . '</a>';
-                } ?>
-            </div>
-            <h2>所有分类</h2>
-            <?php
-            $root = Category::model()->findByPk(3);
-            $children = $root->children()->findAll();
-            $params = array();
-            if (!empty($_GET['key'])) {
-                $params['key'] = $_GET['key'];
-            }
-            foreach ($children as $child) {
-                $params['cat'] = $child->getUrl();
-                echo '<div class="pd_l_ca"><a href="' . Yii::app()->createUrl('catalog/index', $params) . '">' . $child->name . '</a></div>';
-                echo '<ul class="pd_ca_list" >';
-                $leafs = $child->children()->findAll();
-                foreach ($leafs as $leaf) {
-                    $params['cat'] = $leaf->getUrl();
-                    echo '<li><a href="' . Yii::app()->createUrl('catalog/index', $params) . '">' . $leaf->name . '</a></li>';
-                }
-                echo '</ul>';
-            } ?>
-        </div>
         <div class="pd_l_intr">
             <h2>推荐产品</h2>
             <ul class="pd_intr_list">
@@ -736,11 +740,13 @@ $(function () {
           //  $('.deal_size').addClass('prop-div-select');
         //} else {
            // $('.deal_size').removeClass('prop-div-select');
-        var value = $('.deal_price_list :selected').text();
-       	if (value.localeCompare("请选择出行日期") == 0){
+        //var value = $('.deal_price_list :selected').text();
+        var selected_item = $('.deal_price_list :selected').val();
+       	if (selected_item == ''){
        		$('.deal_price_list').addClass('prop-div-select');
         }
        	else{
+       		$('.deal_info').append('<input type="hidden" id="item_price" name="item_price" value=' + selected_item + ' />');
             //Here update the div where you need to see the selected value
             $('.deal_price_list').removeClass('prop-div-select');
             $.post($(this).data('url'), function(response){
@@ -754,7 +760,6 @@ $(function () {
        	}
         
     });
-
 
     $('.buy-without-login').click(function() {
         $('#deal').submit();

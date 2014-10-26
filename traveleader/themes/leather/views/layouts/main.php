@@ -73,6 +73,24 @@
 <?php //if (Yii::app()->params['ads']) {
     //echo $this->renderPartial('picture', array('ads' => Yii::app()->params['ads']), true, true);
 //} ?>
+<!--  
+<?php 
+$this->widget('ext.emetrotile.EMetroTile', array(
+    'Tiles'=>array(
+                array('title'=>'Test Title', 'tiles'=>array(
+                    array('content'=>array('test1-a','test1-b'), 'liveTileOptions'=>array('data-speed'=>750, 'data-delay'=>3000,'data-stack'=>true)),
+                    array('content'=>array('test2-a', 'test2-b'), 'position'=>'bottom', 'liveTileOptions'=>array('animate'=>true)),
+                    array('content'=>'test4', 'position'=>'bottom'),
+                    array('content'=>'Blog', 'style'=>'vertical', 'url'=>'http://blog.expressthisout.com'),
+                    array('content'=>array('test3-a','test3-b','test3-c'), 'style'=>'horizontal', 'liveTileOptions'=>array('data-mode'=>'carousel')),
+                    array('content'=>array('test5-a','test5-b'), 'position'=>'bottom', 'liveTileOptions'=>array('data-mode'=>'flip')),
+                    array('content'=>'test6', 'position'=>'top'),
+ 
+                ))
+        )
+  ));
+?>
+-->
 
 <div class="container_24">
     <div class="clearfix"></div>
@@ -88,27 +106,28 @@
                 <li><?php echo CHtml::link('会员等级折扣', array('/page/index','key' => 'memberrank'));?></li>
                 <li><?php echo CHtml::link('订单的几种状态', array('/page/index','key' => 'orderstatus'));?></li>
                 <li><?php echo CHtml::link('积分奖励计划', array('/page/index','key' => 'scoreplan'));?></li>
-                <li><?php echo CHtml::link('商品退货保障', array('/page/index','key' => 'returngood'));?></li>
+                <!-- <li><?php echo CHtml::link('商品退货保障', array('/page/index','key' => 'returngood'));?></li> -->
             </ul>
         </div>
         <div class="foot_pay">
             <ul>
-                <li><span class="font14 bold">购物指南</span></li>
-                <li><?php echo CHtml::link('非会员购物通道', array('/page/index','key' => 'nonmember'));?></li>
+                <li><span class="font14 bold">下单指南</span></li>
+                <!-- <li><?php echo CHtml::link('非会员购物下单', array('/page/index','key' => 'nonmember'));?></li> -->
                 <li><?php echo CHtml::link('售后服务', array('/page/index','key' => 'service'));?></li>
                 <li><?php echo CHtml::link('网站使用条款', array('/page/index','key' => 'terms'));?></li>
                 <li><?php echo CHtml::link('免责条款', array('/page/index','key' => 'disclaimer'));?></li>
-                <li><?php echo CHtml::link('简单的购物流程', array('/page/index','key' => 'process'));?></li>
+                <li><?php echo CHtml::link('简单的下单流程', array('/page/index','key' => 'process'));?></li>
             </ul>
         </div>
         <div class="foot_set">
             <ul>
-                <li><span class="font14 bold">支付/配送方式</span></li>
+                <li><span class="font14 bold">支付方式</span></li>
                 <li><?php echo CHtml::link('支付方式', array('/page/index','key' => 'payment'));?></li>
-                <li><?php echo CHtml::link('配送方式', array('/page/index','key' => 'shipping'));?></li>
-                <li><?php echo CHtml::link('订单何时出库', array('/page/index','key' => 'orderinfo'));?></li>
+               <!--   <li><?php echo CHtml::link('配送方式', array('/page/index','key' => 'shipping'));?></li>
+                <li><?php echo CHtml::link('订单何时出库', array('/page/index','key' => 'orderinfo'));?></li>-->
                 <li><?php echo CHtml::link('网上支付小贴士', array('/page/index','key' => 'onlinepayment'));?></li>
-                <li><?php echo CHtml::link('关于送货和验货', array('/page/index','key' => 'shippinginfo'));?></li>
+                <!-- <li><?php echo CHtml::link('关于送货和验货', array('/page/index','key' => 'shippinginfo'));?></li>
+                  -->
             </ul>
         </div>
         <div class="foot_back">
@@ -117,7 +136,8 @@
                 <li><?php echo CHtml::link('售后政策', array('/page/index','key' => 'aftermarket'));?></li>
                 <li><?php echo CHtml::link('价格保护', array('/page/index','key' => 'priceprotection'));?></li>
                 <li><?php echo CHtml::link('退款说明', array('/page/index','key' => 'refund'));?></li>
-                <li><?php echo CHtml::link('返修/退换货', array('/page/index','key' => 'rework_returns'));?></li>
+               <!--   <li><?php echo CHtml::link('返修/退换货', array('/page/index','key' => 'rework_returns'));?></li>
+                -->
                 <li><?php echo CHtml::link('取消订单', array('/page/index','key' => 'cancelorder'));?></li>
             </ul>
         </div>
@@ -127,7 +147,8 @@
                 <li><?php echo CHtml::link('帮助中心', array('/page/index','key' => 'helpcenter'));?></li>
                 <li><?php echo CHtml::link('在线客服', array('/page/index','key' => 'contact'));?></li>
                 <li><?php echo CHtml::link('品质保证', array('/page/index','key' => 'qualityAssurance'));?></li>
-                <li><?php echo CHtml::link('批发政策', array('/page/index','key' => 'wholesale'));?></li>
+                <!--  <li><?php echo CHtml::link('批发政策', array('/page/index','key' => 'wholesale'));?></li>
+                -->
                 <li><?php echo CHtml::link('关于我们', array('/page/index','key' => 'about'));?></li>
             </ul>
         </div>
@@ -141,19 +162,17 @@
         <p class="foot_link">
             <?php echo CHtml::link('关于我们', array('/page/index','key' => 'about'));?>|
             <?php echo CHtml::link('联系我们', array('/page/index','key' => 'contact'));?>|
-            <?php echo CHtml::link('人才招聘', array('/page/index','key' => ''));?>|
-            <?php echo CHtml::link('商家入驻', array('/page/index','key' => 'join'));?>|
+            <?php echo CHtml::link('人才招聘', array('/page/index','key' => ''));?>|           
             <?php echo CHtml::link('广告服务', array('/page/index','key' => ''));?>|
-            <?php echo CHtml::link('手机商城', array('/page/index','key' => ''));?>|
+            <?php echo CHtml::link('手机旅游', array('/page/index','key' => ''));?>|
             <?php echo CHtml::link('友情链接', array('/page/index','key' => ''));?>|
             <?php echo CHtml::link('销售联盟', array('/page/index','key' => 'partner'));?>|
-            <a href="/basic/index.php">皮雕社区</a>|
             <?php echo CHtml::link('资源交流', array('/page/index','key' => ''));?>
         </p>
 
-        <p>Copyright ? 2013 - 2015 演示商城 All Rights Reserved. <a href="">站长统计</a></p>
+        <p>Copyright ? 2013 - 2015 领贤旅游 All Rights Reserved. <a href="">站长统计</a></p>
 
-        <p>银河方舟 全程技术支持</p>
+        <p>Powered by Yii</p>
     </div>
 </div>
 </body>

@@ -18,8 +18,7 @@
     <div class="addr_and_note">
         <dl>
             <dt>
-                收货地址
-                ：
+                联系人：
             </dt>
             <dd>
                 <?php
@@ -56,14 +55,16 @@
             ?>
         </dd></dl>
     <dl>
+    <!--  
         <dt>发货时间：</dt>
         <dd>
             <?php
-            if($Order->ship_time){
-                echo date("Y年m月d日 H:i:s",$Order->ship_time);
-            }
+           // if($Order->ship_time){
+            //    echo date("Y年m月d日 H:i:s",$Order->ship_time);
+          //  }
             ?>
         </dd>
+        -->
 
         <dt>付款时间：</dt>
         <dd>
@@ -97,12 +98,14 @@
             ?>
         </dd></dl>
     <dl>
+    <!--  
         <dt>发货状态：</dt>
         <dd>
             <?php
-            echo Tbfunction::showShipStatus($Order->ship_status);
+          //  echo Tbfunction::showShipStatus($Order->ship_status);
             ?>
         </dd>
+        -->
 
         <dt>退款状态：</dt>
         <dd>
@@ -120,7 +123,7 @@
 <table>
     <colgroup>
         <col class="item">
-        <col class="sku">
+        <!-- <col class="sku">  -->
         <!-- 宝贝 -->
 
         <col class="status">
@@ -129,10 +132,13 @@
         <col class="service">
         <!-- 服务 -->
 
-        <col class="price">
+        <col class="adult_price">
+        <col class="child_price">
         <!-- 单价（元） -->
 
-        <col class="num">
+        <col class="adult_number">
+        <col class="child_number">
+        
         <!-- 数量 -->
 
         <col class="discount">
@@ -148,11 +154,13 @@
         <td colspan="8"></td>
     </tr>
     <tr class="order-hd">
-        <th class="item " style="width:31%">宝贝</th>
-                           <th class="sku" style="width:24%">宝贝属性</th>
-                           <th class="price" style="width:15%">单价(元)</th>
-                           <th class="num" style="width:15%">数量</th>
-                           <th class="order-price last" style="width:15%">商品总价(元)</th>
+        <th class="item " style="width:31%">旅游产品</th>
+                         <!--    <th class="sku" style="width:24%">宝贝属性</th> -->
+                           <th class="adult_price" style="width:15%">成人(元)</th>
+                           <th class="adult_number" style="width:15%">成人数量</th>
+                           <th class="child_price" style="width:15%">儿童(元)</th>
+                           <th class="child_number" style="width:15%">儿童数量</th>
+                           <th class="order-price last" style="width:15%">产品总价(元)</th>
     </tr>
 
     <?php
@@ -164,7 +172,7 @@
                 <div class="pic-info">
                     <div class="pic s50">
                         <a target="_blank" href="javascript:void(0)" title="商品图片">
-                            <img alt="查看宝贝详情" src="<?php echo $orderItems->pic ?>" />
+                            <img alt="查看产品详情" src="<?php echo Yii::app()->baseUrl. $orderItems->pic ?>" />
                         </a>
                     </div>
                 </div>
@@ -175,27 +183,39 @@
                     </div>
                 </div>
             </td>
-            <td class="sku">
-                <div class="props"><span><?php echo implode(',',json_decode($orderItems->props_name, true)); ?></span></div>
-            </td>
 
-            <td class="price">
+            <td class="adult_price">
                 <?php
-                echo $orderItems->price;
+                echo $orderItems->adult_price;
                 ?>
             </td>
-            <td class="num">
+            
+            <td class="adult_number">
                 <?php
-                echo $orderItems->quantity;
+                echo $orderItems->adult_number;
+                ?>
+            </td>
+            
+            <td class="child_price">
+                <?php
+                echo $orderItems->child_price;
+                ?>
+            </td>
+
+             <td class="child_number">
+                <?php
+                echo $orderItems->child_number;
                 ?>
             </td>
             <td class="order-price" rowspan="1">
                 <?php
                 echo $orderItems->total_price;
                 ?>
+                <!--  
                 <li>
-                    (快递: <?php echo $Order->ship_fee;?>)
+                    (快递: <?php //echo $Order->ship_fee;?>)
                 </li>
+                -->
             </td>
         </tr>
 

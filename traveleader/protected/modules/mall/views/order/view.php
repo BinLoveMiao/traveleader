@@ -13,7 +13,7 @@
             <div class="addr_and_note">
                 <dl>
                     <dt>
-                        收货地址
+                       联系人信息
                         ：
                     </dt>
                     <dd>
@@ -52,6 +52,7 @@
                         ?>
                     </dd></dl>
                 <dl>
+                <!--  
                     <dt>发货时间：</dt>
                     <dd>
                         <?php
@@ -59,7 +60,7 @@
                             echo date("Y-m-d H:i;s",$Order->ship_time);
                         }
                         ?>
-                    </dd>
+                    </dd>-->
 
                     <dt>付款时间：</dt>
                     <dd>
@@ -93,12 +94,14 @@
                         ?>
                     </dd></dl>
                 <dl>
+                <!-- 
                     <dt>发货状态：</dt>
                     <dd>
                         <?php
                         echo Tbfunction::showShipStatus($Order->ship_status);
                         ?>
                     </dd>
+                     -->
 
                     <dt>退款状态：</dt>
                     <dd>
@@ -124,10 +127,10 @@
                 <tbody class="order">
 
                 <tr class="order-hd">
-                    <th class="item col-xs-3">宝贝</th>
-                    <th class="sku col-xs-3">宝贝属性</th>
+                    <th class="item col-xs-3">产品</th>
+                  <!--   <th class="sku col-xs-3">宝贝属性</th> -->
                     <th class="price col-xs-2">单价(元)</th>
-                    <th class="num col-xs-2">数量</th>
+                   <!-- <th class="num col-xs-2">数量</th> --> 
                     <th class="order-price last col-xs-2">商品总价(元)</th>
                 </tr>
 
@@ -139,7 +142,7 @@
                         <div class="pic-info">
                             <div class="pic s50">
                                 <a target="_blank" href="javascript:void(0)" title="商品图片">
-                                    <img alt="查看宝贝详情" src="<?php echo $orderItems->pic ?>" />
+                                    <img alt="查看产品详情" src="<?php echo $orderItems->pic ?>" />
                                 </a>
                             </div>
                         </div>
@@ -168,9 +171,11 @@
                         <?php
                             echo $orderItems->total_price;
                         ?>
+                        <!-- 
                         <li>
                             (快递: <?php echo $Order->ship_fee;?>)
                         </li>
+                         -->
                     </td>
                 </tr>
 

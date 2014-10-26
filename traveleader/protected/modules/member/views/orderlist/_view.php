@@ -15,10 +15,11 @@
 	<b><?php echo CHtml::encode($data->getAttributeLabel('pay_status')); ?>:</b>
 	<?php echo CHtml::encode($data->pay_status); ?>
 	<br />
-
+<!-- 
 	<b><?php echo CHtml::encode($data->getAttributeLabel('ship_status')); ?>:</b>
 	<?php echo CHtml::encode($data->ship_status); ?>
 	<br />
+ -->
 
 	<b><?php echo CHtml::encode($data->getAttributeLabel('refund_status')); ?>:</b>
 	<?php echo CHtml::encode($data->refund_status); ?>

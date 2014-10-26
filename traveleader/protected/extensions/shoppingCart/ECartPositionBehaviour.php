@@ -16,6 +16,11 @@ class ECartPositionBehaviour extends CActiveRecordBehavior {
      * @var int
      */
     private $quantity = 0;
+    
+    private $adult_number = 0;
+    private $child_number = 0;
+    private $price_adult = 0;
+    private $price_child = 0;
     /**
      * Update model on session restore?
      * @var boolean
@@ -35,7 +40,13 @@ class ECartPositionBehaviour extends CActiveRecordBehavior {
      *
      */
     public function getSumPrice($withDiscount = true) {
-        $fullSum = $this->getOwner()->getPrice() * $this->quantity;
+    	if($this->price_adult != 0 && $this->price_child != 0){
+    		$fullSum = $this->price_adult * $this->adult_number +
+    						$this->price_child * $this->child_number;
+    	}
+    	else{
+       		$fullSum = $this->getOwner()->getPrice() * $this->quantity;
+    	}
         if($withDiscount)
             $fullSum -=  $this->discountPrice;
         return $fullSum;
@@ -57,6 +68,39 @@ class ECartPositionBehaviour extends CActiveRecordBehavior {
     public function setQuantity($newVal) {
         $this->quantity = $newVal;
     }
+    
+    public function getChildNumber(){
+    	return $this->child_number;
+    }
+    
+    public function setChildNumber($num){
+    	$this->child_number = $num;
+    }
+    
+    public function getAdultNumber(){
+    	return $this->adult_number;
+    }
+    
+    public function setAdultNumber($num){
+    	$this->adult_number = $num;
+    }
+    
+    public function getChildPrice(){
+    	return $this->price_child;
+    }
+    
+    public function setChildPrice($price){
+    	$this->price_child = $price;
+    }
+    
+    public function getAdultPrice(){
+    	return $this->price_adult;
+    }
+    
+    public function setAdultPrice($price){
+    	$this->price_adult = $price;
+    }
+    
 
     /**
      * Magic method. Called on session restore.

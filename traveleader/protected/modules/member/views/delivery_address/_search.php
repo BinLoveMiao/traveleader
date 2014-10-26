@@ -59,6 +59,11 @@
 		<?php echo $form->label($model,'mobile_phone'); ?>
 		<?php echo $form->textField($model,'mobile_phone',array('size'=>45,'maxlength'=>45)); ?>
 	</div>
+	
+	<div class="row">
+		<?php echo $form->label($model,'email'); ?>
+		<?php echo $form->textField($model,'email',array('size'=>45,'maxlength'=>45)); ?>
+	</div>
 
 	<div class="row">
 		<?php echo $form->label($model,'memo'); ?>
