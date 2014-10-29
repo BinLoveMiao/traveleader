@@ -73,24 +73,7 @@
 <?php //if (Yii::app()->params['ads']) {
     //echo $this->renderPartial('picture', array('ads' => Yii::app()->params['ads']), true, true);
 //} ?>
-<!--  
-<?php 
-$this->widget('ext.emetrotile.EMetroTile', array(
-    'Tiles'=>array(
-                array('title'=>'Test Title', 'tiles'=>array(
-                    array('content'=>array('test1-a','test1-b'), 'liveTileOptions'=>array('data-speed'=>750, 'data-delay'=>3000,'data-stack'=>true)),
-                    array('content'=>array('test2-a', 'test2-b'), 'position'=>'bottom', 'liveTileOptions'=>array('animate'=>true)),
-                    array('content'=>'test4', 'position'=>'bottom'),
-                    array('content'=>'Blog', 'style'=>'vertical', 'url'=>'http://blog.expressthisout.com'),
-                    array('content'=>array('test3-a','test3-b','test3-c'), 'style'=>'horizontal', 'liveTileOptions'=>array('data-mode'=>'carousel')),
-                    array('content'=>array('test5-a','test5-b'), 'position'=>'bottom', 'liveTileOptions'=>array('data-mode'=>'flip')),
-                    array('content'=>'test6', 'position'=>'top'),
- 
-                ))
-        )
-  ));
-?>
--->
+
 
 <div class="container_24">
     <div class="clearfix"></div>

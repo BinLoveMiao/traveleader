@@ -1,5 +1,7 @@
 <?php Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/slides.jquery.js'); ?>
 <?php Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/pptBox.js'); ?>
+<?php Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl . '/js/MetroJs.js'); ?>
+<?php Yii::app()->clientScript->registerCssFile(Yii::app()->baseUrl . '/css/MetroJs.css'); ?>
 
 <?php
 $imageHelper=new ImageHelper();
@@ -12,116 +14,60 @@ Yii::app()->plugin->render('Hook_Login');
             <a href="/basic/page/contact?key=help">联系<br/>在线客服</a>
         </div>
     </div>
-    <!-- 
-    <div class="warp_tab contaniner_24">
-        <div class="warp_tab_con">
-            <div class="warp_tab_t">
-                <ul class="tab_t_list">
-                    <?php
-                    $i = 1;
-                    $class = 'current';
-                    foreach ($hotCategories as $hotCategory) {
-                        echo '<li class="' . $class . '" onclick="change_bg(' . $i++ . ');">' . $hotCategory->name . '</li>';
-                        $class = '';
-                    }
-                    $i = 1;
-                    ?>
-                </ul>
-            </div>
-            <?php foreach ($hotItems as $hotItemList) { ?>
-                <div class="warp_tab_c" id="pop_<?php echo $i; ?>" <?php if($i!=1) echo "style='display: none;'"?>>
-                    <?php
-                    $i++;
-                    foreach ($hotItemList as $hotItem) {
-                        $itemUrl = Yii::app()->createUrl('item/view', array('id' => $hotItem->item_id));
-                        ?>
-                        <div class="warp_tab_list">
-                            <div class="tab_img"><a href="<?php echo $itemUrl; ?>">
-                                    <?php
-                                    $picUrl=$hotItem->getMainPic();
-                                    if(!empty($picUrl)){
-                                        $picUrl=$imageHelper->thumb('220','220',$picUrl);
-                                        $picUrl=yii::app()->baseUrl. $picUrl;
-                                        echo CHtml::image($picUrl, $hotItem->title, array('width' => 220, 'height' => '220'));
-                                    }else {
-                                        $picUrl=$hotItem->getHolderJs('220','220');
-                                       ?> <img alt="<?php echo $hotItem->title; ?>" src="<?php echo $picUrl; ?>"
-                                         width="220" height="220"></a><?php
-                                    }
-                                    ?>
-                                </a></div>
-                            <div class="tab_name">
-                                <?php echo CHtml::link($hotItem->title, $itemUrl); ?>
-                            </div>
-                            <div class="tab_price">
-                                <div class="tab_price_n"><?php echo $hotItem->currency . $hotItem->price ?></div>
-                                <div class="tab_price_v"><?php echo CHtml::link('详情点击', $itemUrl); ?></div>
-                            </div>
-                        </div>
-                    <?php } ?>
-                </div>
-            <?php } ?>
-        </div>
-         -->
-         <!-- 
-        <div class="warp_news">
-            <div class="news_tit"><?php echo CHtml::link('更多>>', Yii::app()->createUrl('post/index', array())); ?></div>
-            <div class="news_c">
-                <div class="news_img">
-                    <script>
-                        var box = new PPTBox();
-                        box.width = 180; //宽度
-                        box.height = 178;//高度
-                        box.autoplayer = 5;//自动播放间隔时间
-                        //box.add({"url":"图片地址","title":"悬浮标题","href":"链接地址"})
-                        <?php
-                        $num=0;
-                              foreach($posts as $post){
-                                  if($num==3){
-                                    break;
-                                  }
-                                  if(!empty($post->pic_url)){
-                                   $status = intval($post->status);
-                                       if(Yii::app()->user->isGuest)
-                                       {
-                                            if($status < 2 )
-                                            {
-                                                continue;
-                                            }
-                                       }
-                                     $imageHelper=new ImageHelper();
-                                            $picUrl=$imageHelper->thumb('180','178',$post->pic_url);
-                                            $picUrl=Yii::app()->baseUrl. $picUrl;
-                                            $news=Yii::app()->createUrl("post/view/$post->id");
-                                            echo 'box.add({"url": "'. $picUrl.'", "href": "'.$news.'", "title": "'.$post->title.'"});';
-                                            $num++;
-                                  }
-                               }
-                            //else echo 'box.add({"url": "image/tu2.jpg", "href": "", "title": "no data"});';
-                ?>
-                        box.show();
-                    </script>
-                </div>
-                <ul class="news_list">
-                    <?php
-                    $class = 'current';
-                    foreach ($posts as $post) {
-                        $status = intval($post->status);
-                        if(Yii::app()->user->isGuest)
-                        {
-                            if($status < 2 )
-                            {
-                                continue;
-                            }
-                        }
-                        echo '<li class="' . $class . '"><a href="' . Yii::app()->createUrl('post/view', array('id' => $post->id)) . '">' . $post->title . '</a></li>';
-                        $class = '';
-                    } ?>
-                </ul>
-            </div>
-        </div>
-    </div>
-     -->
+    
+     <div style="width: 800px; height: 350px; overflow: hidden; position: relative;" class="metro_tags">
+    	 <ul id="metro_tags" class="tags">
+     	 <?php
+                    	$tags=MoodTag::model()->findAll();
+                    	$data_mode=array('carousel', 'slide', 'flip');
+                    	$data_delay=array(2000,2500,3000);
+                    	$data_dir=array('horizontal', 'vertical');
+                    	$tag_index=array_rand($tags, min(array(10, count($tags))));
+                    	foreach ($tag_index as $index) {
+							$tag=$tags[$index];
+							//echo $tag->name;
+                    		$params['tag'] = $tag->id;
+                    		if($rand_selector==3){
+								$option=' data-direction='.$data_dir[rand(0, 1)];
+							}
+							else{
+								$option='';	
+							}
+                    		echo '<a style="display:block" href="'.Yii::app()->createUrl('catalog/index', $params) .'">'. 
+                    			'<div class="live-tile" data-mode='.$data_mode[rand(0, 2)].
+                    			' data-delay='.$data_delay[rand(0, 2)].
+                    			$option.
+                    			'>' .
+                    			'<span class="tile-title">'. $tag->name. '</span>'.
+                    			'<div><img class="full" src="'. Yii::app()->baseUrl. $tag->pic1.
+                    						'" alt="1"'.'/></div>'.
+                    			'<div><img class="full" src="'. Yii::app()->baseUrl. $tag->pic2.
+                    						'" alt="2"'.'/></div>'.
+                    			'<div><img class="full" src="'. Yii::app()->baseUrl. $tag->pic3.
+                    						'" alt="3"'.'/></div>'.
+                    			'<div><img class="full" src="'. Yii::app()->baseUrl. $tag->pic4.
+                    						'" alt="4"'.'/></div>'.'</div>'.'</a>';
+                    						
+                    		//$pics=array($tag->pic1, $tag->pic2, $tag->pic3, $tag->pic4);
+                    		//foreach(range(1, $tag->num_pics) as $i){
+                    		//	$display=$display.'<div><img class="full" src="'. Yii::app()->baseUrl. $pics[$i-1].
+                    		//			'" alt="'.$i.'"'.'/></div>';
+							//}
+                    		//$display=$dispaly. '</div>'.'</a>';
+                    		//echo $display;
+                    ?> 
+   				 	<?php 
+                    	}
+                    ?> 
+                    </ul>
+     </div>
+     <!-- Activate live tiles -->
+	<script type="text/javascript">
+    	// apply regular slide universally unless .exclude class is applied 
+    	// NOTE: The default options for each liveTile are being pulled from the 'data-' attributes
+    	$(".live-tile, .flip-list").not(".exclude").liveTile();
+	</script>
+
     <div class="warp_product">
         <?php $isFrist = true;
         $num = 0;

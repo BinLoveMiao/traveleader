@@ -462,21 +462,53 @@ $imageHelper=new ImageHelper();
     </div>
     <div class="pd_l_fr grid_19">
         <ul class="deal_describe_tit">
-            <li onclick="describe(1);" class="current">商品描述</li>
-            <li onclick="describe(2);">顾客评价（<span class="cor_red"><?php echo $item->review_count;?></span>）</li>
-            <li onclick="describe(3);">月成交记录（<span class="cor_red"><?php echo $item->deal_count;?></span>）</li>
+            <li onclick="describe(1);" class="current">路线简介</li>
+            <li onclick="describe(2);" class="schedule">行程安排</li>
+            <li onclick="describe(3);">游客评价（<span class="cor_red"><?php echo $item->review_count;?></span>）</li>
+            <li onclick="describe(4);">下单记录（<span class="cor_red"><?php echo $item->deal_count;?></span>）</li>
         </ul>
         <div class="deal_describe" id="describe_1" style="">
             <?php echo $item->desc; ?>
         </div>
+                
         <div class="deal_describe" id="describe_2" style="display:none;">
+            <?php 
+            	$schedules = Schedule::model()->findAllByAttributes(array('item_id' => $item->item_id));
+            	foreach($schedules as $sche){
+					$from=Area::model()->findByPk($sche->from)->name;
+					$to=Area::model()->findByPk($sche->to)->name;
+					$sche_details=explode("+",$sche->schedule);
+			?>
+				<div class="sche_perday"><div class="font20 sche_fromto">第 <?php echo $sche->which_day?> 天    
+				<?php if ($from!=$to) {echo $from;?> 至 <?php echo $to;} echo '  '. $sche->feature_scene;?></div>
+			<?php
+					foreach($sche_details as $detail){
+						$d=explode("|",$detail);
+						if(count($d)==2){
+			?>
+						<span class="bold sche_time"><?php echo $d[0].',' ?></span>
+						<span class="sche_detail"><?php echo $d[1]?><br></span>
+						<?php } else{?>
+						<span class="sche_detail"><?php echo $d[0]?><br></span>
+						<?php }?>
+			<?php
+					}
+			?>
+			</div>
+			<?php		
+				}
+            ?>
+        </div>
+        
+        
+        <div class="deal_describe" id="describe_3" style="display:none;">
             <?php    $this->widget('widgets.default.WReview',array(
                 '_itemId'=> $item->item_id,
                 '_entityId'=>'1',
             ))?>
         </div>
 
-        <div class="deal_describe" id="describe_3" style="display:none;">
+        <div class="deal_describe" id="describe_4" style="display:none;">
             <?php
             $num=count($item->orderItems);
             if($num>0){
@@ -492,10 +524,10 @@ $imageHelper=new ImageHelper();
                     </colgroup>
                     <thead id="table-th">
                     <tr>
-                        <th>买家</th>
-                        <th>宝贝名称</th>
+                        <th>游客姓名</th>
+                        <th>产品名称</th>
                         <th>价格</th>
-                        <th>购买数量</th>
+                        <th>游客数量</th>
                         <th>成交时间</th>
                         <th>状态</th>
                     </tr>
@@ -509,8 +541,8 @@ $imageHelper=new ImageHelper();
                         <tr>
                             <td><?php echo Tbfunction::getUser($orderItem->order->user_id);?></td>
                             <td><?php echo $orderItem->title;?></td>
-                            <td><?php echo $orderItem->price;?></td>
-                            <td><?php echo $orderItem->quantity;?></td>
+                            <td>成人：<?php echo $orderItem->adult_price;?><br>儿童：<?php echo $orderItem->child_price;?></td>
+                            <td>成人：<?php echo $orderItem->adult_number;?><br>儿童：<?php echo $orderItem->child_number;?></td>
                             <td><?php echo date("M j, Y",$orderItem->order->create_time);?></td>
                             <td><?php echo $orderItem->order->status? finished:unfinished;?></td>
                         </tr>

@@ -1,4 +1,7 @@
 <?php Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/pptBox.js'); ?>
+<?php Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl . '/js/MetroJs.js'); ?>
+<?php Yii::app()->clientScript->registerCssFile(Yii::app()->baseUrl . '/css/MetroJs.css'); ?>
+
 <div class="warp_contant">
     <div class="float">
         <div class="float_button">
@@ -81,17 +84,58 @@
             </div>
             <?php }?>
             <div class="pd_select">
-                <?php if ($categories) { ?>
+                <?php if ($categories &&count($categories) > 3 && $categories[0]->level==3) { ?>
+                <!--  
                     <ul>
                         <li>分类：</li>
                         <?php foreach ($categories as $cate) {
                             $params['cat'] = $cate->getUrl();
                             echo '<li><a href="' . Yii::app()->createUrl('catalog/index', $params) . '">' . $cate->name . '</a></li>';
                         } ?>
-                    </ul>                 
+                    </ul>
+                    --> 
+                    <ul>
+                    <?php 
+                    	$data_mode=array('carousel', 'slide', 'flip');
+                    	$data_delay=array(2000,2500,3000);
+                    	$data_dir=array('horizontal', 'vertical');
+                    	$cate_index=array_rand($categories, min(array(5, count($categories))));
+                    	foreach ($cate_index as $index) {
+							$cate=$categories[$index]; 
+                    		$params['cat'] = $cate->getUrl();
+                    		if($rand_selector==3){
+								$option=' data-direction='.$data_dir[rand(0, 1)];
+							}
+							else{
+								$option='';	
+							}
+                    		echo '<a style="display:block" href="'.Yii::app()->createUrl('catalog/index', $params) .'">'. 
+                    			'<div class="live-tile" data-mode='.$data_mode[rand(0, 2)].
+                    			' data-delay='.$data_delay[rand(0, 2)].
+                    			$option.
+                    			'>' .
+                    			'<span class="tile-title">'. $cate->name. '</span>'.
+                    			'<div><img class="full" src="'. Yii::app()->baseUrl. $cate->pic.
+                    			'" alt="1"'.'/></div>'.
+                    			'<div><img class="full" src="'. Yii::app()->baseUrl. $cate->pic2.
+                    			'" alt="2"'.'/></div>'. 
+                    		 	'</div>'.'</a>';
+                    ?> 
+   				 	<?php 
+                    	}
+                    ?>
+                    </ul>              
                 <?php
                 }
                 ?>
+                <!-- Activate live tiles -->
+				<script type="text/javascript">
+   				 // apply regular slide universally unless .exclude class is applied 
+   				 // NOTE: The default options for each liveTile are being pulled from the 'data-' attributes
+    			$(".live-tile, .flip-list").not(".exclude").liveTile();
+				</script>
+                
+   				 
                <!-- 
                 <?php 
                 $params = $_GET;

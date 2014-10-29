@@ -48,14 +48,14 @@
     float:left;
 	margin-top:5px;
 	margin-left:5px;
-	background-color:rgb(247, 247, 247);
+	background-color:rgb(240, 240, 240);
 	border-radius: 5px;
 }
 .deal_tit{
     margin-top:10px;
 	margin-left: 15px;
 	margin-bottom:10px;
-    font-size:30px;
+    font-size:25px;
     font-weight:700;
 }
 .deal_price{
@@ -90,6 +90,13 @@
 .font15{
     font-size:13px;
 	margin-right: 5px;
+}
+
+.font20{
+	font-size:16px;
+	font-family:Arial;
+	font-weight:bold;
+	color:black;
 }
 
 .deal_sold{
@@ -279,6 +286,16 @@
 }
 .deal_describe{
     padding: 20px;
+	white-space:normal;
+	width:800px;
+}
+
+.sche_fromto{
+	background: rgb(230,230,230);
+}
+
+.sche_perday{
+	margin-top: 20px;
 }
 
 #warning-load{

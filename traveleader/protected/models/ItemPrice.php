@@ -35,7 +35,7 @@ class ItemPrice extends CActiveRecord
 		return array(
 				array('item_id, date, price_adult, price_child', 'required'),
 				array('item_id', 'length', 'max'=>10),
-				array('create_time', 'safe'),
+				array('create_time, update_time', 'safe'),
 				// The following rule is used by search().
 				// @todo Please remove those attributes that should not be searched.
 				array('item_price_id, item_id, date, create_time, update_time', 'safe', 'on'=>'search'),

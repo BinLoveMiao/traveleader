@@ -23,6 +23,14 @@ class CatalogController extends YController
         if(!empty($_GET['city'])){
         	$criteria->addCondition("t.city = '{$_GET['city']}'");
         }
+        if(!empty($_GET['tag'])){
+        	$criteria->addCondition("t.tag1 = '{$_GET['tag']}' 
+        			OR t.tag2 = '{$_GET['tag']}'
+        			OR t.tag3 = '{$_GET['tag']}'");
+        	$tag=MoodTag::model()->findByPk($_GET['tag']);
+        	$tag->frequency += 1;
+        	$tag->save();
+        }
 
         if (!empty($_GET['key'])) {
             $criteria->addCondition("(t.title LIKE '%{$_GET['key']}%')");

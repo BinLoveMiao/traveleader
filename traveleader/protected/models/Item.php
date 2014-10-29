@@ -15,7 +15,7 @@
  * @property string $props
  * @property string $props_name
  * @property string $desc
- * @property string $schedule
+ * @property string $num_days
  * @property string $cost_incl
  * @property string $cost_excl
  * @property string $departure
@@ -32,7 +32,11 @@
  * @property string $language
  * @property string $country
  * @property string $state
- * @property string $scene
+ * @property string $city
+ * @property string $supplier
+ * @property string $tag1
+ * @property string $tag2
+ * @property string $tag3
  *
  * The followings are the available model relations:
  * @property Category $category
@@ -64,14 +68,18 @@ class Item extends YActiveRecord
         return array(
             array('category_id, title, price, currency, props, props_name, desc, language, country, state, city', 'required'),
             array('is_show, is_promote, is_new, is_hot, is_best', 'numerical', 'integerOnly' => true),
-            array('category_id, stock, min_number, price, discount_price, departure, shipping_fee, click_count, wish_count, review_count,deal_count,create_time, update_time, country, state, city', 'length', 'max' => 10),
+            array('category_id, stock, min_number, price, discount_price, num_days, departure, shipping_fee, click_count,
+            		wish_count, review_count,deal_count,create_time,
+            		update_time, country, state, city, supplier, tag1, tag2, tag3', 'length', 'max' => 10),
             array('outer_id, language', 'length', 'max' => 45),
             array('title', 'length', 'max' => 255),
+        	array('desc', 'length', 'max' => 500),
             array('currency', 'length', 'max' => 20),
             array('create_time, update_time', 'safe'),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            array('title, stock, min_number, price, discount_price, props, props_name, is_show, is_promote, is_new, is_hot, is_best, click_count, wish_count, create_time, update_time, language, country, state, city', 'safe', 'on' => 'search'),
+            array('title, stock, min_number, price, discount_price, num_days, is_show, is_promote, is_new, is_hot, is_best,
+            		click_count, wish_count, create_time, update_time, language, country, state, city, supplier, tag1, tag2, tag3', 'safe', 'on' => 'search'),
         );
     }
 
@@ -93,6 +101,9 @@ class Item extends YActiveRecord
             'orderItems' => array(self::HAS_MANY, 'OrderItem', 'item_id'),
             'propImgs' => array(self::HAS_MANY, 'PropImg', 'item_id'),
             'skus' => array(self::HAS_MANY, 'Sku', 'item_id'),
+        	'tag1' => array(self::BELONGS_TO, 'MoodTag', 'id'),
+        	'tag2' => array(self::BELONGS_TO, 'MoodTag', 'id'),
+        	'tag3' => array(self::BELONGS_TO, 'MoodTag', 'id'),
         );
     }
 
@@ -114,10 +125,10 @@ class Item extends YActiveRecord
             'props' => 'Props',
             'props_name' => 'Props Name',
             'desc' => 'Desc',
+        	'num_days' => 'Number of days travelling',
         	'cost_incl' => 'Cost Include',
         	'cost_excl' => 'Cost Not Include',
         	'departure' => 'Place of Departure',
-        	'schedule' => 'Travel Schedule',
             'shipping_fee' => 'Shipping Fee',
             'is_show' => 'Is Show',
             'is_promote' => 'Is Promote',
@@ -132,6 +143,10 @@ class Item extends YActiveRecord
             'country' => 'Country',
             'state' => 'State',
             'city' => 'City',
+        	'supplier' => 'Supplier of this Product',
+        	'tag1' => 'Primary Tag',
+        	'tag2' => 'Secondary Tag',
+        	'tag3' => 'Inferior Tag',
         );
     }
 
@@ -179,6 +194,9 @@ class Item extends YActiveRecord
         $criteria->compare('country', $this->country, true);
         $criteria->compare('state', $this->state, true);
         $criteria->compare('city', $this->city, true);
+        $criteria->compare('tag1', $this->tag1, true);
+        $criteria->compare('tag2', $this->tag2, true);
+        $criteria->compare('tag3', $this->tag3, true);
 
         return new CActiveDataProvider($this, array(
             'criteria' => $criteria,

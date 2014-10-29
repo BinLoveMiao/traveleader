@@ -13,6 +13,7 @@
  * @property integer $label
  * @property string $url
  * @property string $pic
+ * @property string $pic2
  * @property integer $is_show
  *
  * The followings are the available model relations:
@@ -41,11 +42,11 @@ class Category extends CActiveRecord
             array('label, is_show', 'numerical', 'integerOnly' => true),
             array('left, right, root, level', 'length', 'max' => 10),
             array('name, url', 'length', 'max' => 200),
-            array('pic', 'length', 'max' => 255),
-            array('left, right, root, level,pic', 'safe'),
+            array('pic', 'pic2', 'length', 'max' => 255),
+            array('left, right, root, level,pic,pic2', 'safe'),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            array('category_id, left, right, root, level, name, label, url, pic, is_show', 'safe', 'on' => 'search'),
+            array('category_id, left, right, root, level, name, label, url, is_show', 'safe', 'on' => 'search'),
         );
     }
 
@@ -77,6 +78,7 @@ class Category extends CActiveRecord
             'label' => 'Label',
             'url' => 'Url',
             'pic' => 'Pic',
+        	'pic2' => 'Pic2',
             'is_show' => 'Is Show',
         );
     }
@@ -107,7 +109,6 @@ class Category extends CActiveRecord
         $criteria->compare('name', $this->name, true);
         $criteria->compare('label', $this->label);
         $criteria->compare('url', $this->url, true);
-        $criteria->compare('pic', $this->pic, true);
         $criteria->compare('is_show', $this->is_show);
 
         return new CActiveDataProvider($this, array(
