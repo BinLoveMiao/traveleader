@@ -38,7 +38,7 @@ Yii::app()->plugin->render('Hook_Login');
                     			' data-delay='.$data_delay[rand(0, 2)].
                     			$option.
                     			'>' .
-                    			'<span class="tile-title">'. $tag->name. '</span>'.
+                    			'<span class="tile-title" style="background:#2D2D2D;">'. $tag->name. '</span>'.
                     			'<div><img class="full" src="'. Yii::app()->baseUrl. $tag->pic1.
                     						'" alt="1"'.'/></div>'.
                     			'<div><img class="full" src="'. Yii::app()->baseUrl. $tag->pic2.

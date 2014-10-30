@@ -44,8 +44,13 @@ class OrderController extends Controller
      */
     public function actionView($id)
     {
+        //$this->render('view', array(
+        //    'model' => $this->loadModel($id),
+        //));
+        $order = Order::model()->findByPk($id);
+        $order_items = $order->orderItems;
         $this->render('view', array(
-            'model' => $this->loadModel($id),
+        		'Order' => $order, 'Order_item' => $order_items
         ));
     }
 
@@ -217,7 +222,8 @@ class OrderController extends Controller
                         throw new Exception('save order fail');
                     }
                     $transaction->commit();
-                    $this->redirect(array('success'));
+                    //$this->redirect(array('success'));
+                    $this->render('success', array('order_id' => $model->order_id, 'user_id' => $model->user_id));
                 } catch (Exception $e) {
                     $transaction->rollBack();
                     $this->redirect(array('fail'));

@@ -114,7 +114,7 @@
                     			' data-delay='.$data_delay[rand(0, 2)].
                     			$option.
                     			'>' .
-                    			'<span class="tile-title">'. $cate->name. '</span>'.
+                    			'<span class="tile-title" style="background:#2D2D2D;">'. $cate->name. '</span>'.
                     			'<div><img class="full" src="'. Yii::app()->baseUrl. $cate->pic.
                     			'" alt="1"'.'/></div>'.
                     			'<div><img class="full" src="'. Yii::app()->baseUrl. $cate->pic2.

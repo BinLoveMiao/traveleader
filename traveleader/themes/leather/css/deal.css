@@ -295,7 +295,8 @@
 }
 
 .sche_perday{
-	margin-top: 20px;
+	margin-top: 5px;
+	margin-bottom: 20px;
 }
 
 #warning-load{
@@ -310,10 +311,8 @@
     position:absolute;
     background:rgb(255,255,255);
 
-
-
-
 }
+
 #btn{
     width:130px;
     height:45px;

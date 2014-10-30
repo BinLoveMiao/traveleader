@@ -146,7 +146,7 @@ th{
     width: 300px;
 }
 .price{
-    width: 120px;
+    width: 80px;
 }
 .sku{
     width: 120px;
@@ -154,6 +154,51 @@ th{
 .num{
     width: 80px;
 }
+
+.sched_time{
+	width:40px;
+	overflow:hidden;
+	text-align:center;
+}
+
+.sched_detail{
+	width:300px;
+	overflow:hidden;
+}
+
+.sched_meal{
+	width:100px;
+	overflow:hidden;
+}
+
+.sched_accom{
+	width:240px;
+	overflow:hidden;
+}
+
+.sched_notice{
+	width:240px;
+	overflow:hidden;
+}
+
+.sched-hd{
+	margin-top:20px;
+	background:#E8F2FF;
+}
+
+.sched-hd th{
+	text-align:center;
+}
+
+.sched_item td{
+    padding:8px 5px;
+    line-height:130%;
+    vertical-align:middle;
+    border:1px solid #ddd;
+    border-top:0
+}
+
+
 .order-price{
     width: 160px;
     height: 35px;

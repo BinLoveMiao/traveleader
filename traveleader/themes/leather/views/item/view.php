@@ -477,23 +477,22 @@ $imageHelper=new ImageHelper();
             	foreach($schedules as $sche){
 					$from=Area::model()->findByPk($sche->from)->name;
 					$to=Area::model()->findByPk($sche->to)->name;
-					$sche_details=explode("+",$sche->schedule);
+					//$sche_details=explode("+",$sche->schedule);
+					$sche_details=$sche->decodeSchedule();
 			?>
 				<div class="sche_perday"><div class="font20 sche_fromto">第 <?php echo $sche->which_day?> 天    
 				<?php if ($from!=$to) {echo $from;?> 至 <?php echo $to;} echo '  '. $sche->feature_scene;?></div>
 			<?php
 					foreach($sche_details as $detail){
-						$d=explode("|",$detail);
-						if(count($d)==2){
+						//$d=explode("|",$detail);
 			?>
-						<span class="bold sche_time"><?php echo $d[0].',' ?></span>
-						<span class="sche_detail"><?php echo $d[1]?><br></span>
-						<?php } else{?>
-						<span class="sche_detail"><?php echo $d[0]?><br></span>
-						<?php }?>
-			<?php
-					}
-			?>
+						<span class="bold sche_time"><?php if($detail['time']) echo $detail['time'].': ' ?></span>
+						<span class="sche_detail"><?php echo $detail['detail']?><br></span>
+						<?php } ?>
+				<div class="sche_others" style="background:rgb(240,240,240);border-radius:10px; margin-top:10px;">
+					<span class="sche_meal"> 餐饮：<?php echo $sche->meal?> <br></span>
+					<span class="sche_accom">住宿：<?php echo $sche->accommodation?></span>
+				</div>
 			</div>
 			<?php		
 				}

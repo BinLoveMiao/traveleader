@@ -120,24 +120,20 @@
     <div class="clearfix"></div>
 </div>
 <!-- 订单信息 -->
+
+    <?php
+    foreach($Order_item as $orderItems){
+
+        ?>
 <table>
     <colgroup>
         <col class="item">
         <!-- <col class="sku">  -->
         <!-- 宝贝 -->
-
-        <col class="status">
-        <!-- 交易状态 -->
-
-        <col class="service">
-        <!-- 服务 -->
-
-        <col class="adult_price">
-        <col class="child_price">
+        <col class="price">
         <!-- 单价（元） -->
 
-        <col class="adult_number">
-        <col class="child_number">
+        <col class="number">
         
         <!-- 数量 -->
 
@@ -151,22 +147,15 @@
     </colgroup>
     <tbody class="order">
     <tr class="sep-row">
-        <td colspan="8"></td>
+        <td colspan="1"></td>
     </tr>
     <tr class="order-hd">
-        <th class="item " style="width:31%">旅游产品</th>
-                         <!--    <th class="sku" style="width:24%">宝贝属性</th> -->
-                           <th class="adult_price" style="width:15%">成人(元)</th>
-                           <th class="adult_number" style="width:15%">成人数量</th>
-                           <th class="child_price" style="width:15%">儿童(元)</th>
-                           <th class="child_number" style="width:15%">儿童数量</th>
-                           <th class="order-price last" style="width:15%">产品总价(元)</th>
+        <th class="item " style="width:30%">旅游产品</th>
+                           <th class="price" style="width:10%">价格(元)</th>
+                           <th class="num" style="width:10%">人数</th>
+                           <th class="order-price last" style="width:20%">订单总价(元)</th>
     </tr>
 
-    <?php
-    foreach($Order_item as $orderItems){
-
-        ?>
         <tr class="order-item">
             <td class="item">
                 <div class="pic-info">
@@ -184,42 +173,77 @@
                 </div>
             </td>
 
-            <td class="adult_price">
-                <?php
-                echo $orderItems->adult_price;
-                ?>
+            <td class="price" style="width:10%">
+            	<span>成人：<?php echo $orderItems->adult_price;?> <br></span>
+				<span>儿童：<?php echo $orderItems->child_price;?></span>
             </td>
             
-            <td class="adult_number">
-                <?php
-                echo $orderItems->adult_number;
-                ?>
+            <td class="num">
+            	<span>成人：<?php echo $orderItems->adult_number;?> <br></span>
+                <span>儿童：<?php echo $orderItems->child_number;?> <br></span>
             </td>
             
-            <td class="child_price">
-                <?php
-                echo $orderItems->child_price;
-                ?>
-            </td>
-
-             <td class="child_number">
-                <?php
-                echo $orderItems->child_number;
-                ?>
-            </td>
             <td class="order-price" rowspan="1">
                 <?php
                 echo $orderItems->total_price;
                 ?>
-                <!--  
-                <li>
-                    (快递: <?php //echo $Order->ship_fee;?>)
-                </li>
-                -->
             </td>
         </tr>
+   </table>
+   
+   <table>
+        <tr class="sched-hd">
+        	<th class="sched_time " style="width:6%">时间</th>
+            <th class="sched_detail" style="width:35%">行程安排</th>
+            <th class="sched_meal" style="width:15%">餐饮</th>
+            <th class="sched_accom" style="width:22%">住宿</th>
+            <th class="sched_notice" style="width:22%">注意事项</th>
+    	</tr>
+    	
 
         <?php
+        $schedules = Schedule::model()->findAllByAttributes(array('item_id' => $orderItems->item_id));
+        foreach($schedules as $sched){
+			$time_detail=$sched->decodeSchedule();
+		?>
+		<tr class="sched_item">
+			<td class="sched_time">
+                <span>第<?php
+                echo $sched->which_day;
+                ?>天</span>
+            </td>
+            
+            <td class="sched_detail">
+            	<?php 
+            		foreach($time_detail as $detail){
+						?>
+						<span><?php if($detail['time']) echo $detail['time']."："?></span>
+						<span><?php echo $detail['detail']?><br></span>
+						<?php
+					}
+            	?>
+            </td>
+            
+            <td class="sched_meal">
+                <?php
+                echo $sched->meal;
+                ?>
+            </td>
+            
+            <td class="sched_accom">
+                <?php
+                echo $sched->accommodation;
+                ?>
+            </td>
+            
+            <td class="sched_notice">
+                <?php
+                echo $sched->notice;
+                ?>
+            </td>          
+		</tr>
+		<?php 
+   		}
     }
     ?>
     <tr class="order-ft">
