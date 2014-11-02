@@ -67,6 +67,12 @@ Yii::app()->plugin->render('Hook_Login');
     	// NOTE: The default options for each liveTile are being pulled from the 'data-' attributes
     	$(".live-tile, .flip-list").not(".exclude").liveTile();
 	</script>
+	
+	<!--  
+	<div style="width: 400px; height: 350px; overflow: hidden; position: relative;" class="weather">
+
+	</div>
+	-->
 
     <div class="warp_product">
         <?php $isFrist = true;

@@ -7,7 +7,7 @@ Yii::app()->clientScript->registerCoreScript('jquery');
 ?>
 <?php echo CHtml::beginForm(array('/order/create'), 'POST', array('id'=>'orderForm')) ?>
 <div class="box">
-    <div class="box-title"><span style="float:right"><?php echo CHtml::link('管理收货地址', array('/member/delivery_address/admin'))?></span>收货地址</div>
+    <div class="box-title"><span style="float:right"><?php echo CHtml::link('管理联系人', array('/member/delivery_address/admin'))?></span>联系人</div>
     <div class="box-content">
         <?php
         $cri = new CDbCriteria(array(

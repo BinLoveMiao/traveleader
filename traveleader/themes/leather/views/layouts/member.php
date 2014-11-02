@@ -8,7 +8,7 @@
             <div class="box-content">
                 <ul>
                     <li><?php echo CHtml::link('个人信息', array('/user/profile/edit')) ?></li>
-                    <li><?php echo CHtml::link('收货地址', array('/member/delivery_address/admin')) ?></li>
+                    <li><?php echo CHtml::link('联系人信息', array('/member/delivery_address/admin')) ?></li>
                     <li><?php echo CHtml::link('修改密码', array('/user/profile/changepassword')) ?></li>
                 </ul>
             </div>

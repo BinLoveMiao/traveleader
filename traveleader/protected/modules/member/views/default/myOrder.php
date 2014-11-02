@@ -12,7 +12,7 @@ $this->breadcrumbs=array(
                 <th width="20%">订单编号</th>
                 <th width="20%">姓名</th>
                 <th width="20%">Email</th>
-                <th width="20%">收获地址</th>
+                <th width="20%">地址</th>
                 <th width="20%">操作</th>
             </tr>
             <?php foreach($myorders as $mo){?>
