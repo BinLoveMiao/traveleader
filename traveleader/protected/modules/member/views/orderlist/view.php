@@ -74,6 +74,29 @@
             }
             ?>
         </dd>
+        
+         <dt>出游时间：</dt>
+        <dd>
+            <?php
+            if(count($Order_item) != 0){
+                $travel_date=$Order_item[0]->travel_date;
+                echo $travel_date;
+            }
+			//$gap=ceil((strtotime(date("Y-M-d h:i:s")) - strtotime($travel_date. ' 00:00:00'))/86400);
+			//if($gap > $Order->whole_num_days){
+			?> 
+			<!--  
+				<div class="post_note">
+				<a href=""> 发表游记</a> 
+				</div>
+				<div class="post_review">
+				<a href=""> 发表评论</a> 
+				</div>
+			<?php	
+			//}
+            ?>-->
+
+        </dd>
 
         <dt>&nbsp;</dt>
         <dd>&nbsp;</dd>
@@ -174,13 +197,13 @@
             </td>
 
             <td class="price" style="width:10%">
-            	<span>成人：<?php echo $orderItems->adult_price;?> <br></span>
-				<span>儿童：<?php echo $orderItems->child_price;?></span>
+            	<p>成人：<?php echo $orderItems->adult_price;?></p>
+				<p>儿童：<?php echo $orderItems->child_price;?></p>
             </td>
             
             <td class="num">
-            	<span>成人：<?php echo $orderItems->adult_number;?> <br></span>
-                <span>儿童：<?php echo $orderItems->child_number;?> <br></span>
+            	<p>成人：<?php echo $orderItems->adult_number;?> </p>
+                <p>儿童：<?php echo $orderItems->child_number;?></p>
             </td>
             
             <td class="order-price" rowspan="1">

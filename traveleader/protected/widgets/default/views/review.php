@@ -6,14 +6,12 @@
  * Time: 2:47 PM
  */
 
-
-
 $review=$this->reviewData();
 $reviewData=$review[0];
 $reviewCount=count($reviewData);
 $pages=$review[1];
 $reviewNum=Review::model()->reviewSummary($this->_itemId,$this->_entityId,'1');
-$picReviewCount= Review::model()->reviewSummary($this->_itemId,$this->_entityId,'2');
+//$picReviewCount= Review::model()->reviewSummary($this->_itemId,$this->_entityId,'2');
 if($reviewCount>=1){
     $positiveRate=$reviewNum[1]/$reviewCount;
     $neutralRate=$reviewNum[2]/$reviewCount;
@@ -37,13 +35,15 @@ else{
             </strong>
             <br>
     <span>
-        positive rate
+    	    好评率
     </span>
         </div>
         <div class="percent">
             <dl>
                 <dt>
-                    positive
+                 	 <span class="review-exp-img">
+                 	 	<img src=<?php echo Yii::app()->baseUrl. '/upload/expression/positive.jpg'?> alt="赞"/>
+                 	  </span>
             <span>
                 (<?php echo round($positiveRate * 100)?>%)
             </span>
@@ -55,7 +55,9 @@ else{
             </dl>
             <dl>
                 <dt>
-                    neutral
+                  	<span class="review-exp-img">
+                 	 	<img src=<?php echo Yii::app()->baseUrl. '/upload/expression/neutural.jpg'?> alt="一般"/>
+                 	  </span>
             <span>
                 (<?php echo round($neutralRate * 100)?>%)
             </span>
@@ -67,7 +69,9 @@ else{
             </dl>
             <dl>
                 <dt>
-                    negative
+                   	<span class="review-exp-img">
+                 	 	<img src=<?php echo Yii::app()->baseUrl. '/upload/expression/negative.jpg'?> alt="踩"/>
+                 	  </span>
             <span>
                 (<?php echo round($negativeRate * 100)?>%)
             </span>
@@ -77,6 +81,12 @@ else{
                     </div>
                 </dd>
             </dl>
+        </div>
+        <div class="rep_review">
+        <p>出游归来可点评产品</p>
+        <p class="btn_review">
+        	<?php echo CHtml::link("发表点评", Yii::app()->createUrl('member/orderlist/admin'))?>
+        </p>
         </div>
         <div class="clr"></div>
     </div>
@@ -94,11 +104,11 @@ else{
             ));
             $i++;
         }
-    }else echo "No Related Data";
+    }else {echo "无记录";}
     ?>
     </ul>
     <?php
-    $this->widget('CLinkPager',array('pages'=>$pages));
+      $this->widget('CLinkPager',array('pages'=>$pages));
 ?>
 </div>
 </div>

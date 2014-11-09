@@ -21,6 +21,7 @@ class ECartPositionBehaviour extends CActiveRecordBehavior {
     private $child_number = 0;
     private $price_adult = 0;
     private $price_child = 0;
+    private $date;
     /**
      * Update model on session restore?
      * @var boolean
@@ -99,6 +100,14 @@ class ECartPositionBehaviour extends CActiveRecordBehavior {
     
     public function setAdultPrice($price){
     	$this->price_adult = $price;
+    }
+    
+    public function getDate(){
+    	return $this->date;
+    }
+    
+    public function setDate($date){
+    	$this->date = $date;
     }
     
 

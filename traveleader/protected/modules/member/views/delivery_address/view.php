@@ -1,6 +1,6 @@
 <?php
 $this->breadcrumbs=array(
-	'收货地址'=>array('admin'),
+	'我的联系人'=>array('admin'),
 	'详细地址#'.$model->contact_id,
 );
 

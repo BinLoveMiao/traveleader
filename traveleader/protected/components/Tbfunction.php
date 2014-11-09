@@ -17,11 +17,15 @@ class Tbfunction {
         echo  CHtml::link('Add',array('create','user_id'=>$id),array('class'=>'btn btn-primary'));
     }
     public function view_user($id){
-        echo CHtml::link('view',array('detail','id'=>$id),array('class'=>'btn btn-primary'));
+        echo CHtml::link('查看',array('detail','id'=>$id),array('class'=>'btn_detail'));
+    }
+    
+    public function review_order($id){
+    	echo CHtml::link('评论', array('review', 'id'=>$id), array('class'=>'btn_detail'));
     }
 
     public function view_log($id){
-        echo CHtml::link('view',array('detail','id'=>$id),array('class'=>'btn btn-primary'));
+        echo CHtml::link('查看',array('detail','id'=>$id),array('class'=>'btn btn-primary'));
     }
 
     public function getUser($user_id)
@@ -77,7 +81,16 @@ class Tbfunction {
     }
 
     public function ReturnPayMethod(){
-        return array('0' => '货到付款', '1' => '支付宝', '2' => '银行卡');
+        return array('0' => '到门市店支付', '1' => '支付宝', '2' => '银行卡');
+    }
+    
+    public function ReturnReviewStatus(){
+    	return array('0' => '待评论', '1' => '已评论');
+    }
+    
+    public function showReviewStatus($review_status){
+    	$reviewStatus=array('0'=>'待评论','1'=>'已评论');
+        return $reviewStatus[$review_status];
     }
 
 

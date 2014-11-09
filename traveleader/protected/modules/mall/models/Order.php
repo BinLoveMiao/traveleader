@@ -31,6 +31,11 @@
  * @property integer $has_old_man
  * @property integer $has_foreigner
  * @property integer $is_invoice
+ * @property integer $is_review 
+ * // Order is marked as reviewed if all items under it has been reviewed
+ * 
+ * @property integer $whole_num_days
+ * @property string $feature_item_name
  * 
  * @property string $create_time
  * @property string $update_time
@@ -67,10 +72,10 @@ class Order extends CActiveRecord
         return array(
             array('receiver_name, receiver_mobile, receiver_email', 'required'),
             array('status, pay_status, refund_status, comment_status', 'numerical', 'integerOnly' => true),
-        	array('is_children, has_old_man, has_foreigner, is_invoice', 'numerical', 'integerOnly' => true),
+        	array('is_children, has_old_man, has_foreigner, is_invoice, is_review, whole_num_days', 'numerical', 'integerOnly' => true),
             array('user_id, total_fee, pay_fee, payment_method_id, pay_time, create_time, update_time', 'length', 'max' => 10),
             array('receiver_name, receiver_country, receiver_state, receiver_city, receiver_district, receiver_zip, receiver_mobile, receiver_email, receiver_phone', 'length', 'max' => 45),
-            array('receiver_address', 'length', 'max' => 255),
+            array('feature_item_name, receiver_address', 'length', 'max' => 255),
             array('memo', 'safe'),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
@@ -121,6 +126,7 @@ class Order extends CActiveRecord
         	'has_old_man' => "Has old man older than 70 years old",
         	'has_foreigner' => "Has foreigner",
         	'is_invoice' => "Need invoice or not",
+        	'is_review' => '点评状态',
             'memo' => '备注',
             'pay_time' => '付款时间',
             'create_time' => '下单时间',
@@ -128,6 +134,8 @@ class Order extends CActiveRecord
             'comment_status' => '评论状态',
             'payment_method_id' => '付款方式',
             'detail_address' => '具体地址',
+        	'feature_item_name' => '代表线路名称',
+        	'whole_num_days' => '总出行天数',
         );
     }
 
@@ -159,8 +167,8 @@ class Order extends CActiveRecord
         $criteria->compare('receiver_zip', $this->receiver_zip, true);
         $criteria->compare('receiver_mobile', $this->receiver_mobile, true);
         $criteria->compare('receiver_phone', $this->receiver_phone, true);
-        $criteria->compare('memo', $this->memo, true);
         $criteria->compare('pay_time', $this->pay_time, true);
+        $criteria->compare('is_review', $this->is_review, true);
         $criteria->compare('create_time', $this->create_time, true);
         $criteria->compare('update_time', $this->update_time, true);
 

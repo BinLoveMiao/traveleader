@@ -46,7 +46,7 @@
     <div class="logo">
         <a href="<?php echo Yii::app()->getBaseUrl(true); ?>">
             <img alt="<?php echo Yii::app()->params['title']; ?>"
-                 src="<?php echo Yii::app()->settings->get('site','logo')=='' ? Yii::app()->theme->baseUrl.'/Image/logo.png':Yii::app()->settings->get('site','logo')?>"
+                 src="<?php echo Yii::app()->baseUrl.'/themes/leather/image/logo.png';?>"
                  width="227" height="80">
         </a></div>
     <?php echo CHtml::beginForm(Yii::app()->createUrl('catalog/index'), 'get', array('class' => 'search')); ?>

@@ -237,6 +237,7 @@ Yii::app()->clientScript->registerCoreScript('jquery');
                         echo CHtml::hiddenField('child_number', $item->getChildNumber());
                         echo CHtml::hiddenField('child_price', $item->getChildPrice());
                         echo CHtml::hiddenField('adult_price', $item->getAdultPrice());
+                        echo CHtml::hiddenField('travel_date', $item->getDate());
                     }
                     ?>
                     <tr><?php

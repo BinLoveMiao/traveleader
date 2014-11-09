@@ -7,10 +7,19 @@
  * @property string $review_id
  * @property integer $create_at
  * @property string $content
+ * @property integer $rating
+ * @property string $guide_review
+ * @property integer $guide_rating
+ * @property string $schedule_review
+ * @property integer $schedule_rating
+ * @property string $meal_review
+ * @property integer $meal_rating
+ * @property string $transport_review
+ * @property integer $transport_rating
  * @property integer $customer_id
  * @property integer $entity_id
  * @property integer $entity_pk_value
- * @property integer $rating
+
  *
  * The followings are the available model relations:
  * @property ReviewPicture[] $reviewPictures
@@ -34,11 +43,14 @@ class Review extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('create_at, customer_id, entity_id, entity_pk_value, rating', 'numerical', 'integerOnly'=>true),
-			array('content', 'safe'),
+			array('create_at, customer_id, entity_id, entity_pk_value, rating, 
+						guide_rating, schedule_rating, meal_rating, transport_rating', 'numerical', 'integerOnly'=>true),
+			array('content', 'length', 'max' => 500),
+			array('guide_review, schedule_review, meal_review, transport_review', 'length', 'max' => 500),
+			array('content, guide_review, schedule_review, meal_review, transport_review', 'safe'),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
-			array('review_id, create_at, content, customer_id, entity_id, entity_pk_value, rating', 'safe', 'on'=>'search'),
+			array('review_id, create_at, customer_id, entity_id, entity_pk_value, rating', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -64,10 +76,19 @@ class Review extends CActiveRecord
 			'review_id' => 'Review',
 			'create_at' => 'Create At',
 			'content' => 'Content',
+			'rating' => 'Overall Rating',
+			'guide_review' => 'Review of tour guide',
+			'guide_rating' => 'Rating of tour guide',
+			'schedule_review' => 'Review of schedule',
+			'schedule_rating' => 'Rating of schedule',
+			'meal_review' => 'Review of meal',
+			'meal_rating' => 'Rating of meal',
+			'transport_review' => 'Review of transportation',
+			'transport_rating' => 'Rating of transportation',
 			'customer_id' => 'Customer',
 			'entity_id' => 'Entity',
 			'entity_pk_value' => 'Entity Pk Value',
-			'rating' => 'Rating',
+
             'photos_exit'=>'Photos_exit',
 		);
 	}
@@ -92,7 +113,7 @@ class Review extends CActiveRecord
 
 		$criteria->compare('review_id',$this->review_id,true);
 		$criteria->compare('create_at',$this->create_at);
-		$criteria->compare('content',$this->content,true);
+		//$criteria->compare('content',$this->content,true);
 		$criteria->compare('customer_id',$this->customer_id);
 		$criteria->compare('entity_id',$this->entity_id);
 		$criteria->compare('entity_pk_value',$this->entity_pk_value);
@@ -129,7 +150,9 @@ class Review extends CActiveRecord
     Public function reviewFind($productId,$entityId,$rating){
         $data=array();
         $criteria = new CDbCriteria;
-        $criteria->select='review_id,create_at,content,customer_id,rating,photos_exit';
+        $criteria->select='review_id,create_at,content,customer_id,rating,
+        		guide_review, guide_rating, schedule_review, schedule_rating,
+        		meal_review, meal_rating, transport_review, transport_rating, photos_exit';
         $criteria->order='create_at DESC';
         if($rating==4){
             $criteria->condition = 'entity_pk_value=:entity_pk_value and entity_id=:entity_id and photos_exit=:photos_exit';

@@ -72,6 +72,7 @@ class OrderController extends Controller
             	$item_price = ItemPrice::model()->findByPk($item_price_id);
             	$item->setChildPrice($item_price->price_child);
             	$item->setAdultPrice($item_price->price_adult);
+            	$item->setDate($item_price->date);
             }
             
             //$item->setQuantity($quantity);
@@ -144,8 +145,9 @@ class OrderController extends Controller
                         $model->receiver_mobile = $address['mobile_phone'];
                         $model->receiver_email = $address['email'];
                         $model->receiver_phone = $address['phone'];
-                        $model ->payment_method_id= $_POST['payment_method_id'];
-                        $model ->memo = $_POST['memo'];
+                        $model->payment_method_id= $_POST['payment_method_id'];
+                        $model->memo = $_POST['memo'];
+                        $model->review = 0;
                     }
                     $model->create_time = time();
                     $model->order_id=F::get_order_id();
@@ -173,6 +175,12 @@ class OrderController extends Controller
                             //{
                             //    throw new Exception('stock is not enough!');
                            // }
+                           $model->whole_num_days = $item->num_days;
+                           $model->feature_item_name = $item->title;
+                           if(!$model->save()){
+                               throw new Exception('save order item fail');
+                           }
+                           
                             $OrderItem = new OrderItem;
 
 //                            $OrderItem->order_id = $model->order_id;
@@ -185,12 +193,13 @@ class OrderController extends Controller
 //                            $OrderItem->quantity = $_POST['quantity'];
 //                            $OrderItem->total_price = $OrderItem->quantity * $OrderItem->price;
                             if (!$OrderItem::model()->saveOrderItem($OrderItem,$model->order_id,$item,$_POST['adult_number'],
-                        			$_POST['adult_price'], $_POST['child_number'], $_POST['child_price'])) {
+                        			$_POST['adult_price'], $_POST['child_number'], $_POST['child_price'], $_POST['travel_date'])) {
                                 throw new Exception('save order item fail');
                             }
                         }
                         else
                         {
+                        	 $i = 0;
                              foreach ($_POST['keys'] as $key){
                                 $item= $cart->itemAt($key);
                                 // $sku=Sku::model()->findByPk($item['sku']['sku_id']);
@@ -201,6 +210,13 @@ class OrderController extends Controller
                                // if(!$sku->save()) {
                                 // throw new Exception('cut down stock fail');
                                //  }
+                    
+                                $sum_days += $item->num_days;
+                                if($i == 0 && $item->num_days != 0){
+                                	$item_name = $item->title;
+                                	$i = $i + 1;
+                                }
+                                
                                 $OrderItem = new OrderItem;
                                 $OrderItem->order_id = $model->order_id;
                                 $OrderItem->item_id = $item['item_id'];
@@ -209,6 +225,7 @@ class OrderController extends Controller
                                 $OrderItem->pic = $item->getMainPic();
                                 $OrderItem->props_name = $sku['props_name'];
                                 $OrderItem->price = $item['price'];
+                                $OrderItem->travel_date = $item['travel_date'];
                                 $OrderItem->quantity = 0;
                                 $OrderItem->total_price = $item['adult_number'] * $item['adult_price'] +
                                 		$item['child_number'] * $item['child_price'];
@@ -216,6 +233,11 @@ class OrderController extends Controller
                                     throw new Exception('save order item fail');
                                 }
                                $cart->remove($key);
+                             }
+                             $model->whole_num_days = $sum_days;
+                             $model->feature_item_name = $item_name;
+                             if(!$model->save()){
+                             	throw new Exception('save order item fail');
                              }
                         }
                     } else {

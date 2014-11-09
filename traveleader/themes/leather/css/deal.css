@@ -287,7 +287,14 @@
 .deal_describe{
     padding: 20px;
 	white-space:normal;
-	width:800px;
+	width:1000px;
+}
+
+.deal_describe .deal_record{
+    padding: 20px;
+	white-space:normal;
+	width:900px;
+	position: relative;
 }
 
 .sche_fromto{
@@ -295,8 +302,15 @@
 }
 
 .sche_perday{
+	margin-top: 0px;
+	margin-bottom: 20px;
+	width:690px;
+}
+
+.sche_intro{
 	margin-top: 5px;
 	margin-bottom: 20px;
+	width:690px;
 }
 
 #warning-load{

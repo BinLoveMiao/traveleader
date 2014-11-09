@@ -100,13 +100,7 @@ $imageHelper=new ImageHelper();
             </div> 
              <div  class="deal_price_calendar">
                 <?php
-                $criteria = new CDbCriteria;
-				$now = new CDbExpression("NOW()");
-				$criteria->addCondition('date > '.$now);
-                $itemPrices = ItemPrice::model()->findAllByAttributes
-					(array('item_id' => $item->item_id), $criteria);
-                $today =  date("Y-m-d");
-                
+                $today =  date("Y-m-d");                
                 foreach($itemPrices as $item_price){
                 	$days = round((strtotime($item_price->date)-strtotime($today))/3600/24);                	
                 	if( $days < 90){
@@ -179,7 +173,20 @@ $imageHelper=new ImageHelper();
             <span class="font15"> 优惠券：</span>
             </div>
             <div class="deal_sat">
-            <span class="font15"> 满意度：</span> <span class="cor_red">100%</span>
+            <span class="font15"> 好评度：</span> 
+            <?php
+            	if($reviewNum){
+            		$review_num=($reviewNum[1]+$reviewNum[2]+$reviewNum[3]);
+            		if($review_num!=0){
+            			$satisfied_rate=round(100*($reviewNum[1])/$review_num);
+            		}
+            		else {$satisfied_rate=100;}
+            	}
+            	else{
+					$satisfied_rate=100;
+                }
+            ?>
+            <span class="cor_red"><?php echo $satisfied_rate?>%</span>
             </div>
             <div class="deal_advance">
              <span class="font15"> 提前报名：</span> <span class="font15">建议提前60天以上</span>
@@ -464,16 +471,20 @@ $imageHelper=new ImageHelper();
         <ul class="deal_describe_tit">
             <li onclick="describe(1);" class="current">路线简介</li>
             <li onclick="describe(2);" class="schedule">行程安排</li>
-            <li onclick="describe(3);">游客评价（<span class="cor_red"><?php echo $item->review_count;?></span>）</li>
-            <li onclick="describe(4);">下单记录（<span class="cor_red"><?php echo $item->deal_count;?></span>）</li>
+            <li onclick="describe(3);">游客评价（<span class="cor_red"><?php echo $review_num;?></span>）</li>
+            <!-- 
+            <li onclick="describe(4);">下单记录（<span class="cor_red"><?php //echo count($item->orderItems);?></span>）</li>
+             -->
         </ul>
         <div class="deal_describe" id="describe_1" style="">
+            <div class="sche_intro">
             <?php echo $item->desc; ?>
+            </div>
         </div>
                 
         <div class="deal_describe" id="describe_2" style="display:none;">
             <?php 
-            	$schedules = Schedule::model()->findAllByAttributes(array('item_id' => $item->item_id));
+            	//$schedules = Schedule::model()->findAllByAttributes(array('item_id' => $item->item_id));
             	foreach($schedules as $sche){
 					$from=Area::model()->findByPk($sche->from)->name;
 					$to=Area::model()->findByPk($sche->to)->name;
@@ -506,8 +517,10 @@ $imageHelper=new ImageHelper();
                 '_entityId'=>'1',
             ))?>
         </div>
-
+		
+		<!-- 
         <div class="deal_describe" id="describe_4" style="display:none;">
+            <div class="deal_record">
             <?php
             $num=count($item->orderItems);
             if($num>0){
@@ -552,13 +565,11 @@ $imageHelper=new ImageHelper();
                 </table>
             <?php
             }
-            else echo "No data";
+            else echo "无记录";
             ?>
-
-
-
-
+		</div>
         </div>
+         -->
     </div>
 </div>
 </div>

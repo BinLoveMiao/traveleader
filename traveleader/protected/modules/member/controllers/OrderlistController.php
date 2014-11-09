@@ -31,7 +31,7 @@ class OrderlistController extends Controller
 				'users'=>array('*'),
 			),
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('detail','admin','create','update'),
+				'actions'=>array('detail','admin','create','update', 'review', 'reviewsubmit'),
 				'users'=>array('@'),
 			),
 			array('deny',  // deny all users
@@ -58,6 +58,54 @@ class OrderlistController extends Controller
         $this->render('view', array(
             'Order' => $order, 'Order_item' => $order_items
         ));
+    }
+    
+    public function actionReview($id)
+    {
+    	$order = Order::model()->findByPk($id);
+    	$order_items = $order->orderItems;
+    	$this->render('create_review', array(
+    			'Order' => $order, 'Order_items' => $order_items
+    	));
+    }
+    
+    public function actionReviewSubmit($id){
+    	$order = Order::model()->findByPk($id);
+    	$order_items = $order->orderItems;
+
+    	foreach($order_items as $order_item){
+    		$review = new Review;
+    		$review->customer_id = $_POST['anony'] ? '0': Yii::app()->user->id;
+    		$review->entity_pk_value = $order_item->item_id;
+    		$review->content = $_POST['overall-review-'.$order_item->item_id];
+    		$review->rating = $_POST['rating-content-overall-'.$order_item->item_id];
+    		$review->guide_review = $_POST['guide-review-'.$order_item->item_id];
+    		$review->guide_rating = $_POST['rating-content-guide-'.$order_item->item_id];
+    		$review->schedule_review = $_POST['schedule-review-'.$order_item->item_id];
+    		$review->schedule_rating = $_POST['rating-content-schedule-'.$order_item->item_id];
+    		$review->meal_review = $_POST['meal-review-'.$order_item->item_id];
+    		$review->meal_rating = $_POST['rating-content-meal-'.$order_item->item_id];
+    		$review->transport_review = $_POST['guide-review-'.$order_item->item_id];
+    		$review->transport_rating = $_POST['rating-content-transport-'.$order_item->item_id];
+    		$review->entity_id = "1";
+    		$review->create_at = time();
+    		$review->photos_exit = "0";
+    		
+    		if($review->save()){
+    			$model=new Order('search');
+    			$model->unsetAttributes();  // clear any default values
+    			if(isset($_GET['Order']))
+    				$model->attributes=$_GET['Order'];
+    			
+    			$this->render('admin',array(
+    					'model'=>$model,
+    			));
+    		}
+    		else{
+    			$this->render('fail');
+    		}
+    	}
+
     }
 
 	/**

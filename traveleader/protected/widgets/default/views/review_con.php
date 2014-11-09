@@ -1,64 +1,127 @@
 <li class="tb-r-review">
-    <div class="tb-r-buyer">
-        <div class="tb-r-b-photo"><img src="#"></div>
-        <div class="tb-r-b-user">
-            <?php $customer = User::model()->find(array(
-                'select' => 'username',
+	<dl class="clearfix">
+    <!--<div class="tb-r-buyer">  -->
+        <!--  <div class="tb-r-b-photo"><img src="#"></div>-->
+        <dt>
+        <?php $customer = User::model()->find(array(
+                'select' => 'username,pic',
                 'condition' => 'id=?',
                 'params' => array($reviewData->customer_id)
             ));
-            print_r($customer['username']);
-            ?>
+        ?>
+        <div class="tb-r-b-photo">
+        <img src=<?php if($customer['pic']) echo Yii::app()->baseUrl.$customer['pic'];
+        	else echo Yii::app()->baseUrl.'/upload/user/default.png';?>
+        	height="65" width="65">
         </div>
-    </div>
-    <div class="tb-r-bd">
+        <p class="tb-r-b-user">
+        	<?php    
+            echo ($customer['username']);
+            ?>
+        </p>
+        </dt>
+   <!--  </div> -->
+
+        <dd>
         <div class="tb-r-cnt" >
-            <dd content-id="<?php echo $i?>">
+        	<p class="clists_words clearfix" style="background:#F3F3F3;" >
+        	<span>导游服务
+        	<em><?php 
+        		if($reviewData->guide_rating == 1){
+				}
+				else if($reviewData->guide_rating == 2){
+					echo '一般';
+				}
+				else if($reviewData->guide_rating == 3){
+					echo '踩';
+				}
+        		?></em></span>
+        		
+        	<span>行程安排
+        	<em><?php 
+        		if($reviewData->schedule_rating == 1){
+					echo '赞';
+				}
+				else if($reviewData->schedule_rating == 2){
+					echo '一般';
+				}
+				else if($reviewData->schedule_rating == 3){
+					echo '踩';
+				}
+        		?></em></span>
+        		
+        	<span>餐饮住宿
+        	<em><?php 
+        		if($reviewData->meal_rating == 1){
+					echo '赞';
+				}
+				else if($reviewData->meal_rating == 2){
+					echo '一般';
+				}
+				else if($reviewData->meal_rating == 3){
+					echo '踩';
+				}
+        		?></em></span>
+        		
+        	<span>交通出行
+        	<em><?php 
+        		if($reviewData->transport_rating == 1){
+					echo '赞';
+				}
+				else if($reviewData->transport_rating == 2){
+					echo '一般';
+				}
+				else if($reviewData->transport_rating == 3){
+					echo '踩';
+				}
+        		?></em></span>
+        	</p>
+        	
+            <p class = "comment_detail">
                 <?php print_r($reviewData->content); ?>
-            </dd>
-        </div>
-        <div class="tb-r-photos">
-            <?php
-            if($reviewData->photos_exit!=0){
-                echo "<div class='comment-show-pic'><table cellspacing='10'><tbody><tr>";
-                $photos=$reviewData->reviewPhotos;
-                $photosNum=count($photos);
-                for($a=0;$a<$photosNum;$a++){
-                    if(isset($photos[$a]->path)){
-                        ?>
-                        <td><a class="comment-show-pic-wrap">
-                                <img src="<?php echo Yii::app()->baseUrl.$photos[$a]->path?>"></a>
-                        </td>
-                    <?php
-                    }
-                }
-            }
-            ?>
-            </tr></tbody></table>
-        </div>
-        <div class="tb-r-act-bar">
-            <dd>
-                <?php echo date('Y-m-d   H:i:s',$reviewData->create_at); ?>
-            </dd>
-        </div>
+            </p>
 
-
-        <div class="btns">
-            <a class="btn-reply" style="cursor:pointer;" data-id="<?php print_r($reviewData->review_id); ?>" >
-                reply(<em>
-                    <?php $num= Review::model()->reviewSummary($reviewData->review_id, Review::ENTITY_REVIEW, '4');echo $num;
-                    ?>
-                </em>)
-            </a>
+            <?php if($reviewData->guide_review){?> 
+            <p class = "comment_1">   
+            	<span>导游服务：</span>
+            	<?php print_r($reviewData->guide_review); ?>
+            </p>
+            
+            <?php } if($reviewData->schedule_review){?>
+			<p class = "comment_2">   
+            	<span>行程安排：</span><?php print_r($reviewData->schedule_review); ?>
+            </p>
+            
+            <?php } if($reviewData->meal_review){?>
+            <p class = "comment_3">   
+            	<span>餐饮住宿：</span><?php print_r($reviewData->schedule_review); ?>
+            </p>
+            
+            <?php } if($reviewData->transport_review){?>
+            <p class = "comment_4">   
+            	<span>交通出行：</span><?php print_r($reviewData->transport_review); ?>
+            </p>
+            <?php } ?>
+            
+            <dl class="comment_from">
+            <dt>
+                <?php echo date('Y-m-d H:i:s',$reviewData->create_at); ?>
+            </dt>
+            </dl>
         </div>
+            
+        </dd>
+     </dl>
+</li>
+        
 <?php
-$this->renderPartial('/review_reply_con',array(
-    'review_id'=>$reviewData->review_id,
-    'itemId'=>$itemId,
-    'username'=>$customer['username'],
-    'num'=>$num,
-    'i'=>$i,
-));
-echo "</div>";
-echo " </li>";
+//$this->renderPartial('/review_reply_con',array(
+//    'review_id'=>$reviewData->review_id,
+//    'itemId'=>$itemId,
+//    'username'=>$customer['username'],
+//    'num'=>$num,
+//    'i'=>$i,
+//));
+//echo "</dl>";
+//echo " </li>";
 ?>

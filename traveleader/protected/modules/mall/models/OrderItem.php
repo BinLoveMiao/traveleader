@@ -19,14 +19,13 @@
  * @property string $child_number
  * @property string $adult_price
  * @property string $child_price
+ * @property string $travel_date
+ * 
  * //Remains for future use
  * @property string $flight_info
  * @property string $insurance_info
  * 
- * @property integer $is_childen  // All members are children
- * @property integer $has_old_man
- * @property integer $has_foreigner
- * @property integer $is_invoice
+ * @property integer $is_review
  * 
  * @property string $total_price
  * 
@@ -53,8 +52,9 @@ class OrderItem extends CActiveRecord
         // will receive user inputs.
         return array(
             array('order_id, item_id, title, desc, price, child_number, adult_number, 
-            			child_price, adult_price, total_price', 'required'),
+            			child_price, adult_price, total_price, travel_date, is_review', 'required'),
             array('order_id', 'length', 'max'=>20),
+        	array('is_review', 'numerical', 'integerOnly' => true),
             array('pic','safe'),
             array('item_id, price, quantity, child_number, adult_number, child_price, adult_price, total_price', 'length', 'max'=>10),
             array('title, pic, flight_info, insurance_info', 'length', 'max'=>255),
@@ -96,9 +96,11 @@ class OrderItem extends CActiveRecord
         	'child_number' => 'Number of Children',
         	'adult_price' => 'Price for Adults',
         	'child_price' => 'Price for Children',
+        	'travel_date' => '出行时间',
         	'flight_info' => 'Flight Information',
         	'insurance_info' => 'Insurance Information',	
             'total_price' => 'Total Price',
+        	'is_review' => 'Is the item reviewed',
         );
     }
 
@@ -130,6 +132,7 @@ class OrderItem extends CActiveRecord
         $criteria->compare('price',$this->price,true);
         $criteria->compare('quantity',$this->quantity,true);
         $criteria->compare('total_price',$this->total_price,true);
+        $criteria->compare('is_review', $this->is_review, true);
 
         return new CActiveDataProvider($this, array(
             'criteria'=>$criteria,
@@ -160,7 +163,7 @@ class OrderItem extends CActiveRecord
     }
 
     public function saveOrderItem($OrderItem,$order_id,$item,$adult_number, $adult_price, 
-            $child_number, $child_price)
+            $child_number, $child_price, $travel_date)
     {
         $OrderItem->order_id = $order_id;
         $OrderItem->item_id = $item->item_id;
@@ -173,6 +176,7 @@ class OrderItem extends CActiveRecord
         $OrderItem->adult_price = $adult_price;
         $OrderItem->child_number = $child_number;
         $OrderItem->child_price = $child_price;
+        $OrderItem->travel_date = $travel_date;
         // This reserves for future use
         $OrderItem->flight_info = "";
         $OrderItem->insurance_info = "";
