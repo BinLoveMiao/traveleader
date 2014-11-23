@@ -196,7 +196,7 @@ $imageHelper=new ImageHelper();
             <span> <?php echo Area::model()->findByPk($item->departure)->name;?> 至 
            	 <?php echo Area::model()->findByPk($item->city)->name;?></span>
             </div>
-            <div class="deal_sold">已有 <span class="cor_red bold"><?php echo $item->deal_count;?></span>&nbsp;人出游</div>
+            <div class="deal_sold">已有 <span class="cor_red bold"><?php echo $item->travelCount;?></span>&nbsp;人出游</div>
             <div class="deal_book">
             <div class="deal_price_list">
             <?php 

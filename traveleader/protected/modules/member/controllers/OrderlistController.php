@@ -63,9 +63,12 @@ class OrderlistController extends Controller
     public function actionReview($id)
     {
     	$order = Order::model()->findByPk($id);
+    	if($order->status != strval(Order::STATUS_TRAVELLED)){
+    		throw new CHttpException(404, '未出游，不能评论');
+    	}
     	$order_items = $order->orderItems;
     	$this->render('create_review', array(
-    			'Order' => $order, 'Order_items' => $order_items
+    			'order_id' => $order->order_id, 'Order_items' => $order_items
     	));
     }
     
@@ -92,19 +95,31 @@ class OrderlistController extends Controller
     		$review->photos_exit = "0";
     		
     		if($review->save()){
-    			$model=new Order('search');
-    			$model->unsetAttributes();  // clear any default values
-    			if(isset($_GET['Order']))
-    				$model->attributes=$_GET['Order'];
-    			
-    			$this->render('admin',array(
-    					'model'=>$model,
-    			));
+    			$item = Item::model()->findByPk($order_item->item_id);
+    			$item->review_count += 1; //Add the review count
+    			$item->save();			
+    			if($order_item->is_review == "0"){
+    				$order_item->is_review = "1";
+    				$order_item->save();
+    			}
     		}
     		else{
-    			$this->render('fail');
+    			throw new CHttpException(404, 'Review failed.');
     		}
     	}
+    	//if($order->review_status == "0"){
+    	//	$order->review_status = "1";
+    	//	$order->save();
+    	//}
+    	// Should reconsider the redirecting page after review
+    	$model=new Order('search');
+    	$model->unsetAttributes();  // clear any default values
+    	if(isset($_GET['Order']))
+    		$model->attributes=$_GET['Order'];
+    	 
+    	$this->render('admin',array(
+    			'model'=>$model,
+    	));
 
     }
 

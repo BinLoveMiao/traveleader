@@ -227,7 +227,7 @@ a.online_ser{
 	position:fixed;
 	top:250px;
 	right:50%;
-	margin-right:-770px;
+	margin-right:-670px;
 }
 .float_button a{
 	background:url(../image/hand.png) no-repeat bottom center;
@@ -240,9 +240,6 @@ a.online_ser{
 	text-align:center;
 
 }
-
-
-
 
 .warp_tab{
 	width:1180px;
@@ -370,8 +367,8 @@ a.online_ser{
 	color:#d50000;
 }
 .warp_product{
-	width:1180px;
-	margin:0 auto;
+	width:840px;
+	margin:0 20px;
 	padding:15px 0;
 }
 .product_new_tit,.product_cate_tit1,.product_cate_tit2{
@@ -391,6 +388,20 @@ a.online_ser{
     font-size: 20px;
     font-weight:bold;
 }
+
+.product_cate_tit0 label{
+	float: left;
+    margin-left: 25px;
+	margin-top:10px;
+    font-size: 20px;
+    font-weight:bold;
+}
+
+.product_cate_tit0{
+	height:34px;
+	line-height:34px;
+}
+
 .product_cate_tit1{
 	background:url(../image/product_tit2.png) no-repeat;
 	height:34px;
@@ -402,7 +413,7 @@ a.online_ser{
 	line-height:34px;
 }
 .product_c,.product_ca{
-	margin-top:40px;
+	margin-top:20px;
 	overflow:hidden;
 }
 .product_new_b{
@@ -423,7 +434,7 @@ a.online_ser{
     text-align: center;
 	margin:5px 0;
     height:18px;
-    width:220px;
+    width:200px;
 	white-space:nowrap;
 	overflow:hidden;
 	text-overflow:ellipsis;
@@ -490,14 +501,14 @@ a.online_ser{
 	overflow:hidden;
 }
 .product_d{
-	width:220px;
+	width:200px;
 	float:left;
-	margin:0 10px 41px 0px;
+	margin:0 10px 20px 0px;
 }
 .product_e{
-    width: 220px;
+    width: 200px;
     float: left;
-    margin: 0 10px 41px 0px;
+    margin: 0 10px 20px 0px;
 }
 
 
@@ -712,6 +723,6 @@ post css
 }
 
 .product_price{
-    height: 50px;
+    height: 25px;
 }
 

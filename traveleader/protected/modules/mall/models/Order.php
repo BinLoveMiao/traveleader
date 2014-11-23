@@ -6,9 +6,17 @@
  * The followings are the available columns in table 'order':
  * @property string $order_id
  * @property string $user_id
- * @property integer $status
- * @property integer $pay_status
- * @property integer $refund_status
+ * @property integer $status 
+ * // OrderStatus: 
+ * 0 - wait_for_submit
+ * 1 - submitted
+ * 2 - wait_for_pay
+ * 3 - paid
+ * 4 - wait_for_refund
+ * 5 - refunded
+ * 6 - success
+ * 7 - closed
+ * @property integer $review_status 
  * @property string $total_fee
  * @property string $pay_fee
  * @property string $pay_method
@@ -31,7 +39,7 @@
  * @property integer $has_old_man
  * @property integer $has_foreigner
  * @property integer $is_invoice
- * @property integer $is_review 
+
  * // Order is marked as reviewed if all items under it has been reviewed
  * 
  * @property integer $whole_num_days
@@ -42,6 +50,16 @@
  */
 class Order extends CActiveRecord
 {
+	
+	const STATUS_WAIT_SUBMIT=0;
+	const STATUS_SUBMITTED=1;
+	const STATUS_WAIT_PAY=2;
+	const STATUS_PAID=3;
+	const STATUS_WAIT_REFUND=4;
+	const STATUS_REFUNDED=5;
+	const STATUS_SUCCESS=6;
+	const STATUS_CLOSED=7;
+	const STATUS_TRAVELLED=8;
 
     private $orderLog;
     public $id;
@@ -70,18 +88,18 @@ class Order extends CActiveRecord
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
         return array(
-            array('receiver_name, receiver_mobile, receiver_email', 'required'),
-            array('status, pay_status, refund_status, comment_status', 'numerical', 'integerOnly' => true),
-        	array('is_children, has_old_man, has_foreigner, is_invoice, is_review, whole_num_days', 'numerical', 'integerOnly' => true),
+            array('status, receiver_name, receiver_mobile, receiver_email', 'required'),
+            array('status, review_status', 'numerical', 'integerOnly' => true),
+        	array('status', 'in', 'range'=>array(0,1,2,3,4,5,6,7,8)),
+        	array('is_children, has_old_man, has_foreigner, is_invoice, whole_num_days', 'numerical', 'integerOnly' => true),
             array('user_id, total_fee, pay_fee, payment_method_id, pay_time, create_time, update_time', 'length', 'max' => 10),
             array('receiver_name, receiver_country, receiver_state, receiver_city, receiver_district, receiver_zip, receiver_mobile, receiver_email, receiver_phone', 'length', 'max' => 45),
             array('feature_item_name, receiver_address', 'length', 'max' => 255),
             array('memo', 'safe'),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            array('order_id, user_id, status, pay_status, refund_status, comment_status, total_fee, pay_fee, payment_method_id, receiver_name, receiver_country, receiver_state, receiver_city, receiver_district, receiver_address, receiver_zip, receiver_mobile, receiver_phone, memo, pay_time, create_time, update_time', 'safe', 'on' => 'search'),);
+            array('order_id, user_id, status, review_status, total_fee, pay_fee, payment_method_id, receiver_name, receiver_country, receiver_state, receiver_city, receiver_district, receiver_address, receiver_zip, receiver_mobile, receiver_phone, memo, pay_time, create_time, update_time', 'safe', 'on' => 'search'),);
     }
-
 
     /**
      * @return array relational rules.
@@ -107,9 +125,8 @@ class Order extends CActiveRecord
             'order_id' => '订单号',
             'user_id' => '会员',
             'status' => '订单状态',
-            'pay_status' => '付款状态',
-            'refund_status' => '退款状态',
-            'total_fee' => '商品总金额',
+        	'review_status' => '点评状态',
+            'total_fee' => '需付款',
             'pay_fee' => '实付款',
             'pay_method' => '付款方式',
             'receiver_name' => '收货人',
@@ -126,15 +143,13 @@ class Order extends CActiveRecord
         	'has_old_man' => "Has old man older than 70 years old",
         	'has_foreigner' => "Has foreigner",
         	'is_invoice' => "Need invoice or not",
-        	'is_review' => '点评状态',
             'memo' => '备注',
             'pay_time' => '付款时间',
             'create_time' => '下单时间',
             'update_time' => '更新时间',
-            'comment_status' => '评论状态',
             'payment_method_id' => '付款方式',
             'detail_address' => '具体地址',
-        	'feature_item_name' => '代表线路名称',
+        	'feature_item_name' => '代表线路',
         	'whole_num_days' => '总出行天数',
         );
     }
@@ -152,9 +167,9 @@ class Order extends CActiveRecord
         $criteria->compare('order_id', $this->order_id, true);
         $criteria->compare('user_id', $this->user_id, true);
         $criteria->compare('status', $this->status);
-        $criteria->compare('pay_status', $this->pay_status);
-        $criteria->compare('refund_status', $this->refund_status);
-        $criteria->compare('comment_status', $this->comment_status);
+        //$criteria->compare('pay_status', $this->pay_status);
+        $criteria->compare('review_status', $this->review_status);
+        //$criteria->compare('comment_status', $this->comment_status);
         $criteria->compare('total_fee', $this->total_fee, true);
         $criteria->compare('pay_fee', $this->pay_fee, true);
         $criteria->compare('payment_method_id', $this->payment_method_id, true);
@@ -168,7 +183,7 @@ class Order extends CActiveRecord
         $criteria->compare('receiver_mobile', $this->receiver_mobile, true);
         $criteria->compare('receiver_phone', $this->receiver_phone, true);
         $criteria->compare('pay_time', $this->pay_time, true);
-        $criteria->compare('is_review', $this->is_review, true);
+        //$criteria->compare('is_review', $this->is_review, true);
         $criteria->compare('create_time', $this->create_time, true);
         $criteria->compare('update_time', $this->update_time, true);
 
@@ -235,9 +250,9 @@ class Order extends CActiveRecord
         $criteria->compare('order_id', $this->order_id, true);
         $criteria->compare('user_id', Yii::app()->user->id, true);
         $criteria->compare('t.status', $this->status);
-        $criteria->compare('pay_status', $this->pay_status);
-        $criteria->compare('refund_status', $this->refund_status);
-        $criteria->compare('comment_status', $this->comment_status);
+        //$criteria->compare('pay_status', $this->pay_status);
+       // $criteria->compare('refund_status', $this->refund_status);
+        $criteria->compare('review_status', $this->review_status);
         $criteria->compare('total_fee', $this->total_fee, true);
         $criteria->compare('pay_fee', $this->pay_fee, true);
         $criteria->compare('payment_method_id', $this->payment_method_id, true);

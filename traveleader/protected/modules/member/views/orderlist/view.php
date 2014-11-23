@@ -111,15 +111,17 @@
         <dt>订单状态：</dt>
         <dd>
             <?php
-            echo Tbfunction::showStatus($Order->status);
+            echo Tbfunction::showOrderStatus($Order->status);
             ?>
         </dd>
+        <!--  
         <dt>支付状态：</dt>
         <dd>
             <?php
-            echo Tbfunction::showPayStatus($Order->pay_status);
+            //echo Tbfunction::showPayStatus($Order->pay_status);
             ?>
-        </dd></dl>
+        </dd>-->
+        </dl>
     <dl>
     <!--  
         <dt>发货状态：</dt>
@@ -129,13 +131,13 @@
             ?>
         </dd>
         -->
-
+		<!-- 
         <dt>退款状态：</dt>
         <dd>
             <?php
-            echo Tbfunction::showRefundStatus($Order->refund_status);
+            //echo Tbfunction::showRefundStatus($Order->refund_status);
             ?>
-        </dd>
+        </dd>-->
 
         <dt>&nbsp;</dt>
         <dd>&nbsp;</dd>

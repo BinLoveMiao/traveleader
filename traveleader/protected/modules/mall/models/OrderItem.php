@@ -26,6 +26,7 @@
  * @property string $insurance_info
  * 
  * @property integer $is_review
+ * @property integer $status
  * 
  * @property string $total_price
  * 
@@ -35,6 +36,14 @@
  */
 class OrderItem extends CActiveRecord
 {
+	
+	const STATUS_WAIT_PAY=0;
+	const STATUS_PAID=1;
+	const STATUS_WAIT_REFUND=2;
+	const STATUS_REFUNDED=3;
+	const STATUS_SUCCESS=4;
+	const STATUS_CLOSED=5;
+	const STATUS_TRAVELLED=6;
     /**
      * @return string the associated database table name
      */
@@ -52,9 +61,9 @@ class OrderItem extends CActiveRecord
         // will receive user inputs.
         return array(
             array('order_id, item_id, title, desc, price, child_number, adult_number, 
-            			child_price, adult_price, total_price, travel_date, is_review', 'required'),
+            			child_price, adult_price, total_price, travel_date, is_review, status', 'required'),
             array('order_id', 'length', 'max'=>20),
-        	array('is_review', 'numerical', 'integerOnly' => true),
+        	array('is_review, status', 'numerical', 'integerOnly' => true),
             array('pic','safe'),
             array('item_id, price, quantity, child_number, adult_number, child_price, adult_price, total_price', 'length', 'max'=>10),
             array('title, pic, flight_info, insurance_info', 'length', 'max'=>255),
@@ -100,7 +109,8 @@ class OrderItem extends CActiveRecord
         	'flight_info' => 'Flight Information',
         	'insurance_info' => 'Insurance Information',	
             'total_price' => 'Total Price',
-        	'is_review' => 'Is the item reviewed',
+        	'is_review' => 'Is the OrderItem reviewed',
+        	'status' => 'The status of the orderItem',
         );
     }
 
@@ -133,6 +143,7 @@ class OrderItem extends CActiveRecord
         $criteria->compare('quantity',$this->quantity,true);
         $criteria->compare('total_price',$this->total_price,true);
         $criteria->compare('is_review', $this->is_review, true);
+        $criteria->compare('status', $this->status, true);
 
         return new CActiveDataProvider($this, array(
             'criteria'=>$criteria,
@@ -162,32 +173,34 @@ class OrderItem extends CActiveRecord
             return parent::afterSave();
     }
 
-    public function saveOrderItem($OrderItem,$order_id,$item,$adult_number, $adult_price, 
+    public function saveOrderItem($orderItem, $order_id, $item, $adult_number, $adult_price, 
             $child_number, $child_price, $travel_date)
     {
-        $OrderItem->order_id = $order_id;
-        $OrderItem->item_id = $item->item_id;
-        $OrderItem->title = $item->title;
-        $OrderItem->desc = $item->desc;
-        $OrderItem->pic = $item->getMainPic();
-        $OrderItem->price = $item->price;
-        $OrderItem->quantity = 0;
-        $OrderItem->adult_number = $adult_number;
-        $OrderItem->adult_price = $adult_price;
-        $OrderItem->child_number = $child_number;
-        $OrderItem->child_price = $child_price;
-        $OrderItem->travel_date = $travel_date;
+        $orderItem->order_id = $order_id;
+        $orderItem->item_id = $item->item_id;
+        $orderItem->title = $item->title;
+        $orderItem->desc = $item->desc;
+        $orderItem->pic = $item->getMainPic();
+        $orderItem->price = $item->price;
+        $orderItem->quantity = 0;
+        $orderItem->adult_number = $adult_number;
+        $orderItem->adult_price = $adult_price;
+        $orderItem->child_number = $child_number;
+        $orderItem->child_price = $child_price;
+        $orderItem->travel_date = $travel_date;
         // This reserves for future use
-        $OrderItem->flight_info = "";
-        $OrderItem->insurance_info = "";
+        $orderItem->flight_info = "";
+        $orderItem->insurance_info = "";
+        $orderItem->is_review = 0;
+        $orderItem->status = OrderItem::STATUS_WAIT_PAY;
         //$item_price = $ItemPrice::model()->findByPk($OrderItem->item_price);        
         //$OrderItem->total_price = $OrderItem->adult_num * $item_price->price_adult + 
         //			$OrderItem->child_num * $item_price->price_child;
         //$OrderItem->total_price = $item->price * $quantity;
-        $OrderItem->total_price = $adult_number * $adult_price + $child_number * $child_price;
-        if (!$OrderItem->save()) {
+        $orderItem->total_price = $adult_number * $adult_price + $child_number * $child_price;
+        if (!$orderItem->save()) {
 //            throw new Exception('save order item fail');
-            throw new Exception($OrderItem->getError());
+            throw new Exception($orderItem->getError());
             return false;
         }
         else

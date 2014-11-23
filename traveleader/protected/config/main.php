@@ -21,7 +21,7 @@ Yii::setPathOfAlias('xupload', $extDir . DIRECTORY_SEPARATOR . 'xupload'); // Ch
 // CWebApplication properties can be configured here.
 return array(
     'basePath' => $frontend,
-    'name' => 'LingXian领贤旅游',
+    'name' => '领贤旅游',
     'language' => 'zh_cn',
     'theme' => 'leather',
     // preloading 'log' component
@@ -232,7 +232,7 @@ return array(
             'dbEngine' => 'InnoDB',
         ),
         'db' => array(
-            'connectionString' => 'mysql:host=localhost;dbname=yincart',
+            'connectionString' => 'mysql:host=localhost;dbname=traveleader',
             'emulatePrepare' => true,
             'username' => 'root',
             'password' => '',

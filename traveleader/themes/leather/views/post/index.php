@@ -1,18 +1,90 @@
 
 <?php
+$cs = Yii::app()->clientScript;
+$cs->registerCssFile(Yii::app()->theme->baseUrl . '/css/post.css');
+$cs->registerCssFile(Yii::app()->theme->baseUrl . '/css/product.css');
+$cs->registerScriptFile(Yii::app()->baseUrl . '/js/MetroJs.js'); 
+$cs->registerCssFile(Yii::app()->baseUrl . '/css/MetroJs.css'); 
+
 $this->pageTitle = Yii::app()->name;
-$this->breadcrumbs = array(
-    '新闻列表' => array('/post/index'),
-);
 ?>
+
 <?php if(!empty($_GET['tag'])): ?>
 <h1>Posts Tagged with <i><?php echo CHtml::encode($_GET['tag']); ?></i></h1>
 <?php endif; ?>
 
 
-<div class="box" >
-    <div class="box-title" style="text-align: left"><a href="/basic/site/index">首页</a>>><a href="/basic/post/index">新闻列表</a></div>
+<div class="p-top clearfix" >
+     <div class="top-info clearfix">
+     	<div class='crumb'>
+            <a href="<?php echo Yii::app()->baseUrl; ?>">首页>></a>
+            <?php foreach ($this->breadcrumbs as $breadcrumb) {
+                echo '<a href="' . $breadcrumb['url'] . '">' . $breadcrumb['name'] . '</a>';
+            } ?>
+        </div>
+     </div>
+     
+     <div class = "mdd-title">
+     	<span><?php if($scenery) echo $scenery->name;?> </span>
+     </div>
+     
+     <div class="product_cate_tit0"><label><?php echo "热门目的地";?></label></div>
+     <div style="width: 720px; height: 350px; overflow: hidden; position: relative;" class="metro_tags">
+    	 <ul id="metro_tags" class="tags">
+     	 <?php
+                    	$data_mode=array('carousel', 'slide', 'flip');
+                    	$data_delay=array(2000,2500,3000);
+                    	$data_dir=array('horizontal', 'vertical');
+                    	//$tag_index=array_rand($tags, min(array(10, count($tags))));
+                    	foreach ($sceneries as $scenery) {
+							//$tag=$tags[$index];
+							//echo $tag->name;
+                    		$params['scenery'] = $scenery->id;
+                    		if($rand_selector==3){
+								$option=' data-direction='.$data_dir[rand(0, 1)];
+							}
+							else{
+								$option='';	
+							}
+							$scenery_pics=$scenery->getSceneryPictures(4);
+                    		echo '<a style="display:block" href="'.Yii::app()->createUrl('post/index', $params) .'">'. 
+                    			'<div class="live-tile" data-mode='.$data_mode[rand(0, 2)].
+                    			' data-delay='.$data_delay[rand(0, 2)].
+                    			$option.
+                    			'>' .
+                    			'<span class="tile-title" style="background:#2D2D2D;">'. $scenery->name. '</span>'.
+                    			'<div><img class="full" src="'. Yii::app()->baseUrl."/".$scenery_pics[0]->pic.
+                    						'" alt="1"'.'/></div>'.
+                    			'<div><img class="full" src="'. Yii::app()->baseUrl."/".$scenery_pics[1]->pic.
+                    						'" alt="2"'.'/></div>'.
+                    			'<div><img class="full" src="'. Yii::app()->baseUrl."/".$scenery_pics[2]->pic.
+                    						'" alt="3"'.'/></div>'.
+                    			'<div><img class="full" src="'. Yii::app()->baseUrl."/".$scenery_pics[3]->pic.
+                    						'" alt="4"'.'/></div>'.'</div>'.'</a>';
+                    						
+                    		//$pics=array($tag->pic1, $tag->pic2, $tag->pic3, $tag->pic4);
+                    		//foreach(range(1, $tag->num_pics) as $i){
+                    		//	$display=$display.'<div><img class="full" src="'. Yii::app()->baseUrl. $pics[$i-1].
+                    		//			'" alt="'.$i.'"'.'/></div>';
+							//}
+                    		//$display=$dispaly. '</div>'.'</a>';
+                    		//echo $display;
+                    ?> 
+   				 	<?php 
+                    	}
+                    ?> 
+                    </ul>
+     </div>
+     
+</div>
 
+     <!-- Activate live tiles -->
+	<script type="text/javascript">
+    	// apply regular slide universally unless .exclude class is applied 
+    	// NOTE: The default options for each liveTile are being pulled from the 'data-' attributes
+    	$(".live-tile, .flip-list").not(".exclude").liveTile();
+	</script>
+ 
     <div class="box-content" >
         <div class="pull-left" style="height:1900px;width:75%;background:white;">
 
@@ -30,7 +102,7 @@ $this->breadcrumbs = array(
                    ?>
             <div class="news-outside">   <!--第一个新闻-->
                 <div class="col-xs-3 news-img" >  <!--图片部分-->
-                    <img width="150" height="150"  class="attachment-thumbnail wp-post-image" src=<?php echo $post->pic_url;?> >
+                    <img width="150" height="150"  class="attachment-thumbnail wp-post-image" src=<?php echo Yii::app()->baseUrl.$post->cover_pic;?> >
                 </div>
                 <div class="col-xs-9 nes-list">
                     <div class="col-xs-12">   <!--新闻标题-->

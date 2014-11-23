@@ -5,13 +5,23 @@ class Post extends CActiveRecord
 	/**
 	 * The followings are the available columns in table 'tbl_post':
 	 * @var integer $id
+	 * @var integer $category_id // Reserve for future use
 	 * @var string $title
+	 * @var string $summary
 	 * @var string $content
+	 * @var string $author_id
 	 * @var string $tags
 	 * @var integer $status
-	 * @var integer $create_time
-	 * @var integer $update_time
-	 * @var integer $author_id
+	 * @var integer $views
+	 * @var string $cover_pic
+	 * @var string language
+	 * @var string $create_time
+	 * @var string $update_time
+
+	 * @var integer $is_best
+	 * @var string $country
+	 * @var string $state
+	 * @var string $city
 	 */
 	const STATUS_DRAFT=1;
 	const STATUS_PUBLISHED=2;
@@ -33,7 +43,7 @@ class Post extends CActiveRecord
 	 */
 	public function tableName()
 	{
-		return '{{post}}';
+		return 'post';
 	}
 
 	/**
@@ -44,12 +54,15 @@ class Post extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('title, content, status', 'required'),
+			array('title, content, status, scenery_id', 'required'),
 			array('status', 'in', 'range'=>array(1,2,3)),
 			array('title', 'length', 'max'=>128),
+			array('cover_pic', 'length', 'max'=>128),
+			array('language', 'length', 'max'=>45),
 			array('tags', 'match', 'pattern'=>'/^[\w\s,]+$/', 'message'=>'Tags can only contain word characters.'),
 			array('tags', 'normalizeTags'),
-
+			array('views, is_best, item_id, scenery_id, country, state, city', 'integerOnly' => true),
+			array('scenery_id, country, state, city', 'length', 'max' => 10).
 			array('title, status', 'safe', 'on'=>'search'),
 		);
 	}
@@ -63,8 +76,13 @@ class Post extends CActiveRecord
 		// class name for the relations automatically generated below.
 		return array(
 			'author' => array(self::BELONGS_TO, 'User', 'author_id'),
-			'comments' => array(self::HAS_MANY, 'Comment', 'post_id', 'condition'=>'comments.status='.Comment::STATUS_APPROVED, 'order'=>'comments.create_time DESC'),
-			'commentCount' => array(self::STAT, 'Comment', 'post_id', 'condition'=>'status='.Comment::STATUS_APPROVED),
+			'comments' => array(self::HAS_MANY, 'Comment', 'post_id', 'condition'=>'t.status='.Comment::STATUS_APPROVED, 'order'=>'t.create_time DESC'),
+			'commentCount' => array(self::STAT, 'Comment', 'post_id', 'condition'=>'t.status='.Comment::STATUS_APPROVED),
+			'item' => array(self::BELONGS_TO, 'Item', 'item_id'),
+			'area_country' => array(self::BELONGS_TO, 'Area', 'country'),
+			'area_state' => array(self::BELONGS_TO, 'Area', 'state'),
+			'area_city' => array(self::BELONGS_TO, 'Area', 'city'),
+			'scenery' => array(self::BELONGS_TO, 'Scenery', 'scenery_id')
 		);
 	}
 
@@ -75,13 +93,23 @@ class Post extends CActiveRecord
 	{
 		return array(
 			'id' => 'Id',
+			'category_id' => 'Category',
 			'title' => 'Title',
+			'summary' => '摘要',
 			'content' => 'Content',
 			'tags' => 'Tags',
 			'status' => 'Status',
+			'views' => '浏览次数',
 			'create_time' => 'Create Time',
 			'update_time' => 'Update Time',
 			'author_id' => 'Author',
+			'language' => 'Language',
+			'cover_pic' => '封面图片',
+			'is_best' => '是否推荐',
+			'item_id' => '旅游产品',
+			'country' => '国家/大洲',
+			'state' => '省/国家',
+			'city' => '城市',
 		);
 	}
 
@@ -189,7 +217,7 @@ class Post extends CActiveRecord
 		$criteria=new CDbCriteria;
 
 		$criteria->compare('title',$this->title,true);
-
+		
 		$criteria->compare('status',$this->status);
 
 		return new CActiveDataProvider('Post', array(

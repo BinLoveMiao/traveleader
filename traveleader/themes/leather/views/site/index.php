@@ -15,10 +15,11 @@ Yii::app()->plugin->render('Hook_Login');
         </div>
     </div>
     
-     <div style="width: 800px; height: 350px; overflow: hidden; position: relative;" class="metro_tags">
+    <div class="product_cate contaniner_24">
+     <div class="product_cate_tit0"><label><?php echo "旅游标签";?></label></div>
+     <div style="width: 840px; height: 350px; overflow: hidden; position: relative;" class="metro_tags">
     	 <ul id="metro_tags" class="tags">
      	 <?php
-                    	$tags=MoodTag::model()->findAll();
                     	$data_mode=array('carousel', 'slide', 'flip');
                     	$data_delay=array(2000,2500,3000);
                     	$data_dir=array('horizontal', 'vertical');
@@ -61,6 +62,7 @@ Yii::app()->plugin->render('Hook_Login');
                     ?> 
                     </ul>
      </div>
+     </div>
      <!-- Activate live tiles -->
 	<script type="text/javascript">
     	// apply regular slide universally unless .exclude class is applied 
@@ -73,7 +75,7 @@ Yii::app()->plugin->render('Hook_Login');
 
 	</div>
 	-->
-
+	
     <div class="warp_product">
         <?php $isFrist = true;
         $num = 0;
@@ -88,7 +90,7 @@ Yii::app()->plugin->render('Hook_Login');
                     <div class="product_c">
                         <div class="product_list">
                             <?php
-                            for ($i = 1; $i <= 5; $i++) {
+                            for ($i = 1; $i <= 4; $i++) {
                                 $newItem = $items[$i];
                                 $itemUrl = Yii::app()->createUrl('item/view', array('id' => $newItem->item_id));
                                 ?>
@@ -97,12 +99,12 @@ Yii::app()->plugin->render('Hook_Login');
                                             <?php
                                                 if( $newItem->getMainPic()){
                                                     $image=new ImageHelper();
-                                                    $picUrl=$image->thumb('220','220', $newItem->getMainPic());
+                                                    $picUrl=$image->thumb('200','200', $newItem->getMainPic());
                                                     $picUrl=Yii::app()->baseUrl.$picUrl;
-                                                }else $picUrl=$newItem->getHolderJs('220','220');
+                                                }else $picUrl=$newItem->getHolderJs('200','200');
                                             ?>
                                             <img alt="<?php echo $newItem->title; ?>" src="<?php echo $picUrl; ?>"
-                                                 width="220" height="220"></a>
+                                                 width="200" height="200"></a>
                                     </div>
                                     <div class="product_name">
                                         <a href="<?php echo $itemUrl; ?>"><?php echo $newItem->title; ?></a>
@@ -129,12 +131,12 @@ Yii::app()->plugin->render('Hook_Login');
                                             <?php
                                             if( $newItem->getMainPic()){
                                             $image=new ImageHelper();
-                                            $picUrl=$image->thumb('220','220', $newItem->getMainPic());
+                                            $picUrl=$image->thumb('200','200', $newItem->getMainPic());
                                             $picUrl=Yii::app()->baseUrl.$picUrl;
-                                            }else $picUrl=$newItem->getHolderJs('220','220');
+                                            }else $picUrl=$newItem->getHolderJs('200','200');
                                             ?>
                                             <img alt="<?php echo $newItem->title; ?>" src="<?php echo $picUrl; ?>"
-                                                 width="220" height="220"></a>
+                                                 width="200" height="200"></a>
                                     </div>
                                     <div class="product_name">
                                         <a href="<?php echo $itemUrl; ?>"><?php echo $newItem->title; ?></a>

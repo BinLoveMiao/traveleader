@@ -219,7 +219,7 @@ Yii::app()->clientScript->registerCoreScript('jquery');
                     <th class="col-xs-3">名称</th>
                     <!--  <th class="col-xs-3">属性</th>-->
                     <th class="col-xs-1">价格</th>
-                    <th class="col-xs-1">数量</th>
+                    <th class="col-xs-1">人数</th>
                     <th class="col-xs-1">小计</th>
                 </tr>
                 <?php
@@ -250,8 +250,14 @@ Yii::app()->clientScript->registerCoreScript('jquery');
                             } ?></td>
                         <td><?php echo $item->title; ?></td>
                         <!-- <td><?php echo  empty($item->sku) ? '' : implode(';', json_decode($item->sku->props_name, true)); ?></td> -->
-                        <td>成人：<?php echo $item->getAdultPrice(); ?> <br>儿童：<?php echo $item->getChildPrice();?></td>
-                        <td>成人：<?php echo $item->getAdultNumber(); ?> <br>儿童：<?php echo $item->getChildNumber(); ?> </td>
+                        <td>
+                        <span>成人: </span><span><?php echo $item->getAdultPrice(); ?><br></span>
+                        <span>儿童: <span><span><?php echo $item->getChildPrice();?></span>
+                        </td>
+                        <td>
+                        <span>成人: </span><span><?php echo $item->getAdultNumber(); ?><br></span>
+                        <span>儿童: </span><span><?php echo $item->getChildNumber(); ?></span>
+                        </td>
                         <td><?php echo $item->getSumPrice() ?>元</td>
                         <?php $price += $item->getSumPrice() ?>
                     </tr>
@@ -279,8 +285,14 @@ Yii::app()->clientScript->registerCoreScript('jquery');
                                     echo CHtml::image($picUrl, $item->title, array('width' => '70px', 'height' => '70px')); ?></td>
                                 <td><?php echo $item->title; ?></td>
                                <!--  <td><?php echo empty($item->sku) ? '' : implode(';', json_decode($item->sku->props_name, true)); ?></td> -->
-                                 <td>成人：<?php echo $item->getAdultPrice(); ?> <br>儿童：<?php echo $item->getChildPrice();?></td>
-                       			 <td>成人：<?php echo $item->getAdultNumber(); ?> <br>儿童：<?php echo $item->getChildNumber(); ?> </td>
+                                 <td>
+                                 <span>成人：</span><span><?php echo $item->getAdultPrice(); ?><br> </span>
+                                 <span>儿童：</span><span><?php echo $item->getChildPrice();?> </span>
+                                 </td>
+                       			 <td>
+                       			<span>成人：</span><span><?php echo $item->getAdultNumber(); ?><br> </span>
+                       			<span>儿童：</span><span><?php echo $item->getChildNumber(); ?> </span>
+                       			</td>
                         		<td><?php echo $item->getSumPrice() ?>元</td>
                                 <?php $price += $item->getSumPrice() ?>
                             </tr>

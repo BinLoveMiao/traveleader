@@ -29,7 +29,7 @@
         <div class="grid_18 alpha">
             <div id="content" style="background: #ffffff;padding: 20px;font-size: 14px;">
                 <p>
-                    <a class="news-link" href="/basic/site/index">首页</a>>><a href="/basic/post/index" class="news-link">新闻列表</a>>> <?php echo CHtml::link(CHtml::encode($data->title), $data->getUrl()); ?>
+                    <a class="news-link" href="/basic/site/index">首页</a>>><a href="/basic/post/index" class="news-link">我游我记</a>>> <?php echo CHtml::link(CHtml::encode($data->title), $data->getUrl()); ?>
                 </p>
                 <h3  style="background:#2d2d2d; color: white"><?php echo $data->title; ?></h3>
                 <div class="author">

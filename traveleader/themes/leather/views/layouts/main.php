@@ -20,7 +20,8 @@
     <script type="text/javascript" src="<?php echo Yii::app()->theme->baseUrl; ?>/js/passwordCheck.js"></script>
     <script type="text/javascript" src="<?php echo F::baseUrl(); ?>/js/holder.js"></script>
     <title><?php echo Yii::app()->params['title']; ?></title>
-
+	<!-- put in head tag -->
+	<link rel="shortcut icon" href="<?php echo Yii::app()->request->baseUrl; ?>/images/favicon.ico" type="image/x-icon" />
 
     <style type="text/css">
      *{margin:0;padding:0;}
@@ -56,7 +57,7 @@
     </div>
     <div class="search_hot">
         热门搜索：
-        <?php foreach (array('海南三亚', '马尔代夫', '西藏', '云南') as $v) {
+        <?php foreach (array('三亚', '马尔代夫', '西藏', '云南') as $v) {
             echo CHtml::link($v, Yii::app()->createUrl('catalog/index', array('key' => $v)));
         } ?>
     </div>

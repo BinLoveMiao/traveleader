@@ -57,7 +57,14 @@ class Tbfunction {
     }
 
     public function ReturnOrderStatus(){
-        return array('0' => '未提交', '1' => '已提交');
+        return array('0' => '未提交', '1' => '已提交', '2' => '待支付', '3' => '已支付', '4' => '等待退款', 
+        '5' => '已退款', '6' =>'交易成功', '7' => '交易关闭', '8' => '已出游');  
+    }
+    
+    public function showOrderStatus($review_status){
+    	$reviewStatus=array('0' => '未提交', '1' => '已提交', '2' => '待支付', '3' => '已支付',
+    			'4' => '等待退款', '5' => '已退款', '6' =>'交易成功', '7' => '交易关闭', '8' => '已出游');
+    	return $reviewStatus[$review_status];
     }
 
     public function ReturnPayStatus(){
@@ -135,10 +142,10 @@ class Tbfunction {
         return $Status[$status];
     }
 
-    public function showOrderStatus($status){
-        $Status=array('0'=>'未提交','1'=>'已提交');
-        return $Status[$status];
-    }
+    //public function showOrderStatus($status){
+    //    $Status=array('0'=>'未提交','1'=>'已提交');
+    //    return $Status[$status];
+   // }
 
     public function showYesOrNo($status){
         $Status=array('0'=>'否','1'=>'是');

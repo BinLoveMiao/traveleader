@@ -6,6 +6,7 @@
 .rate {
     float: left;
     width: 220px;
+	height:117px;
     padding: 20px 0px 0px;
     text-align: center;
     border-right: 1px solid rgb(228, 228, 228);
@@ -36,10 +37,12 @@
 }
 .percent dt {
     float: left;
-    width: 150px;
+	text-align: left;
+    width: 100px;
 }
 .percent span {
     color: rgb(156, 154, 156);
+	margin-left: 5px;
 }
 .percent dd {
     float: left;
@@ -177,6 +180,7 @@
 .rep_review{
 	float:left;
 	width:280px;
+	margin-top:10px;
 	text-align:center;
 }
 

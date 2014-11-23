@@ -58,6 +58,13 @@ class Area extends CActiveRecord
             'cityItems' => array(self::HAS_MANY, 'Item', 'city'),
             'parentArea' => array(self::BELONGS_TO, 'Area', 'parent_id'),
             'childArea' => array(self::HAS_MANY, 'Area', 'parent_id'),
+        	'countryPosts' => array(self::HAS_MANY, 'Post', 'country'),
+        	'statePosts' => array(self::HAS_MANY, 'Post', 'state'),
+        	'cityPosts' => array(self::HAS_MANY, 'Post', 'city'),
+        	// Return area's sceneries, Top10 most travelled
+        	'countrySceneries' => array(self::HAS_MANY, 'Scenery', 'country', 'order'=>'num_travel DESC', 'limit' => 8),
+        	'stateSceneries' => array(self::HAS_MANY, 'Scenery', 'state', 'order'=>'num_travel DESC', 'limit' => 8),
+        	'citySceneries' => array(self::HAS_MANY, 'Scenery', 'city', 'order'=>'num_travel DESC', 'limit' => 8),
         );
     }
 

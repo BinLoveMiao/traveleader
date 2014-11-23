@@ -15,8 +15,13 @@
         	height="65" width="65">
         </div>
         <p class="tb-r-b-user">
-        	<?php    
-            echo ($customer['username']);
+        	<?php
+        	if($customer['username']){ 
+            	echo ($customer['username']);
+            }
+            else{
+				echo 'anonymous';
+			}
             ?>
         </p>
         </dt>
@@ -28,6 +33,7 @@
         	<span>导游服务
         	<em><?php 
         		if($reviewData->guide_rating == 1){
+					echo '赞';
 				}
 				else if($reviewData->guide_rating == 2){
 					echo '一般';

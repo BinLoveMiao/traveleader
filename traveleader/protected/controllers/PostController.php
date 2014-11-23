@@ -46,6 +46,22 @@ class PostController extends Controller
 	public function actionView()
 	{
 		$post=$this->loadModel();
+		$this->breadcrumbs[] = array(
+				'name' => '我游我记>> ', 'url' => Yii::app()->createUrl('/post/index'),
+		);
+		
+		$country = Area::model()->findByPk($post->country);
+		$state = Area::model()->findByPk($post->state);
+		$city = Area::model()->findByPk($post->city);
+		
+		$this->breadcrumbs[] = array('name' => $country->name. "旅游" .'>> ',
+				'url' => Yii::app()->createUrl('/post/index', array('country' => $country->area_id)));
+		$this->breadcrumbs[] = array('name' => $state->name. "旅游" .'>> ',
+				'url' => Yii::app()->createUrl('/post/index', array('state' => $state->area_id)));
+		$this->breadcrumbs[] = array('name' => $city->name. "旅游" .'>> ',
+				'url' => Yii::app()->createUrl('/post/index', array('city' => $city->area_id)));
+		
+		
 		$comment=$this->newComment($post);
 
 		$this->render('view',array(
@@ -115,15 +131,93 @@ class PostController extends Controller
 	 * Lists all models.
 	 */
 	public function actionIndex()
-	{
-        $posts = Post::model()->findAll(new CDbCriteria(array( 'order' => 'id desc')));
+	{	
 		$criteria=new CDbCriteria(array(
-			'condition'=>'status='.Post::STATUS_PUBLISHED,
-			'order'=>'update_time DESC',
-			'with'=>'commentCount',
+				'condition'=>'status='.Post::STATUS_PUBLISHED,
+				//'order'=>'update_time DESC',
+				'with'=>'commentCount',
 		));
+		$this->breadcrumbs[] = array(
+				'name' => '我游我记>> ', 'url' => Yii::app()->createUrl('/post/index'),
+		);
+		if(!empty($_GET['country'])){
+			$criteria->addCondition("t.country = '{$_GET['country']}'");
+			$country = Area::model()->findByPk($_GET['country']);
+			$sceneries = $country->countrySceneries;
+		}
+		if(!empty($_GET['state'])){
+			$criteria->addCondition("t.state = '{$_GET['state']}'");
+			$state = Area::model()->findByPk($_GET['state']);
+			$country = Area::model()->findByPk($state->parent_id);
+			$sceneries = $state->stateSceneries;
+		}
+		if(!empty($_GET['city'])){
+			$criteria->addCondition("t.city = '{$_GET['city']}'");
+			$city = Area::model()->findByPk($_GET['city']);
+			$state = Area::model()->findByPk($city->parent_id);
+			$country = Area::model()->findByPk($state->parent_id);
+			$sceneries = $city->citySceneries;
+		}
+		if(!empty($_GET['scenery'])){
+			$criteria->addCondition("t.scenery_id = '{$_GET['scenery']}'");
+			$scenery = Scenery::model()->findByPk($_GET['scenery']);
+			$country = Area::model()->findByPk($scenery->country);
+			$state = Area::model()->findByPk($scenery->state);
+			$city = Area::model()->findByPk($scenery->city);
+			$sceneries = $scenery->getAllChildren(8);
+		}
+		
+		if($country){
+			if($country->name != '中国'){
+				$this->breadcrumbs[] = array('name' => $country->name. "旅游" .'>> ',
+						'url' => Yii::app()->createUrl('/post/index', array('country' => $country->area_id)));
+			}
+			$scenery2 = $country;
+		}
+		if($state){
+			$this->breadcrumbs[] = array('name' => $state->name. "旅游" .'>> ',
+					'url' => Yii::app()->createUrl('/post/index', array('state' => $state->area_id)));
+			$scenery2 = $state;
+		}
+		
+		if($city){
+			$this->breadcrumbs[] = array('name' => $city->name. "旅游" .'>> ',
+					'url' => Yii::app()->createUrl('/post/index', array('city' => $city->area_id)));
+			$scenery2 = $city;
+		}
+		if($scenery){
+			$this->breadcrumbs[] = array('name' => $scenery->name .'>> ',
+					'url' => Yii::app()->createUrl('/post/index', array('scenery' => $scenery->id)));
+			$scenery2 = $scenery;
+		}
+		
+		if(empty($_GET['scenery']) && !$sceneries){
+			$sceneries = Scenery::getSceneries(8);
+		}
+		
+		if (!empty($_GET['sort'])) {
+			switch ($_GET['sort']) {
+				case 'new':
+					$criteria->order = 't.update_time DESC';
+					break;
+				case 'hot':
+					$criteria->order = 't.views DESC';
+					break;
+				case 'best':
+					$criteria->addCondition("t.is_best = 1");
+					$criteria->order = 't.update_time DESC';
+					break;	 	
+				default: 
+					$criteria->order = 't.update_time DESC';
+					break;
+			}
+		}
+		
 		if(isset($_GET['tag']))
 			$criteria->addSearchCondition('tags',$_GET['tag']);
+		
+		
+        $posts = Post::model()->findAll($criteria);
 
 		$dataProvider=new CActiveDataProvider('Post', array(
 			'pagination'=>array(
@@ -135,6 +229,8 @@ class PostController extends Controller
 		$this->render('index',array(
 			'dataProvider'=>$dataProvider,
             'posts' => $posts,
+			'scenery' => $scenery2,
+			'sceneries' => $sceneries,
 		));
 	}
 

@@ -16,13 +16,50 @@ class CatalogController extends YController
         
         if(!empty($_GET['country'])){
         	$criteria->addCondition("t.country = '{$_GET['country']}'");
+        	$country = Area::model()->findByPk($_GET['country']);
+        	//$this->breadcrumbs[] = array('name' => $country->name. "旅游" .'>> ',
+        	//		'url' => Yii::app()->createUrl('catalog/index', array('country' => $country->area_id)));
         }
         if(!empty($_GET['state'])){
         	$criteria->addCondition("t.state = '{$_GET['state']}'");
+        	$state = Area::model()->findByPk($_GET['state']);
+        	//$country = Area::model()->findByPk($state->parent_id);
+        	$country = $state->parentArea;
+        	//$this->breadcrumbs[] = array('name' => $country->name. "旅游" .'>> ',
+        	//		'url' => Yii::app()->createUrl('catalog/index', array('country' => $country->area_id)));
+        	//$this->breadcrumbs[] = array('name' => $state->name. "旅游" .'>> ',
+        	//		'url' => Yii::app()->createUrl('catalog/index', array('state' => $state->area_id)));
         }
         if(!empty($_GET['city'])){
         	$criteria->addCondition("t.city = '{$_GET['city']}'");
+        	$city = Area::model()->findByPk($_GET['city']);
+        	//$state = Area::model()->findByPk($city->parent_id);
+        	$state = $city->parentArea;
+        	//$country = Area::model()->findByPk($state->parent_id);
+        	$country = $state->parentArea;
         }
+        if(!empty($_GET['scenery'])){
+        	$criteria->addCondition("t.scenery_id = '{$_GET['scenery']}'");
+        	$scenery = Scenery::model()->findByPk($_GET['scenery']);
+        	$city = $scenery->city;
+        	$state = $scenery->state;
+        	$country = $scenery->country;
+        }
+        if($country){
+        	if($country->name != '中国'){
+        		$this->breadcrumbs[] = array('name' => $country->name. "旅游" .'>> ',
+        				'url' => Yii::app()->createUrl('catalog/index', array('country' => $country->area_id)));
+        	}
+        }
+        if($state){
+        	$this->breadcrumbs[] = array('name' => $state->name. "旅游" .'>> ',
+        				'url' => Yii::app()->createUrl('catalog/index', array('state' => $state->area_id)));
+        }
+        if($city){
+        	$this->breadcrumbs[] = array('name' => $city->name. "旅游" .'>> ',
+        			'url' => Yii::app()->createUrl('catalog/index', array('city' => $city->area_id)));
+        }
+        
         if(!empty($_GET['tag'])){
         	$criteria->addCondition("t.tag1 = '{$_GET['tag']}' 
         			OR t.tag2 = '{$_GET['tag']}'
@@ -117,15 +154,15 @@ class CatalogController extends YController
         if (!empty($_GET['key'])) {
             $params['key'] = $_GET['key'];
         }
-        foreach ($parentCategories as $cate) {
-            if (!$cate->isRoot()) {
-                $params['cat'] = $cate->getUrl();
-                $this->breadcrumbs[] = array('name' => $cate->name . '>> ', 'url' => Yii::app()->createUrl('catalog/index', $params));
-                $categoryIds[] = $cate->category_id;
-            }
-        }
+        //foreach ($parentCategories as $cate) {
+        //    if (!$cate->isRoot()) {
+        //        $params['cat'] = $cate->getUrl();
+        //        $this->breadcrumbs[] = array('name' => $cate->name . '>> ', 'url' => Yii::app()->createUrl('catalog/index', $params));
+        //        $categoryIds[] = $cate->category_id;
+        //    }
+        //}
         $params['cat'] = $category->getUrl();
-        $this->breadcrumbs[] = array('name' => $category->name, 'url' => Yii::app()->createUrl('catalog/index', $params));
+        //$this->breadcrumbs[] = array('name' => $category->name, 'url' => Yii::app()->createUrl('catalog/index', $params));
         Yii::app()->params['categoryIds'] = $categoryIds;
 
         $categories = $category->children()->findAll();

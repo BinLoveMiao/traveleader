@@ -112,7 +112,7 @@ class OrderController extends Controller
                 $transaction = $model->dbConnection->beginTransaction();
                 try {
                     $cart = Yii::app()->cart;
-                    $model->status = 1;  //设置成提交状态
+                    $model->status = Order::STATUS_SUBMITTED;  //设置成提交状态
                     if(!Yii::app()->user->isGuest)
                     {
                         $model->attributes = $_POST;
@@ -147,11 +147,12 @@ class OrderController extends Controller
                         $model->receiver_phone = $address['phone'];
                         $model->payment_method_id= $_POST['payment_method_id'];
                         $model->memo = $_POST['memo'];
-                        $model->review = 0;
+                        //$model->review = 0;
                     }
                     $model->create_time = time();
                     $model->order_id=F::get_order_id();
                     $model->total_fee = 0;
+                    $model->status = Order::STATUS_WAIT_PAY;  //设置成待支付状态
                     if(isset($_POST['keys']))
                     {
                         foreach ($_POST['keys'] as $key){
@@ -181,18 +182,9 @@ class OrderController extends Controller
                                throw new Exception('save order item fail');
                            }
                            
-                            $OrderItem = new OrderItem;
+                            $orderItem = new OrderItem;
 
-//                            $OrderItem->order_id = $model->order_id;
-//                            $OrderItem->item_id = $item->item_id;
-//                            $OrderItem->title = $item->title;
-//                            $OrderItem->desc = $item->desc;
-//                            $OrderItem->pic = $item->getMainPic();
-//                            $OrderItem->props_name = $sku->props_name;
-//                            $OrderItem->price = $item->price;
-//                            $OrderItem->quantity = $_POST['quantity'];
-//                            $OrderItem->total_price = $OrderItem->quantity * $OrderItem->price;
-                            if (!$OrderItem::model()->saveOrderItem($OrderItem,$model->order_id,$item,$_POST['adult_number'],
+                            if (!OrderItem::model()->saveOrderItem($orderItem, $model->order_id, $item, $_POST['adult_number'],
                         			$_POST['adult_price'], $_POST['child_number'], $_POST['child_price'], $_POST['travel_date'])) {
                                 throw new Exception('save order item fail');
                             }

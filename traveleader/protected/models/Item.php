@@ -8,7 +8,7 @@
  * @property string $category_id
  * @property string $outer_id
  * @property string $title
- * @property string $stock
+ * @property string $num_orders
  * @property string $min_number
  * @property string $price
  * @property string $currency
@@ -33,6 +33,7 @@
  * @property string $country
  * @property string $state
  * @property string $city
+ * @property string $scenery_id
  * @property string $supplier
  * @property string $tag1
  * @property string $tag2
@@ -68,9 +69,9 @@ class Item extends YActiveRecord
         return array(
             array('category_id, title, price, currency, props, props_name, desc, language, country, state, city', 'required'),
             array('is_show, is_promote, is_new, is_hot, is_best', 'numerical', 'integerOnly' => true),
-            array('category_id, stock, min_number, price, discount_price, num_days, departure, shipping_fee, click_count,
+            array('category_id, num_orders, min_number, price, discount_price, num_days, departure, shipping_fee, click_count,
             		wish_count, review_count,deal_count,create_time,
-            		update_time, country, state, city, supplier, tag1, tag2, tag3', 'length', 'max' => 10),
+            		update_time, country, state, city, scenery_id, supplier, tag1, tag2, tag3', 'length', 'max' => 10),
             array('outer_id, language', 'length', 'max' => 45),
             array('title', 'length', 'max' => 255),
         	array('desc', 'length', 'max' => 500),
@@ -78,7 +79,7 @@ class Item extends YActiveRecord
             array('create_time, update_time', 'safe'),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            array('title, stock, min_number, price, discount_price, num_days, is_show, is_promote, is_new, is_hot, is_best,
+            array('title, min_number, price, discount_price, num_days, is_show, is_promote, is_new, is_hot, is_best,
             		click_count, wish_count, create_time, update_time, language, country, state, city, supplier, tag1, tag2, tag3', 'safe', 'on' => 'search'),
         );
     }
@@ -96,14 +97,19 @@ class Item extends YActiveRecord
             'countryArea' => array(self::BELONGS_TO, 'Area', 'country'),
             'stateArea' => array(self::BELONGS_TO, 'Area', 'state'),
             'cityArea' => array(self::BELONGS_TO, 'Area', 'city'),
+        	'scenery' => array(self::BELONGS_TO, 'Scenery', 'scenery_id'),
             'itemImgs' => array(self::HAS_MANY, 'ItemImg', 'item_id'),
         	'itemPrices' => array(self::HAS_MANY, 'ItemPrice', 'item_id'),
             'orderItems' => array(self::HAS_MANY, 'OrderItem', 'item_id'),
+        	'travelCount' => array(self::STAT, 'OrderItem', 'item_id', 'condition' => 't.status='.OrderItem::STATUS_TRAVELLED),
             'propImgs' => array(self::HAS_MANY, 'PropImg', 'item_id'),
             'skus' => array(self::HAS_MANY, 'Sku', 'item_id'),
-        	'tag1' => array(self::BELONGS_TO, 'MoodTag', 'id'),
-        	'tag2' => array(self::BELONGS_TO, 'MoodTag', 'id'),
-        	'tag3' => array(self::BELONGS_TO, 'MoodTag', 'id'),
+        	'tag1' => array(self::BELONGS_TO, 'MoodTag', 'tag1'),
+        	'tag2' => array(self::BELONGS_TO, 'MoodTag', 'tag2'),
+        	'tag3' => array(self::BELONGS_TO, 'MoodTag', 'tag3'),
+        	'posts' => array(self::HAS_MANY, 'Post', 'item_id', 'condition'=>'t.status='.POST::STATUS_PUBLISHED, 'order'=>'posts.create_time DESC'),
+        	'postCount' =>array(self::STAT, 'Post', 'item_id', 'condition'=>'t.status='.POST::STATUS_PUBLISHED),
+        	'schedules' => array(self::HAS_MANY, 'Schedule', 'item_id'),
         );
     }
 
@@ -117,7 +123,7 @@ class Item extends YActiveRecord
             'category_id' => 'Category',
             'outer_id' => 'Outer',
             'title' => 'Title',
-            'stock' => 'Stock',
+            'num_orders' => '出游人数',
             'min_number' => 'Min Number',
             'price' => 'Price',
         	'discount_price' => "Price on Discount",
@@ -172,15 +178,15 @@ class Item extends YActiveRecord
        // $criteria->compare('category_id', $this->category_id, true);
        // $criteria->compare('outer_id', $this->outer_id, true);
         $criteria->compare('title', $this->title, true);
-        $criteria->compare('stock', $this->stock, true);
+        //$criteria->compare('num_orders', $this->num_orders, true);
         $criteria->compare('min_number', $this->min_number, true);
         $criteria->compare('price', $this->price, true);
         $criteria->compare('discount_price', $this->discount_price, true);
         //$criteria->compare('currency', $this->currency, true);
-        $criteria->compare('props', $this->props, true);
-        $criteria->compare('props_name', $this->props_name, true);
+        //$criteria->compare('props', $this->props, true);
+        //$criteria->compare('props_name', $this->props_name, true);
         //$criteria->compare('desc', $this->desc, true);
-        $criteria->compare('shipping_fee', $this->shipping_fee, true);
+        //$criteria->compare('shipping_fee', $this->shipping_fee, true);
         $criteria->compare('is_show', $this->is_show);
         $criteria->compare('is_promote', $this->is_promote);
         $criteria->compare('is_new', $this->is_new);
