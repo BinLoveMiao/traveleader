@@ -17,7 +17,8 @@ Yii::app()->plugin->render('Hook_Login');
     
     <div class="product_cate contaniner_24">
      <div class="product_cate_tit0"><label><?php echo "旅游标签";?></label></div>
-     <div style="width: 840px; height: 350px; overflow: hidden; position: relative;" class="metro_tags">
+     <div style="width: 840px; height: 350px; overflow: hidden; position: relative; 
+     	margin-top: 20px; margin-left: 20px;"class="metro_tags">
     	 <ul id="metro_tags" class="tags">
      	 <?php
                     	$data_mode=array('carousel', 'slide', 'flip');

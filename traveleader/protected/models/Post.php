@@ -13,6 +13,7 @@ class Post extends CActiveRecord
 	 * @var string $tags
 	 * @var integer $status
 	 * @var integer $views
+	 * @var integer $ding
 	 * @var string $cover_pic
 	 * @var string language
 	 * @var string $create_time
@@ -22,6 +23,7 @@ class Post extends CActiveRecord
 	 * @var string $country
 	 * @var string $state
 	 * @var string $city
+	 * @var string $scenery_id
 	 */
 	const STATUS_DRAFT=1;
 	const STATUS_PUBLISHED=2;
@@ -56,13 +58,14 @@ class Post extends CActiveRecord
 		return array(
 			array('title, content, status, scenery_id', 'required'),
 			array('status', 'in', 'range'=>array(1,2,3)),
+			array('is_best', 'in', 'range'=>array(0,1)),
 			array('title', 'length', 'max'=>128),
 			array('cover_pic', 'length', 'max'=>128),
 			array('language', 'length', 'max'=>45),
 			array('tags', 'match', 'pattern'=>'/^[\w\s,]+$/', 'message'=>'Tags can only contain word characters.'),
-			array('tags', 'normalizeTags'),
-			array('views, is_best, item_id, scenery_id, country, state, city', 'integerOnly' => true),
-			array('scenery_id, country, state, city', 'length', 'max' => 10).
+			//array('tags', 'normalizeTags'),
+			array('views, ding, item_id, scenery_id, country, state, city', 'numerical', 'integerOnly' => true),
+			array('views, ding, scenery_id, country, state, city,image_id', 'length', 'max' => 10),
 			array('title, status', 'safe', 'on'=>'search'),
 		);
 	}
@@ -76,13 +79,47 @@ class Post extends CActiveRecord
 		// class name for the relations automatically generated below.
 		return array(
 			'author' => array(self::BELONGS_TO, 'User', 'author_id'),
-			'comments' => array(self::HAS_MANY, 'Comment', 'post_id', 'condition'=>'t.status='.Comment::STATUS_APPROVED, 'order'=>'t.create_time DESC'),
-			'commentCount' => array(self::STAT, 'Comment', 'post_id', 'condition'=>'t.status='.Comment::STATUS_APPROVED),
+			//'comments' => array(self::HAS_MANY, 'Comment', 'owner_id', 'condition'=>'t.status='.Comment::STATUS_APPROVED, 'order'=>'t.create_time DESC'),
+			//'commentCount' => array(self::STAT, 'Comment', 'owner_id', 'condition'=>'t.status='.Comment::STATUS_APPROVED),
 			'item' => array(self::BELONGS_TO, 'Item', 'item_id'),
 			'area_country' => array(self::BELONGS_TO, 'Area', 'country'),
 			'area_state' => array(self::BELONGS_TO, 'Area', 'state'),
 			'area_city' => array(self::BELONGS_TO, 'Area', 'city'),
-			'scenery' => array(self::BELONGS_TO, 'Scenery', 'scenery_id')
+			'scenery' => array(self::BELONGS_TO, 'Scenery', 'scenery_id'),
+		);
+	}
+	
+	public function behaviors() {
+		return array(
+			'commentable' => array(
+					'class' => 'ext.comment-module.behaviors.CommentableBehavior',
+					// name of the table created in last step
+					'mapTable' => 'posts_comments_nm',
+						// name of column to related model id in mapTable
+					'mapRelatedColumn' => 'postId'
+			),
+			/*
+			'coverBehavior' => array(
+					'class' => 'ext.imageAttachment.ImageAttachmentBehavior',
+						// size for image preview in widget
+					'previewHeight' => 200,
+					'previewWidth' => 300,
+						// extension for image saving, can be also tiff, png or gif
+					'extension' => 'jpg,png,jpeg',
+					// folder to store images
+					'directory' => '/traveleader/upload/postcover/preview',
+					// url for images folder
+					'url' => Yii::app()->baseUrl.'/upload/postcover/preview',
+					// image versions
+					'versions' => array(
+						'small' => array(
+								'resize' => array(200, null),
+					),
+							//'medium' => array(
+							//			'resize' => array(800, null),
+							//)
+					)
+				)*/
 		);
 	}
 
@@ -94,12 +131,13 @@ class Post extends CActiveRecord
 		return array(
 			'id' => 'Id',
 			'category_id' => 'Category',
-			'title' => 'Title',
+			'title' => '标题',
 			'summary' => '摘要',
-			'content' => 'Content',
-			'tags' => 'Tags',
-			'status' => 'Status',
+			'content' => '我游我记',
+			'tags' => '标签',
+			'status' => '状态',
 			'views' => '浏览次数',
+			'ding' => '顶',
 			'create_time' => 'Create Time',
 			'update_time' => 'Update Time',
 			'author_id' => 'Author',
@@ -110,6 +148,8 @@ class Post extends CActiveRecord
 			'country' => '国家/大洲',
 			'state' => '省/国家',
 			'city' => '城市',
+			'scenery_id' => '景点',
+			'image_id' => 'ImageAttachment',
 		);
 	}
 
@@ -120,7 +160,6 @@ class Post extends CActiveRecord
 	{
 		return Yii::app()->createUrl('post/view', array(
 			'id'=>$this->id,
-			'title'=>$this->title,
 		));
 	}
 
@@ -179,7 +218,7 @@ class Post extends CActiveRecord
 			if($this->isNewRecord)
 			{
 				$this->create_time=$this->update_time=time();
-				$this->user_id=Yii::app()->user->id;
+				$this->author_id=Yii::app()->user->id;
 			}
 			else
 				$this->update_time=time();
@@ -204,7 +243,7 @@ class Post extends CActiveRecord
 	protected function afterDelete()
 	{
 		parent::afterDelete();
-		Comment::model()->deleteAll('post_id='.$this->id);
+		//Comment::model()->deleteAll('post_id='.$this->id);
 		Tag::model()->updateFrequency($this->tags, '');
 	}
 

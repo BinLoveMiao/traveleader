@@ -1,5 +1,7 @@
 <?php
 
+define(BRIEF_LENGTH,800);
+
 class PostController extends Controller
 {
 	public $layout='column2';
@@ -27,7 +29,7 @@ class PostController extends Controller
 	public function accessRules()
 	{
 		return array(
-			array('allow',  // allow all users to access 'index' and 'view' actions.
+			array('allow',  // allow all users to access 'index', 'view', 'create' actions.
 				'actions'=>array('index','view'),
 				'users'=>array('*'),
 			),
@@ -39,6 +41,78 @@ class PostController extends Controller
 			),
 		);
 	}
+	
+	public function actions()
+	{
+		return array(
+				'saveImageAttachment' => 'ext.imageAttachment.ImageAttachmentAction',
+		);
+	}
+	
+	public function actionUploadAdditional(){
+		header( 'Vary: Accept' );
+		if( isset( $_SERVER['HTTP_ACCEPT'] ) && (strpos( $_SERVER['HTTP_ACCEPT'], 'application/json' ) !== false) ) {
+			header( 'Content-type: application/json' );
+		} else {
+			header( 'Content-type: text/plain' );
+		}
+	
+		if( isset( $_GET["_method"] ) ) {
+			if( $_GET["_method"] == "delete" ) {
+				$success = is_file( $_GET["file"] ) && $_GET["file"][0] !== '.' && unlink( $_GET["file"] );
+				echo json_encode( $success );
+			}
+		} else {
+			$this->init( );
+			$model = new Image;//Here we instantiate our model
+	
+			//We get the uploaded instance
+			$model->file = CUploadedFile::getInstance( $model, 'file' );
+			if( $model->file !== null ) {
+				$model->mime_type = $model->file->getType( );
+				$model->size = $model->file->getSize( );
+				$model->name = $model->file->getName( );
+				//Initialize the ddditional Fields, note that we retrieve the
+				//fields as if they were in a normal $_POST array
+				$model->title = Yii::app()->request->getPost('title', '');
+				$model->description  = Yii::app()->request->getPost('description', '');
+	
+				if( $model->validate( ) ) {
+					$path = Yii::app() -> getBasePath() . "/../images/uploads";
+					$publicPath = Yii::app()->getBaseUrl()."/images/uploads";
+					if( !is_dir( $path ) ) {
+						mkdir( $path, 0777, true );
+						chmod ( $path , 0777 );
+					}
+					$model->file->saveAs( $path.$model->name );
+					chmod( $path.$model->name, 0777 );
+	
+					//Now we return our json
+					echo json_encode( array( array(
+							"name" => $model->name,
+							"type" => $model->mime_type,
+							"size" => $model->size,
+							//Add the title
+							"title" => $model->title,
+							//And the description
+							"description" => $model->description,
+							"url" => $publicPath.$model->name,
+							"thumbnail_url" => $publicPath.$model->name,
+							"delete_url" => $this->createUrl( "upload", array(
+									"_method" => "delete",
+									"file" => $path.$model->name
+							) ),
+							"delete_type" => "POST"
+					) ) );
+				} else {
+					echo json_encode( array( array( "error" => $model->getErrors( 'file' ), ) ) );
+					Yii::log( "XUploadAction: ".CVarDumper::dumpAsString( $model->getErrors( ) ), CLogger::LEVEL_ERROR, "xupload.actions.XUploadAction" );
+				}
+			} else {
+				throw new CHttpException( 500, "Could not upload file" );
+			}
+		}
+	}
 
 	/**
 	 * Displays a particular model.
@@ -46,23 +120,36 @@ class PostController extends Controller
 	public function actionView()
 	{
 		$post=$this->loadModel();
+		//Update the views
+		$post->views = $post->views + 1;
+		$post->save();
+		
 		$this->breadcrumbs[] = array(
 				'name' => '我游我记>> ', 'url' => Yii::app()->createUrl('/post/index'),
 		);
 		
-		$country = Area::model()->findByPk($post->country);
+		//$country = Area::model()->findByPk($post->country);
 		$state = Area::model()->findByPk($post->state);
-		$city = Area::model()->findByPk($post->city);
-		
-		$this->breadcrumbs[] = array('name' => $country->name. "旅游" .'>> ',
-				'url' => Yii::app()->createUrl('/post/index', array('country' => $country->area_id)));
-		$this->breadcrumbs[] = array('name' => $state->name. "旅游" .'>> ',
+		$scenery = Scenery::model()->findByPk($post->scenery_id);
+		$parent = $scenery->parentScenery;
+		//$city = Area::model()->findByPk($post->city);
+		if($state){
+			$this->breadcrumbs[] = array('name' => $state->name. "旅游" .'>> ',
 				'url' => Yii::app()->createUrl('/post/index', array('state' => $state->area_id)));
-		$this->breadcrumbs[] = array('name' => $city->name. "旅游" .'>> ',
-				'url' => Yii::app()->createUrl('/post/index', array('city' => $city->area_id)));
+		}
 		
+		if($scenery){
+			if($parentScenery){
+				$this->breadcrumbs[] = array('name' => $parentScenery->name.'>> ',
+					'url' => Yii::app()->createUrl('/post/index', array('scenery' => $parentScenery->id)));
+				
+			}
 		
-		$comment=$this->newComment($post);
+			$this->breadcrumbs[] = array('name' => $scenery->name. "旅游攻略" .'>> ',
+				'url' => Yii::app()->createUrl('/post/index', array('scenery' => $scenery->id)));
+		}
+		
+		$this->breadcrumbs[] = array('name' => $post->title);
 
 		$this->render('view',array(
 			'model'=>$post,
@@ -77,15 +164,78 @@ class PostController extends Controller
 	public function actionCreate()
 	{
 		$model=new Post;
+		$image=new ImageTemp;
+		$image->id=time();
+		$image->name="test";
+		$image->save();
+
+		$default_scenery=null;
+		$default_state=null;
+		$default_city=null;
+		if(!empty($_GET['state'])){
+			 $default_state=Area::model()->findByPk($_GET['state']);
+		}
+		if(!empty($_GET['city'])){
+			$default_city=Area::model()->findByPk($_GET['city']);
+			$default_state=$default_city->parentArea;
+		}
+		if(!empty($_GET['scenery'])){
+			$default_scenery=Scenery::model()->findByPk($_GET['scenery'],
+				new CDbCriteria(array("select" => "t.id, t.name, t.state, t.city")));
+			$default_state=$default_scenery->stateArea;
+			$default_city=$default_scenery->cityArea;
+		}
+		if(!empty($_GET['item'])){
+			$model->item_id = $_GET['item'];
+		}
+		else{
+			$model->item_id = 0;
+		}
+		
 		if(isset($_POST['Post']))
 		{
-			$model->attributes=$_POST['Post'];
+			//$model->attributes=$_POST['Post'];
+			//print_r($image->coverBehavior);
+			$image2 = ImageTemp::model()->findByPk($_POST['image_id']);
+			$coverPic = $image2->coverBehavior->getUrl('small');
+			$model->image_id=$_POST['image_id'];
+			//echo $coverPic;
+			//echo $image->id;
+			//print_r($_POST);
+			//echo($image->coverBehavior->getUrl('small'));
+			//print_r($_POST);exit;
+			//exit;
+			$model->status = $_POST['Post']['status'];
+			$model->views = 0;
+			$model->ding = 0;
+			$model->is_best = 0;
+			$model->content = $_POST['Post']['content'];
+			$model->title= $_POST['Post']['title'];
+			$address=$_POST['AddressResult'];
+			$model->state=$address['state'];
+			$model->city=$address['city'];
+			$model->scenery_id=$address['district'];
+			$model->cover_pic = $coverPic;
+			//echo $model->content;
+			//echo iconv("UTF-8","GB2312",$_POST);
+			//$model->summary=$this->Generate_Brief($model->content);
+			$model->summary=$_POST['Post']['summary'];
+			$model->tags = ""; // Save for further use
+			$model->category_id = 0; // Save for further use
+			//$model->author_id = Yii::app()->user->getId();
 			if($model->save())
 				$this->redirect(array('view','id'=>$model->id));
 		}
+		
+		$xupload_form = new XUploadForm;
 
 		$this->render('create',array(
 			'model'=>$model,
+			'default_scenery'=>$default_scenery,
+			'default_state'=>$default_state,
+			'default_city'=>$default_city,
+			'image'=>$image,
+			
 		));
 	}
 
@@ -98,13 +248,51 @@ class PostController extends Controller
 		$model=$this->loadModel();
 		if(isset($_POST['Post']))
 		{
-			$model->attributes=$_POST['Post'];
+			if($model->image_id != 0){
+				$image2 = ImageTemp::model()->findByPk($model->image_id);
+			} else{
+				$image2 = ImageTemp::model()->findByPk($_POST['image_id']);
+			}
+			$coverPic = $image2->coverBehavior->getUrl('small');
+			$model->status = $_POST['Post']['status'];
+			$model->content = $_POST['Post']['content'];
+			$model->title= $_POST['Post']['title'];
+			$address=$_POST['AddressResult'];
+			$model->state=$address['state'];
+			$model->city=$address['city'];
+			$model->scenery_id=$address['district'];
+			$model->cover_pic = $coverPic;
+			//echo $model->content;
+			//echo iconv("UTF-8","GB2312",$_POST);
+			$model->summary=$this->Generate_Brief($model->content);
+			$model->tags = ""; // Save for further use
+			$model->category_id = 0; // Save for further use
+			
+			//$model->attributes=$_POST['Post'];
 			if($model->save())
 				$this->redirect(array('view','id'=>$model->id));
 		}
+		
+		if($model->image_id != 0){
+			$image=ImageTemp::model()->findByPk($model->image_id);
+		}
+		else{
+			$image=new ImageTemp;
+			$image->id=time();
+			$image->name="test";
+			$image->save();
+		}
+		
+		$default_state=$model->area_state;
+		$default_city=$model->area_city;
+		$default_scenery=$model->scenery;
 
 		$this->render('update',array(
 			'model'=>$model,
+			'image'=>$image,
+			'default_scenery'=>$default_scenery,
+			'default_state'=>$default_state,
+			'default_city'=>$default_city,
 		));
 	}
 
@@ -117,6 +305,11 @@ class PostController extends Controller
 		if(Yii::app()->request->isPostRequest)
 		{
 			// we only allow deletion via POST request
+			//print_r($this->loadModel()->getCommentDataProvider());
+			// Delete the comments first
+			foreach($this->loadModel()->getCommentDataProvider()->data as $data){
+				$data->delete();
+			}
 			$this->loadModel()->delete();
 
 			// if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
@@ -135,8 +328,9 @@ class PostController extends Controller
 		$criteria=new CDbCriteria(array(
 				'condition'=>'status='.Post::STATUS_PUBLISHED,
 				//'order'=>'update_time DESC',
-				'with'=>'commentCount',
+				//'with'=>'commentCount',
 		));
+		
 		$this->breadcrumbs[] = array(
 				'name' => '我游我记>> ', 'url' => Yii::app()->createUrl('/post/index'),
 		);
@@ -189,6 +383,7 @@ class PostController extends Controller
 			$this->breadcrumbs[] = array('name' => $scenery->name .'>> ',
 					'url' => Yii::app()->createUrl('/post/index', array('scenery' => $scenery->id)));
 			$scenery2 = $scenery;
+			$num_pics = $scenery->countSceneryPics();
 		}
 		
 		if(empty($_GET['scenery']) && !$sceneries){
@@ -224,13 +419,14 @@ class PostController extends Controller
 				'pageSize'=>Yii::app()->params['postsPerPage'],
 			),
 			'criteria'=>$criteria,
-		));
+		));	
 
 		$this->render('index',array(
 			'dataProvider'=>$dataProvider,
             'posts' => $posts,
 			'scenery' => $scenery2,
 			'sceneries' => $sceneries,
+			'num_pics' => $num_pics,
 		));
 	}
 
@@ -310,5 +506,90 @@ class PostController extends Controller
 			}
 		}
 		return $comment;
+	}
+	
+	private function Generate_Brief($text){
+		global $Briefing_Length;
+		mb_regex_encoding("UTF-8");
+		if(mb_strlen($text) <= BRIEF_LENGTH ) return $text;
+		$Foremost = mb_substr($text, 0, BRIEF_LENGTH);
+	
+		$re = "<(\/?)(P|DIV|H1|H2|H3|H4|H5|H6|ADDRESS|PRE|TABLE|TR|TD|TH|INPUT|SELECT|TEXTAREA|OBJECT|A|UL|OL|LI|BASE|META|LINK|HR|BR|PARAM|IMG|AREA|INPUT|SPAN)[^>]*(>?)";
+		$Single = "/BASE|META|LINK|HR|BR|PARAM|IMG|AREA|INPUT|BR/i";
+		 
+		$Stack = array(); $posStack = array();
+		 
+		mb_ereg_search_init($Foremost, $re, 'i');
+		 
+		while($pos = mb_ereg_search_pos()){
+			$match = mb_ereg_search_getregs();
+			/*        [Child-matching Formulation]:
+			  
+			$matche[1] : A "/" charactor indicating whether current "<...>" Friction is Closing Part
+			$matche[2] : Element Name.
+			$matche[3] : Right > of a "<...>" Friction
+			*/
+	
+			if($match[1]==""){
+				$Elem = $match[2];
+				if(mb_eregi($Single, $Elem) && $match[3] !=""){
+					continue;
+				}
+				array_push($Stack, mb_strtoupper($Elem));
+				array_push($posStack, $pos[0]);
+			}else{
+				$StackTop = $Stack[count($Stack)-1];
+				$End = mb_strtoupper($match[2]);
+				if(strcasecmp($StackTop,$End)==0){
+					array_pop($Stack);
+					array_pop($posStack);
+					if($match[3] ==""){
+						$Foremost = $Foremost.">";
+					}
+				}
+			}
+		}
+		 
+		$cutpos = array_shift($posStack) - 1;
+		$Foremost =  mb_substr($Foremost,0,$cutpos,"UTF-8");
+		return $Foremost;
+	}
+	
+	public function actionGetChildAreas($parent_id)
+	{
+		$parent_area = Area::model()->findByPk($parent_id);
+		if($parent_area->grade == 2){ // Means it is a city level
+			$sceneries=$parent_area->citySceneries;
+			$areasData = CHtml::listData($sceneries, 'id', 'name');
+		}
+		else{
+			$areas = Area::model()->findAllByAttributes(array('parent_id' => $parent_id));
+			$areasData = CHtml::listData($areas, 'area_id', 'name');
+		}
+		
+		echo json_encode(CMap::mergeArray(array('0' => ''), $areasData));
+	}
+	
+	public function actionDynamiccities() {
+		echo $_GET['AddressResult_state'];
+		$data = Area::model()->findAll("parent_id=:parent_id", array(":parent_id" => $_GET['AddressResult_state']));
+	
+		$data = CHtml::listData($data, "area_id", "name");
+		echo CHtml::tag("option", array("value" => ''), '', true);
+		foreach ($data as $value => $name) {
+			echo CHtml::tag("option", array("value" => $value), CHtml::encode($name), true);
+		}
+	}
+	
+	public function actionDynamicsceneries() {
+		if ($_GET["AddressResult_city"]) {
+			//$data = Area::model()->findAll("parent_id=:parent_id", array(":parent_id" => $_GET["AddressResult_city"]));
+			$city = Area::model()->findByPk($_GET["AddressResult_city"]);
+			$data = $city->citySceneries;
+			$data = CHtml::listData($data, "id", "name");
+			foreach ($data as $value => $name) {
+				echo CHtml::tag("option", array("value" => $value), CHtml::encode($name), true);
+			}
+		}
 	}
 }

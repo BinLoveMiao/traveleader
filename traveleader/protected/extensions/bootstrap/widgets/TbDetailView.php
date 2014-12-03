@@ -1,47 +1,68 @@
 <?php
-
 /**
  * TbDetailView class file.
- * @author Sam Stenvall <sam@supportersplace.com>
- * @author Christoffer Niska <christoffer.niska@gmail.com>
- * @copyright Copyright &copy; Sam Stenvall 2013-
+ * @author Christoffer Niska <ChristofferNiska@gmail.com>
+ * @copyright Copyright &copy; Christoffer Niska 2011-
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  * @package bootstrap.widgets
  */
+
 Yii::import('zii.widgets.CDetailView');
 
 /**
- * Bootstrap Zii detail widget.
+ * Bootstrap Zii detail view.
  */
 class TbDetailView extends CDetailView
 {
-    /**
-     * @var string|array the detail view style.
-     * Valid values are TbHtml::DETAIL_STRIPED, TbHtml::DETAIL_BORDERED, TbHtml::DETAIL_CONDENSED and/or TbHtml::DETAIL_HOVER.
-     */
-    public $type = array(TbHtml::DETAIL_TYPE_STRIPED, TbHtml::DETAIL_TYPE_CONDENSED);
-    /**
-     * @var string the URL of the CSS file used by this grid view.
-     * Defaults to false, meaning that no CSS will be included.
-     */
-    public $cssFile = false;
+	// Table types.
+	const TYPE_STRIPED = 'striped';
+	const TYPE_BORDERED = 'bordered';
+	const TYPE_CONDENSED = 'condensed';
 
-    /**
-     * Initializes the widget.
-     */
-    public function init()
-    {
-        parent::init();
-        $classes = array('table');
-        if (!empty($this->type)) {
-            if (is_string($this->type)) {
-                $this->type = explode(' ', $this->type);
-            }
+	/**
+	 * @var string|array the table type.
+	 * Valid values are 'striped', 'bordered' and/or 'condensed'.
+	 */
+	public $type = array(self::TYPE_STRIPED, self::TYPE_CONDENSED);
+	/**
+	 * @var string the URL of the CSS file used by this detail view.
+	 * Defaults to false, meaning that no CSS will be included.
+	 */
+	public $cssFile = false;
 
-            foreach ($this->type as $type) {
-                $classes[] = 'table-' . $type;
-            }
-        }
-        TbHtml::addCssClass($classes, $this->htmlOptions);
-    }
+	/**
+	 * Initializes the widget.
+	 */
+	public function init()
+	{
+		parent::init();
+
+		$classes = array('table');
+
+		if (isset($this->type))
+		{
+			if (is_string($this->type))
+				$this->type = explode(' ', $this->type);
+
+			$validTypes = array(self::TYPE_STRIPED, self::TYPE_BORDERED, self::TYPE_CONDENSED);
+
+			if (!empty($this->type))
+			{
+				foreach ($this->type as $type)
+				{
+					if (in_array($type, $validTypes))
+						$classes[] = 'table-'.$type;
+				}
+			}
+		}
+
+		if (!empty($classes))
+		{
+			$classes = implode(' ', $classes);
+			if (isset($this->htmlOptions['class']))
+				$this->htmlOptions['class'] .= ' '.$classes;
+			else
+				$this->htmlOptions['class'] = $classes;
+		}
+	}
 }

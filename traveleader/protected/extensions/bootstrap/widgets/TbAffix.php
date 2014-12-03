@@ -1,13 +1,12 @@
 <?php
 /**
  * TbAffix class file.
- * @author Christoffer Niska <christoffer.niska@gmail.com>
- * @copyright Copyright &copy; Christoffer Niska 2013-
+ * @author Christoffer Niska <ChristofferNiska@gmail.com>
+ * @copyright Copyright &copy; Christoffer Niska 2012-
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  * @package bootstrap.widgets
+ * @since 2.0.0
  */
-
-Yii::import('bootstrap.behaviors.TbWidget');
 
 /**
  * Bootstrap affix widget.
@@ -15,45 +14,53 @@ Yii::import('bootstrap.behaviors.TbWidget');
  */
 class TbAffix extends CWidget
 {
-    /**
-     * @var string the HTML tag for the container.
-     */
-    public $tagName = 'div';
-    /**
-     * @var mixed pixels to offset from screen when calculating position of scroll.
-     */
-    public $offset;
-    /**
-     * @var array the HTML attributes for the container.
-     */
-    public $htmlOptions = array();
+	const CONTAINER_PREFIX = 'yii_bootstrap_affix_';
 
-    /**
-     * Initializes the widget.
-     */
-    public function init()
-    {
-        $this->attachBehavior('TbWidget', new TbWidget);
-        $this->copyId();
-        $this->htmlOptions['data-spy'] = 'affix';
-        if (isset($this->offset)) {
-            if (is_string($this->offset)) {
-                $this->offset = array('top', $this->offset);
-            }
+	/**
+	 * @var string the name of the affix element. Defaults to 'div'.
+	 */
+	public $tagName = 'div';
+	/**
+	 * @var array the options for the Bootstrap Javascript plugin.
+	 */
+	public $options = array();
+	/**
+	 * @var array the HTML attributes for the widget container.
+	 */
+	public $htmlOptions = array();
 
-            if (is_array($this->offset) && count($this->offset) === 2) {
-                list($position, $offset) = $this->offset;
-                $this->htmlOptions['data-offset-' . $position] = $offset;
-            }
-        }
-        echo TbHtml::openTag($this->tagName, $this->htmlOptions);
-    }
+	private static $_containerId = 0;
 
-    /**
-     * Runs the widget.
-     */
-    public function run()
-    {
-        echo CHtml::closeTag($this->tagName);
-    }
+	/**
+	 * Initializes the widget.
+	 */
+	public function init()
+	{
+		echo CHtml::openTag($this->tagName, $this->htmlOptions);
+	}
+
+	/**
+	 * Runs the widget.
+	 */
+	public function run()
+	{
+		$id = $this->htmlOptions['id'];
+
+		echo CHtml::closeTag($this->tagName);
+
+		/** @var CClientScript $cs */
+		$cs = Yii::app()->getClientScript();
+		$options = !empty($this->options) ? CJavaScript::encode($this->options) : '';
+		$cs->registerScript(__CLASS__.'#'.$id, "jQuery('#{$id}').affix({$options});");
+	}
+
+	/**
+	 * Returns the next affix container ID.
+	 * @return string the id
+	 * @static
+	 */
+	public static function getNextContainerId()
+	{
+		return self::CONTAINER_PREFIX.self::$_containerId++;
+	}
 }

@@ -40,11 +40,15 @@ return array(
         'ext.shoppingCart.*',
         'application.modules.install.models.*',
         'application.modules.install.components.*',
+    	'application.extensions.xupload.models.*',
+    	'application.extensions.image.*',
+    	'ext.bootstrap.widgets.*',
     ),
     // path aliases
     'aliases' => array(
         // Uncomment the following statement to register path alias.
         //    'alias' => realpath(__DIR__ . '/../extensions/aliasRealPath'), // change it to fit your need
+    	'xupload' => 'ext.xupload'
     ),
     'modules' => array(
         'plugin' => array(
@@ -52,45 +56,24 @@ return array(
             'pluginRoot' => 'application.plugin',   # Folder for plugins,make sure it is writeable.
             'layout' => '//layouts/main',            # layout of admin control panel.
         ),
-        'comments' => array(
-            //you may override default config for all connecting models
-            'defaultModelConfig' => array(
-                //only registered users can post comments
-                'registeredOnly' => false,
-                'useCaptcha' => false,
-                //allow comment tree
-                'allowSubcommenting' => true,
-                //display comments after moderation
-                'premoderate' => false,
-                //action for postig comment
-                'postCommentAction' => 'comments/comment/postComment',
-                //super user condition(display comment list in admin view and automoderate comments)
-                'isSuperuser' => 'Yii::app()->user->checkAccess("moderate")',
-                //order direction for comments
-                'orderComments' => 'DESC',
+        'comment'=>array(
+            'class'=>'ext.comment-module.CommentModule',
+            'commentableModels'=>array(
+                // define commentable Models here (key is an alias that must be lower case, value is the model class name)
+                'post'=>'Post'
             ),
-            //the models for commenting
-            'commentableModels' => array(
-                //model with individual settings
-                'Article' => array(
-                    'registeredOnly' => false,
-                    'useCaptcha' => true,
-                    'allowSubcommenting' => false,
-                    //config for create link to view model page(page with comments)
-                    'pageUrl' => array(
-                        'route' => 'article/view',
-                        'data' => array('id' => 'article_id'),
-                    ),
-                ),
-                //model with default settings
-                'ImpressionSet',
-            ),
-            //config for user models, which is used in application
-            'userConfig' => array(
-                'class' => 'User',
-                'nameProperty' => 'username',
-                'emailProperty' => 'email',
-            ),
+            // set this to the class name of the model that represents your users
+            'userModelClass'=>'User',
+            // set this to the username attribute of User model class
+            'userNameAttribute'=>'username',
+            // set this to the email attribute of User model class
+            'userEmailAttribute'=>'email',
+            // you can set controller filters that will be added to the comment controller {@see CController::filters()}
+//          'controllerFilters'=>array(),
+            // you can set accessRules that will be added to the comment controller {@see CController::accessRules()}
+//          'controllerAccessRules'=>array(),
+            // you can extend comment class and use your extended one, set path alias here
+//          'commentModelClass'=>'comment.models.Comment',
         ),
         'install',
         // uncomment the following to enable the Gii tool
@@ -132,6 +115,12 @@ return array(
             // If removed, Gii defaults to localhost only. Edit carefully to taste.
             'ipFilters' => array('127.0.0.1', '::1'),
             'generatorPaths' => array('bootstrap.gii'),
+        ),
+        'ajaxuploader'=>array(
+        		'userModel'=>'Biodata',  //change to the model that has the pix column
+        		'userPixColumn'=>'pix',  //column to save the filename
+        		'folder'=>'images', //the dest folder(should be in the same folder level as protected folder)
+        
         ),
     ),
     // application components
@@ -253,6 +242,14 @@ return array(
                     'showInFireBug' => true,
                 ),
             ),
+        ),
+        
+        'image'=>array(
+        		'class'=>'application.extensions.image.CImageComponent',
+        		// GD or ImageMagick
+        		'driver'=>'GD',
+        		// ImageMagick setup path
+        		//'params'=>array('directory'=>'D:/Program Files/ImageMagick-6.4.8-Q16'),
         ),
     ),
     // application-level parameters that can be accessed

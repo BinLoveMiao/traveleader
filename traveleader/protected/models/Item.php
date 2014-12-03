@@ -107,8 +107,8 @@ class Item extends YActiveRecord
         	'tag1' => array(self::BELONGS_TO, 'MoodTag', 'tag1'),
         	'tag2' => array(self::BELONGS_TO, 'MoodTag', 'tag2'),
         	'tag3' => array(self::BELONGS_TO, 'MoodTag', 'tag3'),
-        	'posts' => array(self::HAS_MANY, 'Post', 'item_id', 'condition'=>'t.status='.POST::STATUS_PUBLISHED, 'order'=>'posts.create_time DESC'),
-        	'postCount' =>array(self::STAT, 'Post', 'item_id', 'condition'=>'t.status='.POST::STATUS_PUBLISHED),
+        	//'posts' => array(self::HAS_MANY, 'Post', 'item_id', 'condition'=>'t.status='.POST::STATUS_PUBLISHED, 'order'=>'posts.create_time DESC'),
+        	//'postCount' =>array(self::STAT, 'Post', 'item_id', 'condition'=>'t.status='.POST::STATUS_PUBLISHED),
         	'schedules' => array(self::HAS_MANY, 'Schedule', 'item_id'),
         );
     }
@@ -527,6 +527,17 @@ class Item extends YActiveRecord
     public function afterSave()
     {
         parent::afterSave();
+    }
+    
+    /**
+     * This is invoked after the record is deleted.
+     */
+    public function afterDelete()
+    {
+    	parent::afterDelete();
+    	ItemPrice::model()->deleteAll('t.item_id='.$this->item_id);
+    	ItemImg::model()->deleteAll('t.item_id='.$this->item_id);
+    	Tag::model()->updateFrequency($this->tags, '');
     }
 
     /**

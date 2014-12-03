@@ -8,27 +8,33 @@ class LoginController extends Controller
 	 * Displays the login page
 	 */
 	public function actionLogin()
-	{
-     //  print_r(Yii::app()->controller->module);exit;
+	{	
         if (Yii::app()->user->isGuest) {
 			$model=new UserLogin;
 			// collect user input data
 			if(isset($_POST['UserLogin']))
 			{
+				//print_r(Yii::app()->user->returnUrl);
+				//print_r(Yii::app()->controller->module->returnUrl);
+				//print_r($_GET['redirect']);
+				//exit;
 				$model->attributes=$_POST['UserLogin'];
 				// validate user input and redirect to previous page if valid
 				if($model->validate()) {
 					$this->lastViset();
-					if (Yii::app()->getBaseUrl()."/index.php" === Yii::app()->user->returnUrl)
+					if(!empty($_GET['redirect']))
+						$this->redirect($_GET['redirect']);
+					else if (Yii::app()->getBaseUrl()."/index.php" === Yii::app()->user->returnUrl)
 						$this->redirect(Yii::app()->controller->module->returnUrl);
 					else
 						$this->redirect(Yii::app()->user->returnUrl);
 				}
 			}
+			$this->render('//user/login', array('model'=>$model));
 			// display the login form
-			$this->render('//user/login',array('model'=>$model));
-		} else
+		} else{
 			$this->redirect(Yii::app()->controller->module->returnUrl);
+		}
 	}
 	
 	private function lastViset() {

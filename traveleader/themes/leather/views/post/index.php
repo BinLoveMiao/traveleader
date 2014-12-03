@@ -24,42 +24,68 @@ $this->pageTitle = Yii::app()->name;
         </div>
      </div>
      
+     <?php if($scenery) {?>
      <div class = "mdd-title">
-     	<span><?php if($scenery) echo $scenery->name;?> </span>
+     	<span><?php echo $scenery->name;?> </span>
      </div>
      
-     <div class="product_cate_tit0"><label><?php echo "热门目的地";?></label></div>
-     <div style="width: 720px; height: 350px; overflow: hidden; position: relative;" class="metro_tags">
-    	 <ul id="metro_tags" class="tags">
-     	 <?php
+     <div class = "want-been yahei">
+     	<div class = "num-been">
+     		<div class="num-count">
+     			<span>有 <?php echo $scenery->num_travel?> 游客去过</span>
+     		</div>
+     	</div>       
+	</div>
+	<?php }?>
+     
+
+	<!--  
+     <div class="p-content">
+
+     	</div>
+    -->
+
+     	
+</div>
+
+ 
+<div class="p-content" >
+     <?php if($sceneries){?>
+     	<div class="m-rank">
+     		<div class="hd">
+     			<span><?php echo "热门目的地";?></span>
+     		</div>
+     		<div class="metro_tags">
+    	 		<ul id="metro_tags" class="tags">
+     	 		<?php
                     	$data_mode=array('carousel', 'slide', 'flip');
                     	$data_delay=array(2000,2500,3000);
                     	$data_dir=array('horizontal', 'vertical');
                     	//$tag_index=array_rand($tags, min(array(10, count($tags))));
-                    	foreach ($sceneries as $scenery) {
+                    	foreach ($sceneries as $sce) {
 							//$tag=$tags[$index];
 							//echo $tag->name;
-                    		$params['scenery'] = $scenery->id;
+                    		$params['scenery'] = $sce->id;
                     		if($rand_selector==3){
 								$option=' data-direction='.$data_dir[rand(0, 1)];
 							}
 							else{
 								$option='';	
 							}
-							$scenery_pics=$scenery->getSceneryPictures(4);
+							$scenery_pics=$sce->getSceneryPictures(4);
                     		echo '<a style="display:block" href="'.Yii::app()->createUrl('post/index', $params) .'">'. 
                     			'<div class="live-tile" data-mode='.$data_mode[rand(0, 2)].
                     			' data-delay='.$data_delay[rand(0, 2)].
                     			$option.
                     			'>' .
-                    			'<span class="tile-title" style="background:#2D2D2D;">'. $scenery->name. '</span>'.
-                    			'<div><img class="full" src="'. Yii::app()->baseUrl."/".$scenery_pics[0]->pic.
+                    			'<span class="tile-title" style="background:#2D2D2D;">'. $sce->name. '</span>'.
+                    			'<div><img class="full" src="'. Yii::app()->baseUrl.$scenery_pics[0]->pic.
                     						'" alt="1"'.'/></div>'.
-                    			'<div><img class="full" src="'. Yii::app()->baseUrl."/".$scenery_pics[1]->pic.
+                    			'<div><img class="full" src="'. Yii::app()->baseUrl.$scenery_pics[1]->pic.
                     						'" alt="2"'.'/></div>'.
-                    			'<div><img class="full" src="'. Yii::app()->baseUrl."/".$scenery_pics[2]->pic.
+                    			'<div><img class="full" src="'. Yii::app()->baseUrl.$scenery_pics[2]->pic.
                     						'" alt="3"'.'/></div>'.
-                    			'<div><img class="full" src="'. Yii::app()->baseUrl."/".$scenery_pics[3]->pic.
+                    			'<div><img class="full" src="'. Yii::app()->baseUrl.$scenery_pics[3]->pic.
                     						'" alt="4"'.'/></div>'.'</div>'.'</a>';
                     						
                     		//$pics=array($tag->pic1, $tag->pic2, $tag->pic3, $tag->pic4);
@@ -74,52 +100,137 @@ $this->pageTitle = Yii::app()->name;
                     	}
                     ?> 
                     </ul>
-     </div>
+     			</div>
+     		</div>
+     		<!-- Activate live tiles -->
+			<script type="text/javascript">
+    		// apply regular slide universally unless .exclude class is applied 
+    		// NOTE: The default options for each liveTile are being pulled from the 'data-' attributes
+    		$(".live-tile, .flip-list").not(".exclude").liveTile();
+    		</script>
+     <?php } 
+     if($scenery){
+     			?>
+     <div class="first-screen clearfix">			
+     	<div class="m-photo">
+    	 	<img src=<?php echo Yii::app()->baseUrl.$scenery->main_pic;?> width="670" height=“360”>
+    	 	<a class="btn-num" href="" target="_blank">
+    		 共 <em><?php echo $num_pics;?></em>张图片
+    	 	</a>
+     	</div>
+     	
+     	<div class="p-aside">
+     		<div class="m-box m-tags">
+     			<div class="hd">
+     				<span> <?php echo $scenery->name;?> 简介</span>
+     			</div>
+     			
+     			<div class="bd">
+     			   <span>最佳旅游季节</span>
+     				<div class="t-info">
+     					<p>
+     						<span class="highlight"><?php echo $scenery->best_time;?></span>
+     					</p>
+     				</div>
+     				
+     				<span>气候</span>
+     				<div class="t-info">
+     					<p>
+     						<span class="highlight"><?php echo $scenery->climate;?></span>
+     					</p>
+     				</div>
+     				
+     				<span>介绍</span>
+     				<div class="t-info-l">	
+     					<p>
+     						<span class="highlight"><?php echo $scenery->intro;?></span>
+     					</p>
+     				</div>
+
+     			</div>
+     		</div>
+     	</div>
      
-</div>
-
-     <!-- Activate live tiles -->
-	<script type="text/javascript">
-    	// apply regular slide universally unless .exclude class is applied 
-    	// NOTE: The default options for each liveTile are being pulled from the 'data-' attributes
-    	$(".live-tile, .flip-list").not(".exclude").liveTile();
-	</script>
- 
-    <div class="box-content" >
-        <div class="pull-left" style="height:1900px;width:75%;background:white;">
-
+     </div>
+     		
+     		
+     <?php }?>
+     
+<script>
+     			
+</script>
+     		
+<div class="m-post">
+     <div class="hd">
+     	<ul>
+     	<?php 
+     		$sort_params=array('new', 'hot', 'best');
+     		$sort_display=array('最新游记','最热游记','精品游记');
+     		$sort_selector=0;
+     		if($_GET['sort']=='hot') $sort_selector=1;
+     		else if ($_GET['sort']=='best') $sort_selector=2;
+     		for($i=0;$i<count($sort_params);$i++){
+				if($i!=$sort_selector){
+					echo '<li><a href="'.Yii::app()->createUrl('/post/index', array_merge($_GET,array('sort' => $sort_params[$i]))).
+					'">'.$sort_display[$i]. '</a></li>';
+				}
+				else{
+					echo '<li class="on"><a href="'.Yii::app()->createUrl('/post/index', array_merge($_GET,array('sort' => $sort_params[$i]))).
+					'">'.$sort_display[$i]. '</a></li>';
+				}
+			}
+     	?>
+     	</ul>
+     	<span class="r-extra">
+     		<a class="btn-addPost" href="<?php 	
+				echo Yii::app()->createUrl("/post/create", array_merge($_GET));
+			?>">
+     		<i></i>
+     		发表新游记
+     		</a>
+     	</span>
+     </div>	
+     <div class="post-list">
+    	<ul>
            <?php if($posts !== null){
                foreach($posts as $post){?>
                 <?php
                    $status = intval($post->status);
-                   if(Yii::app()->user->isGuest)
-                   {
-                       if($status < 2 )
-                       {
-                           continue;
-                       }
+                   if($status < 2 ){
+                        continue;
                    }
                    ?>
-            <div class="news-outside">   <!--第一个新闻-->
-                <div class="col-xs-3 news-img" >  <!--图片部分-->
-                    <img width="150" height="150"  class="attachment-thumbnail wp-post-image" src=<?php echo Yii::app()->baseUrl.$post->cover_pic;?> >
+            <li class="post-item clearfix"> 
+                <div class="post-cover" >  <!--图片部分-->
+                    <img width="215" height="135"  class="attachment-thumbnail wp-post-image" src=<?php echo $post->cover_pic;?> >
                 </div>
-                <div class="col-xs-9 nes-list">
-                    <div class="col-xs-12">   <!--新闻标题-->
-                        <h4><a href="<?php echo Yii::app()->createUrl('post/view', array('id' => $post->id))?>" class="news-link"><?php echo $post->title;?></a>  </h4>
-                    </div>
-                    <div class="col-xs-12 news-summary">    <!--摘要-->
-                        <p><?php echo $post->summary;?><a href="<?php echo Yii::app()->createUrl('post/view', array('id' => $post->id))?>" class="news-link">阅读全文 >></a>
-                        </p>
-                        <p>发表于:<?php echo date('Y-m-d H:i:s',$post->update_time);?>, 标签：<?php echo $post->tags;?></p>
-                    </div>
+                <div class="post-title yahei">
+                	<h4><a href="<?php echo Yii::app()->createUrl('post/view', array('id' => $post->id))?>"
+                		class="post-link"><?php echo $post->title;?></a>  </h4>
                 </div>
+                
+                <div class="post-author">
+                	<?php
+                	
+                	?>
+                	<span>
+                	<?php 
+                	echo $post->author->username;
+                	?>
+                	发表于: <?php echo date('Y-m-d H:i:s',$post->update_time);?></span>
                 </div>
-            <!--第一个新闻结束-->
+                
+                <div class="post-content">
+                   <?php echo $post->summary;?>
+                </div>
+            </li>
 
             <?php }}?>
+		</ul>
+	</div>
 
-            <div class="page_p"><!--分页-->
+
+    <div class="page_p"><!--分页-->
                 <?php if ($pager->pageCount > 1 ) {
                     if ($pager->currentPage == 0 ) {
                         echo '<span class="end"><a href="javascript:void(0)" class="page_p"><img alt="" src=""/>首页</a></a></span>';
@@ -148,26 +259,13 @@ $this->pageTitle = Yii::app()->name;
                 }
                 ?>
 
-            </div>
+    </div>
 
-<!--            <div> <!--分页-->
-<!--                <ul class="pagination pull-right" id="news-pag">-->
-<!--                    <li><a href="#">&laquo;</a></li>-->
-<!--                    <li><a href="#">1</a></li>-->
-<!--                    <li><a href="#">2</a></li>-->
-<!--                    <li><a href="#">3</a></li>-->
-<!--                    <li><a href="#">4</a></li>-->
-<!--                    <li><a href="#">5</a></li>-->
-<!--                    <li><a href="#">&raquo;</a></li>-->
-<!--                </ul>-->
-<!---->
-<!--            </div>-->
-        </div>   <!--新闻列表-->
-
+</div> 
 
 
     <div  style="height:1840px;border-left:2px solid #ececec;padding:10px;width:24%;" class="pull-right">
-        <div style="text-align:center"> <h4><b>热点追踪</b></h4>
+        <div style="text-align:center"> <h4><b>最新发表</b></h4>
         </div>
         <ul class=" pull-center" id="news-hot">
             <?php
@@ -199,4 +297,4 @@ $this->pageTitle = Yii::app()->name;
 <!--            <li><a class="news-link " href="#">.....</a></li>-->
         </ul>
     </div>
-     </div>
+</div>

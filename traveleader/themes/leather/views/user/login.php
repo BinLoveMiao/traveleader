@@ -49,9 +49,11 @@ $this->breadcrumbs=array(
 
             </div>
         </div>
+ <!-- 
 <div class="logo_b">
-          <img alt="" src="<?php echo Yii::app()->theme->baseUrl; ?>/image/logo_b.png" width="257" height="152"/>
+          <img alt="" src="<?php //echo Yii::app()->theme->baseUrl; ?>/image/logo_b.png" width="257" height="152"/>
       </div>
+  -->
         <?php echo CHtml::endForm(); ?>
 
 
