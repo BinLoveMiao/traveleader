@@ -17,7 +17,7 @@ class Tbfunction {
         echo  CHtml::link('Add',array('create','user_id'=>$id),array('class'=>'btn btn-primary'));
     }
     public function view_user($id){
-        echo CHtml::link('查看',array('detail','id'=>$id),array('class'=>'btn_detail'));
+        echo CHtml::link('查看',array('view','id'=>$id),array('class'=>'btn_detail'));
     }
     
     public function review_order($id){
@@ -57,12 +57,12 @@ class Tbfunction {
     }
 
     public function ReturnOrderStatus(){
-        return array('0' => '未提交', '1' => '已提交', '2' => '待支付', '3' => '已支付', '4' => '等待退款', 
+        return array('2' => '待支付', '3' => '已支付', '4' => '等待退款', 
         '5' => '已退款', '6' =>'交易成功', '7' => '交易关闭', '8' => '已出游');  
     }
     
     public function showOrderStatus($review_status){
-    	$reviewStatus=array('0' => '未提交', '1' => '已提交', '2' => '待支付', '3' => '已支付',
+    	$reviewStatus=array('2' => '待支付', '3' => '已支付',
     			'4' => '等待退款', '5' => '已退款', '6' =>'交易成功', '7' => '交易关闭', '8' => '已出游');
     	return $reviewStatus[$review_status];
     }

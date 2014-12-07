@@ -186,10 +186,10 @@ class PostController extends Controller
 			$default_city=$default_scenery->cityArea;
 		}
 		if(!empty($_GET['item'])){
-			$model->item_id = $_GET['item'];
-		}
-		else{
-			$model->item_id = 0;
+			$item = Item::model()->findByPk($_GET['item']);
+			$default_scenery = $item->scenery;
+			$default_state = $item->stateArea;
+			$default_city = $item->cityArea;
 		}
 		
 		if(isset($_POST['Post']))
@@ -199,6 +199,12 @@ class PostController extends Controller
 			$image2 = ImageTemp::model()->findByPk($_POST['image_id']);
 			$coverPic = $image2->coverBehavior->getUrl('small');
 			$model->image_id=$_POST['image_id'];
+			if(!empty($_GET['item'])){
+				$model->item_id=$_GET['item'];
+			}
+			else{
+				$model->item_id=0;
+			}
 			//echo $coverPic;
 			//echo $image->id;
 			//print_r($_POST);
@@ -226,8 +232,6 @@ class PostController extends Controller
 			if($model->save())
 				$this->redirect(array('view','id'=>$model->id));
 		}
-		
-		$xupload_form = new XUploadForm;
 
 		$this->render('create',array(
 			'model'=>$model,
@@ -433,15 +437,29 @@ class PostController extends Controller
 	/**
 	 * Manages all models.
 	 */
+	/*
 	public function actionAdmin()
 	{
-		$model=new Post('search');
-		if(isset($_GET['Post']))
-			$model->attributes=$_GET['Post'];
-		$this->render('admin',array(
-			'model'=>$model,
+		//$model=new Post('search');
+		//if(isset($_GET['Post']))
+		//	$model->attributes=$_GET['Post'];
+		//$posts = Post::model()->findAll(
+		//		new CDbCriteria(array(
+		//			'condition' => 't.author_id='.Yii::app()->user->getId(),
+		//			'order' => 't.create_time DESC',
+		//			'select' => 't.id, t.title, t.status, t.create_time'
+		//		)));
+		$dataprovider = new CActiveDataProvider('Post',array(
+				'criteria'=>array(
+						'condition' => 't.author_id='.Yii::app()->user->getId(),
+						'order' => 't.create_time DESC',
+						'select' => 't.id, t.title, t.status, t.ding, t.views, t.create_time'
+				),
 		));
-	}
+		$this->render('admin',array(
+			'data'=>$dataprovider,
+		));
+	}*/
 
 	/**
 	 * Suggests tags based on the current user input.

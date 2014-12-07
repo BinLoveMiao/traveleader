@@ -3,11 +3,13 @@
 <?php Yii::app()->clientScript->registerCssFile(Yii::app()->baseUrl . '/css/MetroJs.css'); ?>
 
 <div class="warp_contant">
+<!--  
     <div class="float">
         <div class="float_button">
             <a href="/basic/page/contact?key=help">联系<br/>在线客服</a>
         </div>
     </div>
+-->
     <div class="pd_l">
         <div class="pd_l_fl">
             <div class="pd_l_nv_2">

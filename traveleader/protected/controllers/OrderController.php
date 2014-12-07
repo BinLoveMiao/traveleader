@@ -42,15 +42,15 @@ class OrderController extends Controller
      * Displays a particular model.
      * @param integer $id the ID of the model to be displayed
      */
-    public function actionView($id)
+    public function actionDetail($id)
     {
-        //$this->render('view', array(
-        //    'model' => $this->loadModel($id),
+        //$this->render('detail', array(
+        //    'order' => $this->loadModel($id),
         //));
         $order = Order::model()->findByPk($id);
         $order_items = $order->orderItems;
-        $this->render('view', array(
-        		'Order' => $order, 'Order_item' => $order_items
+        $this->render('detail', array(
+        		'Order' => $order, 'order_items' => $order_items
         ));
     }
 
@@ -170,20 +170,20 @@ class OrderController extends Controller
                     if ($model->save()) {
                         if(empty($_POST['keys']))
                         {
+                        	//echo "check4";
                             $item = Item::model()->findBypk($_POST['item_id']);
                            // $sku = Sku::model()->findByPk($_POST['sku_id']);
                             //if($sku->stock < $_POST['quantity'])
                             //{
                             //    throw new Exception('stock is not enough!');
                            // }
-                           $model->whole_num_days = $item->num_days;
-                           $model->feature_item_name = $item->title;
-                           if(!$model->save()){
-                               throw new Exception('save order item fail');
-                           }
-                           
+                           //$model->whole_num_days = $item->num_days;
+                           //$model->feature_item_name = $item->title;
+                           //if(!$model->save()){
+                           //    throw new Exception('save order item fail');
+                          // }
                             $orderItem = new OrderItem;
-
+					
                             if (!OrderItem::model()->saveOrderItem($orderItem, $model->order_id, $item, $_POST['adult_number'],
                         			$_POST['adult_price'], $_POST['child_number'], $_POST['child_price'], $_POST['travel_date'])) {
                                 throw new Exception('save order item fail');
@@ -203,7 +203,7 @@ class OrderController extends Controller
                                 // throw new Exception('cut down stock fail');
                                //  }
                     
-                                $sum_days += $item->num_days;
+                                //$sum_days += $item->num_days;
                                 if($i == 0 && $item->num_days != 0){
                                 	$item_name = $item->title;
                                 	$i = $i + 1;
@@ -226,8 +226,8 @@ class OrderController extends Controller
                                 }
                                $cart->remove($key);
                              }
-                             $model->whole_num_days = $sum_days;
-                             $model->feature_item_name = $item_name;
+                            // $model->whole_num_days = $sum_days;
+                             //$model->feature_item_name = $item_name;
                              if(!$model->save()){
                              	throw new Exception('save order item fail');
                              }
@@ -235,18 +235,22 @@ class OrderController extends Controller
                     } else {
                         throw new Exception('save order fail');
                     }
-                    $transaction->commit();
+                    $transaction->commit();                    
                     //$this->redirect(array('success'));
                     $this->render('success', array('order_id' => $model->order_id, 'user_id' => $model->user_id));
                 } catch (Exception $e) {
+               // 	echo "exception";
                     $transaction->rollBack();
                     $this->redirect(array('fail'));
-                     }
                 }
             }
+        }
     }
     public function actionFail()
     {
+    	if($error=Yii::app()->errorHandler->error){
+    		print_r($error); exit;
+    	}
         $this->render('fail');
     }
 

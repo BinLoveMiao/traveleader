@@ -131,9 +131,119 @@
 	float:left;
 
 }
+
+.youji{
+	width: 400px;
+	float: left;
+	margin-top: 10px;
+	margin-left: 5px;
+	background-color: rgb(240, 240, 240);
+	border-radius: 5px;
+}
+
+.youji .youji-list{
+	width:97%;
+	margin: 5px 5px 5px 5px;
+	background-color:white;
+}
+
+.youji-head{
+	margin: 10px 0px 10px 5px;
+	width:100%;
+}
+
+.youji-head span{
+	font-size: 14px;
+	color: #333;
+	font-weight: bold;
+	padding: 5px;
+}
+
+.youji-head a{
+	float: right;
+	margin-right: 13px;
+	padding: 5px;
+	border-radius:5px;
+	font-size: 10px;
+	color: white;
+	text-align: center;
+	background-color: #42B312;
+	display: inline-block;
+	border: 1px;
+	
+}
+
+.youji-head.a:hover{
+	color:white;
+	text-decoration:underline;
+}
+
+.youji-news{
+	margin: 10px 0px 10px 5px;
+	overflow: hidden;
+	position:relative;
+	z-index:2;
+	width:100%;
+}
+
+.carousel {
+	display: inline !important;
+    border: 1px solid #bababa;
+    border-radius: 10px;
+    background-color: ghostwhite;
+    float: left;
+    padding-left: 10px;
+	width: 85%;
+}
+
+.carousel>ul>li>p{
+	margin-top:2px;
+	width:116px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	background-color: ghostwhite;
+	border-radius:5px;
+	color: black;
+}
+
+.carousel>ul>li>a>img {
+        width: 116px;
+        height: 95px;
+        vertical-align:middle;
+        margin: 0px 10px 10px 0;
+        border-radius: 5px;
+}
+
+a.prev, a.next{
+	display: block;
+    width: 26px;
+    height: 30px;
+    line-height: 1;
+    background-color: #333333;
+    color: ghostwhite;
+    text-decoration: none;
+    font-family: Arial, sans-serif;
+    font-size: 25px;
+    border-radius: 8px;
+    float: left;
+}
+
+a.prev {
+    margin: 50px -5px 0 0; text-indent: 7px;
+}
+
+a.next {
+    margin: 50px 0 0 -5px; text-indent: 10px;
+}
+
+a.prev::hover, a.next:hover{
+	background-color: #666666;
+}
+
+
 #price_search{
     margin-top:-9px;
-
     border-radius:4px;
     background: #F5F5F5;
 }

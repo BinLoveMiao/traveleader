@@ -13,7 +13,7 @@ $this->breadcrumbs = array(
        	 <a href="
        	 <?php if(!Yii::app()->user->isGuest) 
        	 	echo Yii::app()->getBaseUrl(true). '/member/orderlist/detail-'.$order_id;
-       	 	else echo Yii::app()->createUrl('order/view?id='. $order_id);
+       	 	else echo Yii::app()->createUrl('order/detail?id='. $order_id);
        	 ?>">
        	 <span>请点击查看订单。<br/></span>
 		 </a>

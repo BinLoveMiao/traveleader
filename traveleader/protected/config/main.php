@@ -43,6 +43,7 @@ return array(
     	'application.extensions.xupload.models.*',
     	'application.extensions.image.*',
     	'ext.bootstrap.widgets.*',
+    	'ext.yiibooster.components.*',
     ),
     // path aliases
     'aliases' => array(
@@ -146,8 +147,12 @@ return array(
 //        ),
         // yiistrap configuration
         'bootstrap' => array(
-            'class' => 'bootstrap.components.TbApi',
+            'class' => 'ext.yiibooster.components.Bootstrap',
         ),
+        
+        //'booster' => array(
+        //		'class' => 'ext.yiibooster.components.',
+        //),
         // yiiwheels configuration
         'yiiwheels' => array(
             'class' => 'yiiwheels.YiiWheels',
@@ -177,6 +182,7 @@ return array(
 //                        'item-<id:\d+>' => 'item/view',
                 'item/<id:\d+>/<title:.*?>' => 'item/view',
                 'article/<id:\d+>/<title:.*?>' => 'article/view',
+                'member/orderlist/<id:\d+>' => 'member/orderlist/view',
                 '<_c:\w+>/<id:\d+>' => '<_c>/view',
                 '<_c:\w+>/<_a:\w+>/<id:\d+>' => '<_c>/<_a>',
                 '<_c:\w+>/<_a:\w+>' => '<_c>/<_a>',

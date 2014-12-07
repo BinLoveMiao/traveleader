@@ -34,7 +34,7 @@
             <?php echo CHtml::link('收藏网站', 'http://127.0.0.1/basic/', array(rel=>"sidebar",'onclick' => "addFavorite();"));
             echo CHtml::link('官网', Yii::app()->getBaseUrl(true));
             echo CHtml::link('新浪', 'http://www.sina.com.cn/', array('class' => 'sina'));
-            echo CHtml::link('商城', Yii::app()->getBaseUrl(true), array('class' => 'mart')); ?>
+            //echo CHtml::link('商城', Yii::app()->getBaseUrl(true), array('class' => 'mart')); ?>
             <span class="cor_red bold font14">Tel: 13967414054</span>
             <?php echo CHtml::link('在线客服',  array('page/contact','key' => 'help')); ?>
         </div>

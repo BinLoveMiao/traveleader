@@ -14,6 +14,7 @@
                     //array('label'=>Yii::t('main', 'delivery address'), 'url'=>array('//member/delivery_address/admin'),'itemOptions'=>array('class'=>'personal-list')),
                     array('label'=>Yii::t('main', 'my order'), 'url'=>array('//member/orderlist/admin'),'itemOptions'=>array('class'=>'personal-list')),
                     array('label'=>Yii::t('main', 'my collect'), 'url'=>array('//member/wishlist/admin'),'itemOptions'=>array('class'=>'personal-list')),
+                	array('label'=>Yii::t('main', '我游我记'), 'url'=>array('//member/userpost/admin'),'itemOptions'=>array('class'=>'personal-list')),
                 ),
             ));
             ?></div>

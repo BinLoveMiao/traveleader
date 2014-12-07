@@ -1,7 +1,5 @@
 <?php
 $cs = Yii::app()->clientScript;
-$cs->registerCssFile(Yii::app()->theme->baseUrl . '/css/product.css');
-$cs->registerCssFile(Yii::app()->theme->baseUrl . '/css/deal.css');
 $cs->registerScriptFile(Yii::app()->theme->baseUrl . '/js/pptBox.js');
 $cs->registerScriptFile(Yii::app()->theme->baseUrl . '/js/lrtk.js');
 $cs->registerScriptFile(Yii::app()->baseUrl . '/js/jquery-ui.min.js');
@@ -10,8 +8,14 @@ $cs->registerScriptFile(Yii::app()->baseUrl . '/js/bootstrap.min.js');
 //$cs->registerCssFile(Yii::app()->baseUrl . '/css/bootstrap-theme.min.css');
 $cs->registerScriptFile(Yii::app()->baseUrl . '/js/jquery.qtip.min.js');
 $cs->registerCssFile(Yii::app()->baseUrl . '/css/jquery.qtip.min.css');
+//$cs->registerScriptFile(Yii::app()->baseUrl . '/js/jquery-1.9.1.min.js');
+$cs->registerScriptFile(Yii::app()->baseUrl . '/js/jquery.jcarousellite.min.js');
+$cs->registerScriptFile(Yii::app()->baseUrl . '/js/jquery.mousewheel.min.js');
+$cs->registerScriptFile(Yii::app()->baseUrl . '/js/jquery.easing.1.3.js');
 Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl.'/css/cart/review.css');
 Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl.'/js/review.js');
+$cs->registerCssFile(Yii::app()->theme->baseUrl . '/css/product.css');
+$cs->registerCssFile(Yii::app()->theme->baseUrl . '/css/deal.css');
 
 $imageHelper=new ImageHelper();
 /** @var Item $item */
@@ -300,7 +304,7 @@ $imageHelper=new ImageHelper();
             <input type="hidden" id="item_id" name="item_id" value="<?php echo $item->item_id; ?>" />
             <input type="hidden" id="props" name="props" value="" />
             <div class="deal_add" data-url="<?php echo Yii::app()->createUrl('user/user/isLogin'); ?>" ><?php echo CHtml::link("立即预定", 'javascript:void(0);')?></div>
-            <!-- <div  class="deal_add_car" data-url="<?php echo Yii::app()->createUrl('cart/add'); ?>"><a href="javascript:void(0)" id="addToShopCart" >加入购物车</a></div>--> 
+            <div  class="deal_add_car" data-url="<?php echo Yii::app()->createUrl('cart/add'); ?>"><a href="javascript:void(0)" id="addToShopCart" >加入购物车</a></div> 
             <div  class="deal_collect" data-url="<?php echo Yii::app()->createUrl('member/wishlist/addWish'); ?>" ><a href="javascript:void(0)">立即收藏</a></div>
             <!-- Modal -->
             </div>
@@ -333,6 +337,28 @@ $imageHelper=new ImageHelper();
                 </div>
             </div>
       </form>
+      	<div class="youji">		
+			<div class="youji-list auto">
+				<div class="youji-head">
+					<span>最新发表的游记</span>
+					<a href="<?php echo Yii::app()->createUrl('post/create',array('item' => $item->item_id));?>">
+					发表 我游我记
+					</a>
+				</div>
+				<div class="youji-news">
+    				<div class="carousel">
+    				  <ul>
+    				<?php foreach($posts as $post)
+    					echo '<li><p>'.$post->title.'</p><a href="'.
+    						Yii::app()->createUrl("post/view", array("id"=>$post->id)).
+    					'"><img src="'.$post->cover_pic. '"></a></li>';
+    					?>
+        				</ul>
+    				</div>
+   					 <div class="clear"></div>
+				</div>
+			</div>
+		</div>
       </div>
     </div><!-- /.modal-content -->
 </div><!-- /.modal-dialog -->
@@ -362,34 +388,6 @@ $imageHelper=new ImageHelper();
             <hr />
             <div class="col-xs-6 pull-left" align="left">收藏此商品的人还喜欢</div>
             <div class="col-xs-6 pull-right" align="right" style="visibility: hidden"><a><font color="#3388BB">换一组</font></a></div>
-<!--            <div>-->
-<!--                <ul class="clearfix">-->
-<!--                    <li class="col-xs-2">-->
-<!--                        <a href="/basic/item/57" title=""target="_blank"><img src="/basic/upload/item/manclothes/.tmb/thumb_d_adaptiveResize_70_70.jpg" class="li-img" alt=""></a>-->
-<!--                        <div width="100%" align="center" height="15px">$1299.00</div>-->
-<!--                    </li>-->
-<!--                    <li class="col-xs-2">-->
-<!--                        <a href="/basic/item/59" title=""target="_blank"><img src="/basic/upload/item/manclothes/.tmb/thumb_iii_adaptiveResize_70_70.jpg" alt=""></a>-->
-<!--                        <div width="100%" align="center" height="15px">$1299.00</div>-->
-<!--                    </li>-->
-<!--                    <li class="col-xs-2">-->
-<!--                        <a href="/basic/item/35" title=""target="_blank"><img src="/basic/upload/item/manclothes/.tmb/thumb_T1vyPGFhxeXXXXXXXX_!!0-item_pic.jpg_460x460q90_adaptiveResize_70_70.jpg" class="li-img" alt=""></a>-->
-<!--                        <div width="100%" align="center" height="15px">$1299.00</div>-->
-<!--                    </li>-->
-<!--                    <li class="col-xs-2">-->
-<!--                        <a href="/basic/item/37" title=""target="_blank"><img src="/basic/upload/item/manclothes/.tmb/thumb_1015622205-1_u_1_adaptiveResize_70_70.jpg" class="li-img" alt=""></a>-->
-<!--                        <div width="100%" align="center" height="15px">$1299.00</div>-->
-<!--                    </li>-->
-<!--                    <li class="col-xs-2">-->
-<!--                        <a href="/basic/item/58" title=""target="_blank"><img src="/basic/upload/item/manclothes/.tmb/thumb_f_adaptiveResize_70_70.jpg" class="li-img" alt=""></a>-->
-<!--                        <div width="100%" align="center" height="15px">$1299.00</div>-->
-<!--                    </li>-->
-<!--                    <li class="col-xs-2">-->
-<!--                        <a href="/basic/item/31" title=""target="_blank"><img src="/basic/upload/item/manclothes/.tmb/thumb_01_adaptiveResize_70_70.jpg" class="li-img" alt=""></a>-->
-<!--                        <div width="100%" align="center" height="15px">$1299.00</div>-->
-<!--                    </li>-->
-<!--                </ul>-->
-<!--            </div>-->
 
             <div>
                 <ul class="clearfix">
@@ -953,4 +951,9 @@ function GetXmlHttpObject()
     }
     return xmlHttp;
 }
+
+$(".auto .carousel").jCarouselLite({
+    auto: 800,
+    speed: 3000
+});
 </script>

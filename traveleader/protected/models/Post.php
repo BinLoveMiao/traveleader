@@ -66,7 +66,7 @@ class Post extends CActiveRecord
 			//array('tags', 'normalizeTags'),
 			array('views, ding, item_id, scenery_id, country, state, city', 'numerical', 'integerOnly' => true),
 			array('views, ding, scenery_id, country, state, city,image_id', 'length', 'max' => 10),
-			array('title, status', 'safe', 'on'=>'search'),
+			array('title, status, views, ding, create_time', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -129,27 +129,27 @@ class Post extends CActiveRecord
 	public function attributeLabels()
 	{
 		return array(
-			'id' => 'Id',
-			'category_id' => 'Category',
-			'title' => '标题',
-			'summary' => '摘要',
-			'content' => '我游我记',
-			'tags' => '标签',
-			'status' => '状态',
-			'views' => '浏览次数',
-			'ding' => '顶',
-			'create_time' => 'Create Time',
-			'update_time' => 'Update Time',
-			'author_id' => 'Author',
-			'language' => 'Language',
-			'cover_pic' => '封面图片',
-			'is_best' => '是否推荐',
-			'item_id' => '旅游产品',
-			'country' => '国家/大洲',
-			'state' => '省/国家',
-			'city' => '城市',
-			'scenery_id' => '景点',
-			'image_id' => 'ImageAttachment',
+			'id' => Yii::t('Post', 'Id'),
+			'category_id' => Yii::t('Post', '类别'),
+			'title' => Yii::t('Post', '标题'),
+			'summary' => Yii::t('Post', '摘要'),
+			'content' => Yii::t('Post', '我游我记'),
+			'tags' => Yii::t('Post', '标签'),
+			'status' => Yii::t('Post', '状态'),
+			'views' => Yii::t('Post', '浏览次数'),
+			'ding' => Yii::t('Post', '顶'),
+			'create_time' => Yii::t('Post', '创建时间'),
+			'update_time' => Yii::t('Post', '更新时间'),
+			'author_id' => Yii::t('Post', '作者'),
+			'language' => Yii::t('Post', '语言'),
+			'cover_pic' => Yii::t('Post', '封面图片'),
+			'is_best' => Yii::t('Post', '精品'),
+			'item_id' => Yii::t('Post', '旅游产品'),
+			'country' => Yii::t('Post', '国家/洲'),
+			'state' => Yii::t('Post', '省/国家'),
+			'city' => Yii::t('Post', '城市'),
+			'scenery_id' => Yii::t('Post', '景点'),
+			'image_id' => Yii::t('Post', 'ImageAttachement'),
 		);
 	}
 
@@ -256,14 +256,27 @@ class Post extends CActiveRecord
 		$criteria=new CDbCriteria;
 
 		$criteria->compare('title',$this->title,true);
-		
+		//$criteria->compare('author_id', $this->author_id);
 		$criteria->compare('status',$this->status);
-
+		$criteria->compare('author_id', Yii::app()->user->getId());
+		//$criteria->compare('ding', $this->ding);
+		//$criteria->compare('views', $this->views);
+		//$criteria->compare('create_time', $this->create_time);
+		
 		return new CActiveDataProvider('Post', array(
 			'criteria'=>$criteria,
 			'sort'=>array(
 				'defaultOrder'=>'status, update_time DESC',
 			),
 		));
+	}
+	
+	public function getStatusOptions()
+	{
+		return array(
+				self::STATUS_DRAFT      => Yii::t('Post','草稿'),
+				self::STATUS_PUBLISHED  => Yii::t('Post','发布'),
+				self::STATUS_ARCHIVED   => Yii::t('Post','存档'),
+		);
 	}
 }

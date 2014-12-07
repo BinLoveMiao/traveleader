@@ -9,11 +9,13 @@ Yii::app()->plugin->render('Hook_Login');
 ?>
 
 <div class="warp_contant">
+<!--
     <div class="float">
         <div class="float_button">
             <a href="/basic/page/contact?key=help">联系<br/>在线客服</a>
         </div>
     </div>
+  -->
     
     <div class="product_cate contaniner_24">
      <div class="product_cate_tit0"><label><?php echo "旅游标签";?></label></div>

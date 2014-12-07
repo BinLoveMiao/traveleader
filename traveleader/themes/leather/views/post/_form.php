@@ -115,7 +115,7 @@ $form=$this->beginWidget('CActiveForm'); ?>
 	<div class="row">
 		<?php echo $form->label($model,'摘要'); ?>
 		<?php echo $form->textArea($model,'summary',array('maxlength'=>1024, 
-		'style'=>'height:120px;width:650px;padding: 5px 5px 90px;resize:none')); ?>
+		'style'=>'height:120px;width:650px;padding;resize:none')); ?>
 		<?php echo $form->error($model,'summary'); ?>
 	</div>
 	

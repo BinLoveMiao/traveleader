@@ -8,7 +8,7 @@
 <body>
 <div class="tabs-container">
 <ul class="tabs-nav">
-    <li class="current ks-switchable-trigger-internal164"><a name="tab0">订单信息</a></li>
+    <li class="current ks-switchable-trigger-internal164"><a name="tab0">订单项目信息</a></li>
 </ul>
 
 <div class="tabs-panels">
@@ -26,12 +26,13 @@
                 echo Order::model()->showDetailAddress($Order);
                 ?>
             </dd>
+            <!--  
             <dt>备注：</dt>
             <dd>
                 <?php
-                echo $Order->memo;
+                //echo $Order->memo;
                 ?>
-            </dd>
+            </dd>-->
         </dl>
     </div>
 
@@ -55,16 +56,6 @@
             ?>
         </dd></dl>
     <dl>
-    <!--  
-        <dt>发货时间：</dt>
-        <dd>
-            <?php
-           // if($Order->ship_time){
-            //    echo date("Y年m月d日 H:i:s",$Order->ship_time);
-          //  }
-            ?>
-        </dd>
-        -->
 
         <dt>付款时间：</dt>
         <dd>
@@ -78,10 +69,10 @@
          <dt>出游时间：</dt>
         <dd>
             <?php
-            if(count($Order_item) != 0){
-                $travel_date=$Order_item[0]->travel_date;
-                echo $travel_date;
-            }
+            //if(count($Order_item) != 0){
+             //   $travel_date=$Order_item[0]->travel_date;
+                echo $order_item->travel_date;
+           // }
 			//$gap=ceil((strtotime(date("Y-M-d h:i:s")) - strtotime($travel_date. ' 00:00:00'))/86400);
 			//if($gap > $Order->whole_num_days){
 			?> 
@@ -106,12 +97,12 @@
 
 <hr>
 <div class="misc-info">
-    <h3>订单详情</h3>
+    <h3>订单项目详情</h3>
     <dl>
         <dt>订单状态：</dt>
         <dd>
             <?php
-            echo Tbfunction::showOrderStatus($Order->status);
+            echo Tbfunction::showOrderStatus($order_item->status);
             ?>
         </dd>
         <!--  
@@ -146,10 +137,10 @@
 </div>
 <!-- 订单信息 -->
 
-    <?php
-    foreach($Order_item as $orderItems){
+<dl>
+   <dt>订单项目清单：：</dt>
+   <dd>
 
-        ?>
 <table>
     <colgroup>
         <col class="item">
@@ -178,7 +169,7 @@
         <th class="item " style="width:30%">旅游产品</th>
                            <th class="price" style="width:10%">价格(元)</th>
                            <th class="num" style="width:10%">人数</th>
-                           <th class="order-price last" style="width:20%">订单总价(元)</th>
+                           <th class="order-price last" style="width:20%">产品总价(元)</th>
     </tr>
 
         <tr class="order-item">
@@ -186,31 +177,32 @@
                 <div class="pic-info">
                     <div class="pic s50">
                         <a target="_blank" href="javascript:void(0)" title="商品图片">
-                            <img alt="查看产品详情" src="<?php echo Yii::app()->baseUrl. $orderItems->pic ?>" />
+                            <img alt="查看产品详情" src="<?php echo Yii::app()->baseUrl. $order_item->pic ?>" />
                         </a>
                     </div>
                 </div>
                 <div class="txt-info">
                     <div class="desc">
-                        <span class="name"><a href="#" title="" target="_blank"><?php echo $orderItems->title ?></a></span>
+                        <span class="name"><a href="<?php echo Yii::app()->createUrl('item/view', array('id' => $order_item->item_id));?>" 
+                        	title="" target="_blank"><?php echo $order_item->title ?></a></span>
                         <br>
                     </div>
                 </div>
             </td>
 
             <td class="price" style="width:10%">
-            	<p>成人：<?php echo $orderItems->adult_price;?></p>
-				<p>儿童：<?php echo $orderItems->child_price;?></p>
+            	<p>成人：<?php echo $order_item->adult_price;?></p>
+				<p>儿童：<?php echo $order_item->child_price;?></p>
             </td>
             
             <td class="num">
-            	<p>成人：<?php echo $orderItems->adult_number;?> </p>
-                <p>儿童：<?php echo $orderItems->child_number;?></p>
+            	<p>成人：<?php echo $order_item->adult_number;?> </p>
+                <p>儿童：<?php echo $order_item->child_number;?></p>
             </td>
             
             <td class="order-price" rowspan="1">
                 <?php
-                echo $orderItems->total_price;
+                echo $order_item->total_price;
                 ?>
             </td>
         </tr>
@@ -227,7 +219,7 @@
     	
 
         <?php
-        $schedules = Schedule::model()->findAllByAttributes(array('item_id' => $orderItems->item_id));
+        $schedules = Schedule::model()->findAllByAttributes(array('item_id' => $order_item->item_id));
         foreach($schedules as $sched){
 			$time_detail=$sched->decodeSchedule();
 		?>
@@ -269,8 +261,8 @@
 		</tr>
 		<?php 
    		}
-    }
     ?>
+    <!--  
     <tr class="order-ft">
         <td colspan="8">
             <div class="get-money" colspan="6">
@@ -278,16 +270,18 @@
                 实付款：
                 <strong>
                     <?php
-                    echo $Order->pay_fee;
+                   // echo $Order->pay_fee;
                     ?>
                 </strong>元
                 <br>
             </div>
         </td>
-    </tr>
+    </tr>-->
     </tbody>
 
 </table>
+</dd>
+</dl>
 </div>
 </div><!-- end order-info -->
 

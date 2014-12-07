@@ -41,71 +41,82 @@ class OrderlistController extends Controller
 	}
 
 	/**
-	 * Displays a particular model.
+	 * Displays a particular orderItem.
 	 * @param integer $id the ID of the model to be displayed
 	 */
 	public function actionView($id)
 	{
+		$order_item = OrderItem::model()->findByPk($id);
 		$this->render('view',array(
-			'model'=>$this->loadModel($id),
+			'Order'=>$order_item->order,
+			'order_item' => $order_item,
 		));
 	}
-
+	
+	/**
+	 * Show detail of an order. 
+	 * An order can contains multiple orderItems
+	 * @param unknown $id
+	 */
     public function actionDetail($id)
     {
-        $order = Order::model()->findByPk($id);
-        $order_items = $order->orderItems;
-        $this->render('view', array(
-            'Order' => $order, 'Order_item' => $order_items
+        //$order_item = OrderItem::model()->findByPk($id);
+        //$order_items = $order->orderItems;
+    	//$order_item = OrderItem::model()->findAllByPk($id);
+    	//$order = $order_item->order;
+    	$order = Order::model()->findByPk($id);
+        $this->render('detail', array(
+            'Order' => $order, 'order_items' => $order->orderItems
         ));
     }
     
     public function actionReview($id)
     {
-    	$order = Order::model()->findByPk($id);
-    	if($order->status != strval(Order::STATUS_TRAVELLED)){
+    	//$order = Order::model()->findByPk($id);
+    	$order_item = OrderItem::model()->findByPk($id);
+    	//$order = $order_item->order;
+    	if($order_item->status != strval(OrderItem::STATUS_TRAVELLED)){
     		throw new CHttpException(404, '未出游，不能评论');
     	}
-    	$order_items = $order->orderItems;
+    	//$order_items = $order->orderItems;
     	$this->render('create_review', array(
-    			'order_id' => $order->order_id, 'Order_items' => $order_items
+    			'order_id' => $order_item->order_id, 'order_item' => $order_item
     	));
     }
     
     public function actionReviewSubmit($id){
-    	$order = Order::model()->findByPk($id);
-    	$order_items = $order->orderItems;
+    	//$order = Order::model()->findByPk($id);
+    	//$order_items = $order->orderItems;
+		$order_item = OrderItem::model()->findByPk($id);
 
-    	foreach($order_items as $order_item){
-    		$review = new Review;
-    		$review->customer_id = $_POST['anony'] ? '0': Yii::app()->user->id;
-    		$review->entity_pk_value = $order_item->item_id;
-    		$review->content = $_POST['overall-review-'.$order_item->item_id];
-    		$review->rating = $_POST['rating-content-overall-'.$order_item->item_id];
-    		$review->guide_review = $_POST['guide-review-'.$order_item->item_id];
-    		$review->guide_rating = $_POST['rating-content-guide-'.$order_item->item_id];
-    		$review->schedule_review = $_POST['schedule-review-'.$order_item->item_id];
-    		$review->schedule_rating = $_POST['rating-content-schedule-'.$order_item->item_id];
-    		$review->meal_review = $_POST['meal-review-'.$order_item->item_id];
-    		$review->meal_rating = $_POST['rating-content-meal-'.$order_item->item_id];
-    		$review->transport_review = $_POST['guide-review-'.$order_item->item_id];
-    		$review->transport_rating = $_POST['rating-content-transport-'.$order_item->item_id];
-    		$review->entity_id = "1";
-    		$review->create_at = time();
-    		$review->photos_exit = "0";
+    	$review = new Review;
+    	$review->customer_id = $_POST['anony'] ? '0': Yii::app()->user->id;
+    	$review->entity_pk_value = $order_item->item_id;
+    	$review->content = $_POST['overall-review-'.$order_item->item_id];
+    	$review->rating = $_POST['rating-content-overall-'.$order_item->item_id];
+    	$review->guide_review = $_POST['guide-review-'.$order_item->item_id];
+    	$review->guide_rating = $_POST['rating-content-guide-'.$order_item->item_id];
+    	$review->schedule_review = $_POST['schedule-review-'.$order_item->item_id];
+    	$review->schedule_rating = $_POST['rating-content-schedule-'.$order_item->item_id];
+    	$review->meal_review = $_POST['meal-review-'.$order_item->item_id];
+    	$review->meal_rating = $_POST['rating-content-meal-'.$order_item->item_id];
+    	$review->transport_review = $_POST['guide-review-'.$order_item->item_id];
+    	$review->transport_rating = $_POST['rating-content-transport-'.$order_item->item_id];
+    	$review->entity_id = "1";
+    	$review->create_at = time();
+    	$review->photos_exit = "0";
     		
-    		if($review->save()){
-    			$item = Item::model()->findByPk($order_item->item_id);
-    			$item->review_count += 1; //Add the review count
-    			$item->save();			
-    			if($order_item->is_review == "0"){
-    				$order_item->is_review = "1";
-    				$order_item->save();
-    			}
+    	if($review->save()){
+    		$item = Item::model()->findByPk($order_item->item_id);
+    		$item->review_count += 1; //Add the review count
+    		$item->save();			
+    		if($order_item->is_review == "0"){
+    			$order_item->is_review = "1";
+    			$order_item->save();
     		}
-    		else{
-    			throw new CHttpException(404, 'Review failed.');
-    		}
+    	}
+    	else{
+    		throw new CHttpException(404, 'Review failed.');
     	}
     	//if($order->review_status == "0"){
     	//	$order->review_status = "1";
@@ -207,12 +218,30 @@ class OrderlistController extends Controller
 	public function actionAdmin()
 	{
 		$model=new Order('search');
-		$model->unsetAttributes();  // clear any default values
+		//$model->unsetAttributes();  // clear any default values
 		if(isset($_GET['Order']))
 			$model->attributes=$_GET['Order'];
-
+		/*
+		$dataProvider = new CActiveDataProvider('Order',array(
+			'criteria'=>array(
+				'join' => 'LEFT JOIN order_item oi
+					ON oi.order_id = t.order_id',	
+				//'with' => array('orderItems'=>array('joinType'=>'LEFT JOIN')),
+				'condition' => 't.user_id='.Yii::app()->user->getId(),
+				'order' => 't.create_time DESC',
+				'select' => array('t.order_id', 't.create_time', 't.total_fee, t.status',
+					'`oi`.`order_item_id` as `order_item_id`', 
+					'`oi`.`item_id` as `item_id`', 
+					'`oi`.`title` as `title`', 
+					'`oi`.`status` as `status2`',
+					'`oi`.`is_review` as `is_review`'
+				)
+			),
+		));*/
+		
+		//print_r($dataprovider->getData()); exit;	
 		$this->render('admin',array(
-			'model'=>$model,
+			'data'=>$model,
 		));
 	}
 

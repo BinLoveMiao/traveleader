@@ -186,7 +186,7 @@ div.wide.form .buttons, div.wide.form .hint, div.wide.form .errorMessage
 }
 #content .box .box-content  .summary{
  position: absolute;
- bottom: -20px;
+ bottom: 0px;
  right: 10px;
 
 }

@@ -69,7 +69,7 @@ class Item extends YActiveRecord
         return array(
             array('category_id, title, price, currency, props, props_name, desc, language, country, state, city', 'required'),
             array('is_show, is_promote, is_new, is_hot, is_best', 'numerical', 'integerOnly' => true),
-            array('category_id, num_orders, min_number, price, discount_price, num_days, departure, shipping_fee, click_count,
+            array('category_id, min_number, price, discount_price, num_days, departure, shipping_fee, click_count,
             		wish_count, review_count,deal_count,create_time,
             		update_time, country, state, city, scenery_id, supplier, tag1, tag2, tag3', 'length', 'max' => 10),
             array('outer_id, language', 'length', 'max' => 45),

@@ -37,13 +37,13 @@
 class OrderItem extends CActiveRecord
 {
 	
-	const STATUS_WAIT_PAY=0;
-	const STATUS_PAID=1;
-	const STATUS_WAIT_REFUND=2;
-	const STATUS_REFUNDED=3;
-	const STATUS_SUCCESS=4;
-	const STATUS_CLOSED=5;
-	const STATUS_TRAVELLED=6;
+	const STATUS_WAIT_PAY=2;
+	const STATUS_PAID=3;
+	const STATUS_WAIT_REFUND=4;
+	const STATUS_REFUNDED=5;
+	const STATUS_SUCCESS=6;
+	const STATUS_CLOSED=7;
+	const STATUS_TRAVELLED=8;
     /**
      * @return string the associated database table name
      */
@@ -63,7 +63,7 @@ class OrderItem extends CActiveRecord
             array('order_id, item_id, title, desc, price, child_number, adult_number, 
             			child_price, adult_price, total_price, travel_date, is_review, status', 'required'),
             array('order_id', 'length', 'max'=>20),
-        	array('is_review, status', 'numerical', 'integerOnly' => true),
+        	//array('is_review, status', 'numerical', 'integerOnly' => true),
             array('pic','safe'),
             array('item_id, price, quantity, child_number, adult_number, child_price, adult_price, total_price', 'length', 'max'=>10),
             array('title, pic, flight_info, insurance_info', 'length', 'max'=>255),
@@ -168,6 +168,7 @@ class OrderItem extends CActiveRecord
                 'params'=> array(':item_id' =>$this->item_id),
             ));
             $model=Item::model()->findByPk($this->item_id);
+            //print_r($model); exit;
             $model->deal_count=$num;
             $model->save();
             return parent::afterSave();
@@ -176,6 +177,7 @@ class OrderItem extends CActiveRecord
     public function saveOrderItem($orderItem, $order_id, $item, $adult_number, $adult_price, 
             $child_number, $child_price, $travel_date)
     {
+    	//print_r($item);
         $orderItem->order_id = $order_id;
         $orderItem->item_id = $item->item_id;
         $orderItem->title = $item->title;
@@ -183,6 +185,7 @@ class OrderItem extends CActiveRecord
         $orderItem->pic = $item->getMainPic();
         $orderItem->price = $item->price;
         $orderItem->quantity = 0;
+        $orderItem->props_name = "";
         $orderItem->adult_number = $adult_number;
         $orderItem->adult_price = $adult_price;
         $orderItem->child_number = $child_number;

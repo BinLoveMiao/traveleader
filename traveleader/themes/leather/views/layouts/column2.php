@@ -12,7 +12,7 @@
                     'maxComments' => Yii::app()->params['recentCommentCount'],
                     'htmlOptions' => array('class' => 'box-title')
                 )); ?>
-            </div>
+            </div> 
             <!-- sidebar -->
         </div>
     </div>

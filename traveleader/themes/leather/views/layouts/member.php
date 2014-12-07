@@ -9,6 +9,7 @@
                 <ul>
                     <li><?php echo CHtml::link('个人信息', array('/user/profile/edit')) ?></li>
                     <li><?php echo CHtml::link('我的联系人', array('/member/delivery_address/admin')) ?></li>
+                    <li><?php echo CHtml::link('我游我记', array('/member/userpost/admin')) ?></li>
                     <li><?php echo CHtml::link('修改密码', array('/user/profile/changepassword')) ?></li>
                 </ul>
             </div>

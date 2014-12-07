@@ -62,6 +62,13 @@ class Order extends CActiveRecord
 	const STATUS_TRAVELLED=8;
 
     private $orderLog;
+    public $order_detail;
+    public $ORDERITEM_order_item_id;
+    public $ORDERITEM_item_id;
+    public $ORDERITEM_title;
+    public $ORDERITEM_status;
+    public $ORDERITEM_is_review;
+     
     public $id;
     /**
      * Returns the static model of the specified AR class.
@@ -89,16 +96,16 @@ class Order extends CActiveRecord
         // will receive user inputs.
         return array(
             array('status, receiver_name, receiver_mobile, receiver_email', 'required'),
-            array('status, review_status', 'numerical', 'integerOnly' => true),
-        	array('status', 'in', 'range'=>array(0,1,2,3,4,5,6,7,8)),
-        	array('is_children, has_old_man, has_foreigner, is_invoice, whole_num_days', 'numerical', 'integerOnly' => true),
+            array('status, review_status, ORDERITEM_status, ORDERITEM_is_review', 'numerical', 'integerOnly' => true),
+        	array('status, ORDERITEM_status', 'in', 'range'=>array(0,1,2,3,4,5,6,7,8)),
+        	array('is_children, has_old_man, has_foreigner, is_invoice', 'numerical', 'integerOnly' => true),
             array('user_id, total_fee, pay_fee, payment_method_id, pay_time, create_time, update_time', 'length', 'max' => 10),
             array('receiver_name, receiver_country, receiver_state, receiver_city, receiver_district, receiver_zip, receiver_mobile, receiver_email, receiver_phone', 'length', 'max' => 45),
-            array('feature_item_name, receiver_address', 'length', 'max' => 255),
-            array('memo', 'safe'),
+            array('receiver_address', 'length', 'max' => 255),
+            array('memo, ORDERITEM_order_item_id, $ORDERITEM_item_id, ORDERITEM_status, ORDERITEM_is_review', 'safe'),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            array('order_id, user_id, status, review_status, total_fee, pay_fee, payment_method_id, receiver_name, receiver_country, receiver_state, receiver_city, receiver_district, receiver_address, receiver_zip, receiver_mobile, receiver_phone, memo, pay_time, create_time, update_time', 'safe', 'on' => 'search'),);
+            array('order_id, user_id, status, review_status, total_fee, pay_fee, ORDERITEM_status, ORDERITEM_is_review', 'safe', 'on' => 'search'),);
     }
 
     /**
@@ -122,35 +129,37 @@ class Order extends CActiveRecord
      */
     public function attributeLabels(){
         return array(
-            'order_id' => '订单号',
-            'user_id' => '会员',
-            'status' => '订单状态',
-        	'review_status' => '点评状态',
-            'total_fee' => '需付款',
-            'pay_fee' => '实付款',
-            'pay_method' => '付款方式',
-            'receiver_name' => '收货人',
-            'receiver_country' => '国家',
-            'receiver_state' => '省',
-            'receiver_city' => '市',
-            'receiver_district' => '区',
-            'receiver_address' => '详细地址',
-            'receiver_zip' => '邮政编码',
-            'receiver_mobile' => '手机',
-        	'receiver_email' => '电子邮件',
-            'receiver_phone' => '电话',   		
-        	'is_children' => "All the tourists are children",
-        	'has_old_man' => "Has old man older than 70 years old",
-        	'has_foreigner' => "Has foreigner",
-        	'is_invoice' => "Need invoice or not",
-            'memo' => '备注',
-            'pay_time' => '付款时间',
-            'create_time' => '下单时间',
-            'update_time' => '更新时间',
-            'payment_method_id' => '付款方式',
-            'detail_address' => '具体地址',
-        	'feature_item_name' => '代表线路',
-        	'whole_num_days' => '总出行天数',
+            'order_id' => Yii::t('Order', '订单号'),
+            'user_id' => Yii::t('Order', '会员'),
+            'status' => Yii::t('Order', '订单状态'),
+        	'review_status' => Yii::t('Order', '点评状态'),
+            'total_fee' => Yii::t('Order', '需付款'),
+            'pay_fee' => Yii::t('Order', '实付款'),
+            'pay_method' => Yii::t('Order', '付款方式'),
+            'receiver_name' => Yii::t('Order', '联系人'),
+            'receiver_country' => Yii::t('Order', '国家'),
+            'receiver_state' => Yii::t('Order', '省'),
+            'receiver_city' => Yii::t('Order', '市'),
+            'receiver_district' => Yii::t('Order', '区'),
+            'receiver_address' => Yii::t('Order', '详细地址'),
+            'receiver_zip' => Yii::t('Order', '邮编'),
+            'receiver_mobile' => Yii::t('Order', '手机'),
+        	'receiver_email' => Yii::t('Order', '电子邮件'),
+            'receiver_phone' => Yii::t('Order', '电话'),   		
+        	'is_children' => Yii::t('Order', '儿童'),
+        	'has_old_man' => Yii::t('Order', '有老人'),
+        	'has_foreigner' => Yii::t('Order', '有外国人'),
+        	'is_invoice' => Yii::t('Order', '需要发票'),
+            'memo' => Yii::t('Order', '备注'),
+            'pay_time' => Yii::t('Order', '付款时间'),
+            'create_time' => Yii::t('Order', '下单时间'),
+            'update_time' => Yii::t('Order', '更新时间'),
+            'payment_method_id' => Yii::t('Order', '付款方式'),
+            'detail_address' => Yii::t('Order', '具体地址'),
+        	'order_detail' => '订单号 | 下单时间 | 需付款',
+        	'ORDERITEM_title' => Yii::t('Order', '订单项目名称'),
+        	'ORDERITEM_is_review' => Yii::t('Order', '订单点评状态'),
+        	'ORDERITEM_status' => Yii::t('Order', '订单项目状态'),
         );
     }
 
@@ -159,40 +168,29 @@ class Order extends CActiveRecord
      * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
      */
     public function search(){
-        // Warning: Please modify the following code to remove attributes that
-        // should not be searched.
-
-        $criteria = new CDbCriteria;
-
-        $criteria->compare('order_id', $this->order_id, true);
-        $criteria->compare('user_id', $this->user_id, true);
-        $criteria->compare('status', $this->status);
-        //$criteria->compare('pay_status', $this->pay_status);
-        $criteria->compare('review_status', $this->review_status);
-        //$criteria->compare('comment_status', $this->comment_status);
-        $criteria->compare('total_fee', $this->total_fee, true);
-        $criteria->compare('pay_fee', $this->pay_fee, true);
-        $criteria->compare('payment_method_id', $this->payment_method_id, true);
-        $criteria->compare('receiver_name', $this->receiver_name, true);
-        $criteria->compare('receiver_country', $this->receiver_country, true);
-        $criteria->compare('receiver_state', $this->receiver_state, true);
-        $criteria->compare('receiver_city', $this->receiver_city, true);
-        $criteria->compare('receiver_district', $this->receiver_district, true);
-        $criteria->compare('receiver_address', $this->receiver_address, true);
-        $criteria->compare('receiver_zip', $this->receiver_zip, true);
-        $criteria->compare('receiver_mobile', $this->receiver_mobile, true);
-        $criteria->compare('receiver_phone', $this->receiver_phone, true);
-        $criteria->compare('pay_time', $this->pay_time, true);
-        //$criteria->compare('is_review', $this->is_review, true);
-        $criteria->compare('create_time', $this->create_time, true);
-        $criteria->compare('update_time', $this->update_time, true);
-
-        $criteria->with = 'users';
-        $criteria->order='order_id desc';
-
-        return new CActiveDataProvider($this, array(
-            'criteria' => $criteria,
-        ));
+    	// Warning: Please modify the following code to remove attributes that
+    	// should not be searched.
+    	
+    	$criteria = new CDbCriteria;
+    	
+    	$criteria->join='LEFT JOIN order_item oi ON oi.order_id = t.order_id';
+    	$criteria->select=array('t.order_id', 't.create_time', 't.total_fee', 't.status',
+    			'`oi`.`order_item_id` as `ORDERITEM_order_item_id`',
+    			'`oi`.`item_id` as `ORDERITEM_item_id`',
+    			'`oi`.`title` as `ORDERITEM_title`',
+    			'`oi`.`status` as `ORDERITEM_status`',
+				'`oi`.`is_review` as `ORDERITEM_is_review`');  	        
+        $criteria->order='t.status, t.create_time DESC';
+    
+    	$criteria->compare('t.order_id', $this->order_id, true);
+    	$criteria->compare('t.user_id', Yii::app()->user->id);
+    	//$criteria->compare('t.status', $this->status);
+    	$criteria->compare('oi.title', $this->ORDERITEM_title, true);
+    	$criteria->compare('oi.status', $this->ORDERITEM_status);
+    	$criteria->compare('oi.is_review', $this->ORDERITEM_is_review);
+    	
+    	return new CActiveDataProvider($this, array(
+    	            'criteria' => $criteria));
     }
 
     public function showDetailAddress($model){
@@ -204,6 +202,13 @@ class Order extends CActiveRecord
         $detail_address = implode(' ', $data);
         return $detail_address;
 
+    }
+    
+    public function getOrderDetail(){
+    	$detail = $this->getAttributeLabel('order_id'). ': ' . $this->order_id. '<br>'.
+      		$this->getAttributeLabel('create_time'). ': ' . date("Y-m-d", $this->create_time). '<br>'.
+      		$this->getAttributeLabel('total_fee'). ': ' . $data->total_fee;
+    	return $detail;
     }
 
     protected function beforeSave() {
@@ -256,16 +261,16 @@ class Order extends CActiveRecord
         $criteria->compare('total_fee', $this->total_fee, true);
         $criteria->compare('pay_fee', $this->pay_fee, true);
         $criteria->compare('payment_method_id', $this->payment_method_id, true);
-        $criteria->compare('receiver_name', $this->receiver_name, true);
-        $criteria->compare('receiver_country', $this->receiver_country, true);
-        $criteria->compare('receiver_state', $this->receiver_state, true);
-        $criteria->compare('receiver_city', $this->receiver_city, true);
-        $criteria->compare('receiver_district', $this->receiver_district, true);
-        $criteria->compare('receiver_address', $this->receiver_address, true);
-        $criteria->compare('receiver_zip', $this->receiver_zip, true);
-        $criteria->compare('receiver_mobile', $this->receiver_mobile, true);
-        $criteria->compare('receiver_phone', $this->receiver_phone, true);
-        $criteria->compare('memo', $this->memo, true);
+        //$criteria->compare('receiver_name', $this->receiver_name, true);
+       // $criteria->compare('receiver_country', $this->receiver_country, true);
+       // $criteria->compare('receiver_state', $this->receiver_state, true);
+       // $criteria->compare('receiver_city', $this->receiver_city, true);
+       // $criteria->compare('receiver_district', $this->receiver_district, true);
+        //$criteria->compare('receiver_address', $this->receiver_address, true);
+      //  $criteria->compare('receiver_zip', $this->receiver_zip, true);
+       // $criteria->compare('receiver_mobile', $this->receiver_mobile, true);
+      //  $criteria->compare('receiver_phone', $this->receiver_phone, true);
+      //  $criteria->compare('memo', $this->memo, true);
         $criteria->compare('pay_time', $this->pay_time, true);
         $criteria->compare('create_time', $this->create_time, true);
         $criteria->compare('update_time', $this->update_time, true);
