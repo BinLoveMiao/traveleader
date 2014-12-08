@@ -158,8 +158,10 @@ class OrderController extends Controller
                         foreach ($_POST['keys'] as $key){
                             $item= $cart->itemAt($key);
                             //$model->total_fee += $item['quantity'] * $item['price'];
-                            $model->total_fee += $item['adult_number'] * $item['adult_price'] +
-                            	$item['child_number'] * $item['child_price'];
+                            //print_r($item->getAdultNumber()); exit;
+                            $model->total_fee += $item->getAdultNumber() * $item->getAdultPrice() +
+                            	$item->getChildNumber() * $item->getChildPrice();
+                            //print_r($model->total_fee); exit;
                         }
                     }else // Have no idea what is this going on
                     {
@@ -194,6 +196,7 @@ class OrderController extends Controller
                         	 $i = 0;
                              foreach ($_POST['keys'] as $key){
                                 $item= $cart->itemAt($key);
+                                //print_r($item); 
                                 // $sku=Sku::model()->findByPk($item['sku']['sku_id']);
                                 //if($sku->stock<$item['quantity']){
                                 // throw new Exception('stock is not enough!');
@@ -204,33 +207,23 @@ class OrderController extends Controller
                                //  }
                     
                                 //$sum_days += $item->num_days;
-                                if($i == 0 && $item->num_days != 0){
-                                	$item_name = $item->title;
-                                	$i = $i + 1;
-                                }
+                               // if($i == 0 && $item->num_days != 0){
+                                //	$item_name = $item->title;
+                                //	$i = $i + 1;
+                               // }
                                 
-                                $OrderItem = new OrderItem;
-                                $OrderItem->order_id = $model->order_id;
-                                $OrderItem->item_id = $item['item_id'];
-                                $OrderItem->title = $item['title'];
-                                $OrderItem->desc = $item['desc'];
-                                $OrderItem->pic = $item->getMainPic();
-                                $OrderItem->props_name = $sku['props_name'];
-                                $OrderItem->price = $item['price'];
-                                $OrderItem->travel_date = $item['travel_date'];
-                                $OrderItem->quantity = 0;
-                                $OrderItem->total_price = $item['adult_number'] * $item['adult_price'] +
-                                		$item['child_number'] * $item['child_price'];
-                                if (!$OrderItem->save()) {
-                                    throw new Exception('save order item fail');
-                                }
+                                $orderItem = new OrderItem;
+                            	 if (!OrderItem::model()->saveOrderItem($orderItem, $model->order_id, $item, $item->getAdultNumber(),
+                        			$item->getAdultPrice(), $item->getChildNumber(), $item->getChildPrice(), $item->getDate())) {
+                                		//throw new Exception('save order item fail');
+                            	}
                                $cart->remove($key);
                              }
                             // $model->whole_num_days = $sum_days;
                              //$model->feature_item_name = $item_name;
-                             if(!$model->save()){
-                             	throw new Exception('save order item fail');
-                             }
+                             //if(!$model->save()){
+                             //	throw new Exception('save order item fail');
+                             //}
                         }
                     } else {
                         throw new Exception('save order fail');
@@ -239,7 +232,7 @@ class OrderController extends Controller
                     //$this->redirect(array('success'));
                     $this->render('success', array('order_id' => $model->order_id, 'user_id' => $model->user_id));
                 } catch (Exception $e) {
-               // 	echo "exception";
+                	echo "exception";
                     $transaction->rollBack();
                     $this->redirect(array('fail'));
                 }

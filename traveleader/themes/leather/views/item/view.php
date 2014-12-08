@@ -225,67 +225,69 @@ $imageHelper=new ImageHelper();
             </div>  
             <!--
             <?php
-            $skus = array();
-            foreach ($item->skus as $sku) {
+            //$skus = array();
+            //foreach ($item->skus as $sku) {
 
-                $skuId[]=$sku->sku_id;
-                $key = implode(';', json_decode($sku->props, true));
-                $skus[$key] = json_encode(array('price' => $sku->price, 'stock' => $sku->stock));
-            }
+             //   $skuId[]=$sku->sku_id;
+            //    $key = implode(';', json_decode($sku->props, true));
+             //   $skus[$key] = json_encode(array('price' => $sku->price, 'stock' => $sku->stock));
+            //}
             ?>
-            <div class="deal_size" data-sku-key='<?php echo json_encode(array_keys($skus)); ?>'
-                 data-sku-value='<?php echo json_encode($skus); ?>' data-sku-id="<?php if(isset($skuId))echo implode(',',$skuId);else echo $item->item_id; ?>">
+            <div class="deal_size" data-sku-key='<?php //echo json_encode(array_keys($skus)); ?>'
+                 data-sku-value='<?php //echo json_encode($skus); ?>' data-sku-id="<?php 
+            		//if(isset($skuId))echo implode(',',$skuId);else echo $item->item_id; ?>">
                 <?php
-                $propImgs = CHtml::listData($item->propImgs, 'item_prop_value', 'pic');
-                $itemProps = $propValues = array();
-                foreach ($item->category->itemProps as $itemProp) {
-                    $itemProps[$itemProp->item_prop_id] = $itemProp;
-                    foreach ($itemProp->propValues as $propValue) {
-                        $propValues[$propValue->prop_value_id] = $propValue;
-                    }
-                }
-                $pvids = json_decode($item->props);
-                foreach ($pvids as $pid => $pvid) {
-                    if (isset($itemProps[$pid]) && $itemProps[$pid]->is_sale_prop) {
-                        $itemProp = $itemProps[$pid];
+                //$propImgs = CHtml::listData($item->propImgs, 'item_prop_value', 'pic');
+               // $itemProps = $propValues = array();
+                //foreach ($item->category->itemProps as $itemProp) {
+                //    $itemProps[$itemProp->item_prop_id] = $itemProp;
+                //    foreach ($itemProp->propValues as $propValue) {
+                //        $propValues[$propValue->prop_value_id] = $propValue;
+                //    }
+              //  }
+               // $pvids = json_decode($item->props);
+               // foreach ($pvids as $pid => $pvid) {
+               //     if (isset($itemProps[$pid]) && $itemProps[$pid]->is_sale_prop) {
+               //         $itemProp = $itemProps[$pid];
                         ?>
-                        <p><span><?php echo $itemProp->prop_name ?>：</span>
-                            <?php if (is_array($pvid)) {
-                                foreach ($pvid as $v) {
-                                    $ids = explode(':', $v);
-                                    $propValue = $propValues[$ids[1]];
-                                    if ($itemProp->is_color_prop && false) {
+                        <p><span><?php //echo $itemProp->prop_name ?>：</span>
+                            <?php //if (is_array($pvid)) {
+                               // foreach ($pvid as $v) {
+                              //      $ids = explode(':', $v);
+                              //      $propValue = $propValues[$ids[1]];
+                              //      if ($itemProp->is_color_prop && false) {
                                         ?>
-                                        <a href="javascript:void(0)" data-value="<?php echo $v; ?>" id="prop<?php echo str_replace(':','-',$v); ?>">
-                                            <img alt="<?php echo $propValue->value_name; ?>"
-                                                 src="<?php echo isset($propImgs[$v]) ? $propImgs[$v] : ''; ?>"
+                                        <a href="javascript:void(0)" data-value="<?php// echo $v; ?>" id="prop<?php echo str_replace(':','-',$v); ?>">
+                                            <img alt="<?php //echo $propValue->value_name; ?>"
+                                                 src="<?php // echo isset($propImgs[$v]) ? $propImgs[$v] : ''; ?>"
                                                  width="41" height="41"></a>
-                                    <?php } else { ?>
+                                    <?php //} else { ?>
                                         <a href="javascript:void(0)"
-                                           data-value="<?php echo $v; ?>" id="prop<?php echo str_replace(':','-',$v); ?>"><?php echo $propValue->value_name; ?></a>
+                                           data-value="<?php //echo $v; ?>" id="prop<?php //echo str_replace(':','-',$v); ?>"><?php echo $propValue->value_name; ?></a>
                                     <?php
-                                    }
-                                }
-                            } else {
-                                $ids = explode(':', $pvid);
-                                $propValue = $propValues[$ids[1]];
-                                if ($itemProp->is_color_prop && false) {
+                                    //}
+                                //}
+                          //  } else {
+                          //      $ids = explode(':', $pvid);
+                          //      $propValue = $propValues[$ids[1]];
+                         //       if ($itemProp->is_color_prop && false) {
                                     ?>
-                                    <a href="javascript:void(0)" data-value="<?php echo $pvid; ?>" id="prop<?php echo str_replace(':','-',$v); ?>">
-                                        <img alt="<?php echo $propValue->value_name; ?>"
-                                             src="<?php echo isset($propImgs[$pvid]) ? $propImgs[$pvid] : ''; ?>"
+                                    <a href="javascript:void(0)" data-value="<?php// echo $pvid; ?>" id="prop<?php echo str_replace(':','-',$v); ?>">
+                                        <img alt="<?php //echo $propValue->value_name; ?>"
+                                             src="<?php //echo isset($propImgs[$pvid]) ? $propImgs[$pvid] : ''; ?>"
                                              width="41" height="41"></a>
-                                <?php } else { ?>
+                                <?php // } else { ?>
                                     <a href="javascript:void(0)"
-                                       data-value="<?php echo $pvid; ?>" id="prop<?php echo str_replace(':','-',$v); ?>"><?php echo $propValue->value_name; ?></a>
+                                       data-value="<?php //echo $pvid; ?>" id="prop<?php //echo str_replace(':','-',$v); ?>"><?php echo $propValue->value_name; ?></a>
                                 <?php
-                                }
-                            } ?>
+                                //}
+                            //} ?>
                         </p>
                     <?php
-                    }
-                } ?>
+                    //}
+               // } ?>
             </div>  -->
+            
             <div class="deal_num">
                 <span class="deal_num_c" content="no_cache">
                     <a href="javascript:void(0)" class="minus"></a>
@@ -726,12 +728,13 @@ $(function () {
     $('.deal_add_car').click(function() {
         $("#log-btn-div").click(function() {carLogin();});
         $("#buy-without-login").hide();
-        var selectProps = $('.prop-select,.img-prop-select');
-        if (selectProps.length < $('.deal_size p').length) {
-            showPopup("请添加商品属性。");
-            $('.deal_size').addClass('prop-div-select');
+        var selected_item = $('.deal_price_list :selected').val();
+       	if (selected_item == ''){
+       		$('.deal_price_list').addClass('prop-div-select');
         } else {
-            $('.deal_size').removeClass('prop-div-select');
+        	$('.deal_info').append('<input type="hidden" id="item_price" name="item_price" value=' + selected_item + ' />');
+            //Here update the div where you need to see the selected value
+            $('.deal_price_list').removeClass('prop-div-select');
             $.post($(".deal_add").data('url'), function(response){
                 if (response.status == 'login') {
                     $.post($('.deal_add_car').data('url'), $('#deal').serialize(), function(response) {

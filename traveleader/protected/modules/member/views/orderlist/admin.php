@@ -30,7 +30,6 @@ $this->breadcrumbs = array(
       	    	//		'htmlOptions'=>array('style'=>
       	    	//				'width: 10%;')
       	    	//),
-                //'feature_item_name',
                // 'total_fee',
                 //'pay_fee',
       	    	array(
@@ -80,10 +79,7 @@ $this->breadcrumbs = array(
                 			'width: 10%;text-align:center')
       	    	)
             );
-      	    //if($model->status == "8"){// For test
-      	    //if($model->status == "8" ){ 
-      	    	//$order_columns[]=array('value'=>'Tbfunction::review_order($data->ORDERITEM_order_item_id)');
-      	    //}
+      	   
         	//$this->widget('bootstrap.widgets.TbGridView', array(
       	    $this->widget('ext.groupgridview.GroupGridView', array(
         	//'type'=>'striped bordered condensed',

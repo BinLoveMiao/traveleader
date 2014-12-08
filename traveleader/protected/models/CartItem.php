@@ -11,32 +11,37 @@ class CartItem extends Item implements IECartPosition
 
     public function getId()
     {
-        if (empty($this->skus)) {
-            return 'Item' . $this->item_id;
-        } else {
-            $skus = array();
-            foreach ($this->skus as $sku) {
-                $skus[$sku->props] = $sku;
-            }
-            $pvids = explode(';', $this->cartProps);
-            $props = array();
-            foreach ($pvids as $pvid) {
-                $ids = explode(':', $pvid);
-                $props[$ids[0]] = $pvid;
-            }
-            $props = json_encode($props);
-            if (isset($skus[$props])) {
-                $this->sku = $skus[$props];
-                return 'Sku' . $skus[$props]->sku_id;
-            } else {
-                return false;
-            }
-        }
+    	return 'Item'. $this->item_id;
+        //if (empty($this->skus)) {
+        //    return 'Item' . $this->item_id;
+        //} else {
+        //    $skus = array();
+        //    foreach ($this->skus as $sku) {
+        //        $skus[$sku->props] = $sku;
+        //    }
+       //     $pvids = explode(';', $this->cartProps);
+       //     $props = array();
+       //     foreach ($pvids as $pvid) {
+       //         $ids = explode(':', $pvid);
+       //         $props[$ids[0]] = $pvid;
+       //     }
+       //     $props = json_encode($props);
+       //     if (isset($skus[$props])) {
+       //         $this->sku = $skus[$props];
+       //         return 'Sku' . $skus[$props]->sku_id;
+       //     } else {
+      //          return false;
+       //     }
+      //  }
     }
 
-    public function getPrice()
-    {
-        return empty($this->sku) ? $this->price : $this->sku->price;
+    //public function getPrice()
+    //{
+    //    return empty($this->sku) ? $this->price : $this->sku->price;
+   // }
+   
+    public function getPrice(){
+    	return $this->price;
     }
 
     /**

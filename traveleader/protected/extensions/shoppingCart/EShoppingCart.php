@@ -67,6 +67,7 @@ class EShoppingCart extends CMap {
     * @param int count of elements positions
     * @return bool
     */
+    /*
     public function put(IECartPosition $position, $quantity = 1) {
         $key = $position->getId();
         if ($this->itemAt($key) instanceof IECartPosition) {
@@ -77,6 +78,25 @@ class EShoppingCart extends CMap {
         if($this->update($position, $quantity))
             return true;
 
+    }*/
+    
+    public function put(IECartPosition $position, $adult_num, $child_num,
+            $adult_price, $child_price, $travel_date) {
+    	$key = $position->getId();
+    	if ($this->itemAt($key) instanceof IECartPosition) {
+    		$position = $this->itemAt($key);
+    		//$oldQuantity = $position->getQuantity();
+    		//$quantity += $oldQuantity;
+    		$old_adult_num = $position->getAdultNumber();
+    		$old_child_num = $position->getChildNumber();
+    		$adult_num += $old_adult_num;
+    		$child_num += $old_child_num;
+    	}
+    	//if($this->update($position, $quantity))
+    	if($this->update($position, $adult_num, $child_num, 
+    				$adult_price, $child_price, $travel_date))
+    		return true;
+    
     }
 
 
@@ -111,6 +131,7 @@ class EShoppingCart extends CMap {
      * @param IECartPosition $position
      * @param int $quantity
      */
+    /*
     public function update(IECartPosition $position, $quantity) {
         if (!($position instanceof CComponent))
             throw new InvalidArgumentException('invalid argument 1, product must implement CComponent interface');
@@ -133,6 +154,49 @@ class EShoppingCart extends CMap {
         if($this->saveState()){
             return true;
         };
+    }*/
+    
+    /**
+     * Updates the position in the shopping cart
+     * If position was previously added, then it will be updated in shopping cart,
+     * if position was not previously in the cart, it will be added there.
+     * If adult_num is less than 1, the position will be deleted.
+     *
+     * @param IECartPosition $position
+     * @param int $adult_num
+     * @param int $child_num
+     * @param int $adult_price
+     * @param int $child_price
+     * @param int $travel_date
+     */
+    
+    public function update(IECartPosition $position, $adult_num, $child_num,
+            $adult_price, $child_price, $travel_date) {
+    	if (!($position instanceof CComponent))
+    		throw new InvalidArgumentException('invalid argument 1, product must implement CComponent interface');
+    
+    	$key = $position->getId();
+    
+    	$position->detachBehavior("CartPosition");
+    	$position->attachBehavior("CartPosition", new ECartPositionBehaviour());
+    	$position->setRefresh($this->refresh);
+    
+    	$position->setChildNumber($child_num);
+    	$position->setAdultNumber($adult_num);
+    	$position->setChildPrice($child_price);
+    	$position->setAdultPrice($adult_price);
+    	$position->setDate($travel_date);
+    
+    	if ($position->getAdultNumber() < 1)
+    		$this->remove($key);
+    	else
+    		parent::add($key, $position);
+    
+    	$this->applyDiscounts();
+    	$this->onUpdatePosition(new CEvent($this));
+    	if($this->saveState()){
+    		return true;
+    	};
     }
 
     /**

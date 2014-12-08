@@ -101,7 +101,7 @@ class WishlistController extends Controller {
         if (isset($_POST['Wishlist'])) {
             $model->attributes = $_POST['Wishlist'];
             if ($model->save())
-                $this->redirect(array('view', 'id' => $model->wishlist_id));
+                $this->redirect(array("/member/wishlist/admin"));
         }
 
         $this->render('update', array(

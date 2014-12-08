@@ -17,6 +17,10 @@ class Wishlist extends CActiveRecord
 	 * @param string $className active record class name.
 	 * @return Wishlist the static model class
 	 */
+	public $ITEM_title;
+	public $ITEM_price;
+	public $ITEM_pic;
+	
 	public static function model($className=__CLASS__)
 	{
 		return parent::model($className);
@@ -54,7 +58,7 @@ class Wishlist extends CActiveRecord
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
-                    'item' => array(self::BELONGS_TO, 'Item', 'item_id')
+             'item' => array(self::BELONGS_TO, 'Item', 'item_id')
 		);
 	}
 
@@ -64,11 +68,14 @@ class Wishlist extends CActiveRecord
 	public function attributeLabels()
 	{
 		return array(
-			'wishlist_id' => 'ID',
-			'user_id' => '会员',
-			'item_id' => '商品ID',
-			'desc' => '备注',
-			'create_time' => '收藏时间',
+			'wishlist_id' => Yii::t("Wishlist", "收藏夹ID"),
+			'user_id' => Yii::t("Wishlist", "会员"),
+			'item_id' => Yii::t("Wishlist", "商品ID"),
+			'desc' => Yii::t("Wishlist", "备注"),
+			'create_time' => Yii::t("Wishlist", "收藏时间"),
+			'ITEM_title' => Yii::t("Wishlist", "产品名称"),
+			'ITEM_price' => Yii::t("Wishlist", "产品价格"),
+			'ITEM_pic' => Yii::t("Wishlist", "产品图片"),
 		);
 	}
 
@@ -104,7 +111,7 @@ class Wishlist extends CActiveRecord
         $criteria=new CDbCriteria;
 
         $criteria->compare('wishlist_id',$this->wishlist_id,true);
-        $criteria->compare('user_id',Yii::app()->user->id,true);
+        $criteria->compare('user_id',Yii::app()->user->id);
         $criteria->compare('item_id',$this->item_id,true);
         $criteria->compare('desc',$this->desc,true);
         $criteria->compare('create_time',$this->create_time,true);

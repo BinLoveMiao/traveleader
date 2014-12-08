@@ -282,9 +282,9 @@ Yii::app()->clientScript->registerCoreScript('jquery');
                                 ?>
                                 <td><?php
                                     $picUrl=$imageHelper->thumb('58','58',$item->getMainPic());
-                                    echo CHtml::image($picUrl, $item->title, array('width' => '70px', 'height' => '70px')); ?></td>
+                                    echo CHtml::image(Yii::app()->baseUrl. $picUrl, $item->title, array('width' => '70px', 'height' => '70px')); ?></td>
                                 <td><?php echo $item->title; ?></td>
-                               <!--  <td><?php echo empty($item->sku) ? '' : implode(';', json_decode($item->sku->props_name, true)); ?></td> -->
+                               <!--  <td><?php //echo empty($item->sku) ? '' : implode(';', json_decode($item->sku->props_name, true)); ?></td> -->
                                  <td>
                                  <span>成人：</span><span><?php echo $item->getAdultPrice(); ?><br> </span>
                                  <span>儿童：</span><span><?php echo $item->getChildPrice();?> </span>
