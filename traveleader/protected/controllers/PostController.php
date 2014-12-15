@@ -30,7 +30,7 @@ class PostController extends Controller
 	{
 		return array(
 			array('allow',  // allow all users to access 'index', 'view', 'create' actions.
-				'actions'=>array('index','view'),
+				'actions'=>array('index','view', 'gallary'),
 				'users'=>array('*'),
 			),
 			array('allow', // allow authenticated users to access all actions
@@ -129,8 +129,8 @@ class PostController extends Controller
 		);
 		
 		//$country = Area::model()->findByPk($post->country);
-		$state = Area::model()->findByPk($post->state);
-		$scenery = Scenery::model()->findByPk($post->scenery_id);
+		$state = Area::loadModel($post->state);
+		$scenery = Scenery::loadModel($post->scenery_id);
 		$parent = $scenery->parentScenery;
 		//$city = Area::model()->findByPk($post->city);
 		if($state){
@@ -156,6 +156,61 @@ class PostController extends Controller
 			'comment'=>$comment,
 		));
 	}
+	
+	public function actionGallary(){
+		$is_scenery = false;
+		if(!empty($_GET['country'])){
+			$area_id = $_GET['country'];
+			$country = Area::loadModel($_GET['country']);
+		}
+		if(!empty($_GET['state'])){
+			$area_id = $_GET['state'];
+			$state = Area::loadModel($_GET['state']);
+			$country = Area::loadModel($state->parent_id);
+		}
+		if(!empty($_GET['city'])){
+			$area_id = $_GET['city'];
+			$city = Area::loadModel($_GET['city']);
+			$state = Area::loadModel($city->parent_id);
+			$country = Area::loadModel($state->parent_id);
+		}
+		
+		if(!empty($_GET['scenery'])){
+			$area_id = $_GET['scenery'];
+			$is_scenery = true;
+			$scenery = Scenery::loadModel($_GET['scenery']);
+			$country = Area::loadModel($scenery->country);
+			$state = Area::loadModel($scenery->state);
+			$city = Area::loadModel($scenery->city);
+		}
+		
+		// Setup the breadcrumb
+		if($country){
+			if($country->name != '中国'){
+				$this->breadcrumbs[] = array('name' => $country->name. "旅游" .'>> ',
+						'url' => Yii::app()->createUrl('/post/gallary', array('country' => $country->area_id)));
+			}
+		}
+		if($state){
+			$this->breadcrumbs[] = array('name' => $state->name. "旅游" .'>> ',
+					'url' => Yii::app()->createUrl('/post/gallary', array('state' => $state->area_id)));
+		}
+		
+		if($city){
+			$this->breadcrumbs[] = array('name' => $city->name. "旅游" .'>> ',
+					'url' => Yii::app()->createUrl('/post/gallary', array('city' => $city->area_id)));
+		}
+		if($scenery){
+			$this->breadcrumbs[] = array('name' => $scenery->name .'>> ',
+					'url' => Yii::app()->createUrl('/post/gallary', array('scenery' => $scenery->id)));
+		}
+		
+		$this->breadcrumbs[] = array('name' => '浏览图片');
+
+		$gallary = Scenery::getAllSceneryPictures($area_id, $is_scenery, 0);
+		
+		$this->render('gallary', array("gallary" => $gallary));
+	}
 
 	/**
 	 * Creates a new model.
@@ -164,10 +219,10 @@ class PostController extends Controller
 	public function actionCreate()
 	{
 		$model=new Post;
-		$image=new ImageTemp;
-		$image->id=time();
-		$image->name="test";
-		$image->save();
+		//$image=new ImageTemp;
+		//$image->id=time();
+		//$image->name="test";
+		//$image->save();
 
 		$default_scenery=null;
 		$default_state=null;
@@ -196,9 +251,9 @@ class PostController extends Controller
 		{
 			//$model->attributes=$_POST['Post'];
 			//print_r($image->coverBehavior);
-			$image2 = ImageTemp::model()->findByPk($_POST['image_id']);
-			$coverPic = $image2->coverBehavior->getUrl('small');
-			$model->image_id=$_POST['image_id'];
+			//$image2 = ImageTemp::model()->findByPk($_POST['image_id']);
+			//$coverPic = $image2->coverBehavior->getUrl('small');
+			//$model->image_id=$_POST['image_id'];
 			if(!empty($_GET['item'])){
 				$model->item_id=$_GET['item'];
 			}
@@ -221,7 +276,7 @@ class PostController extends Controller
 			$model->state=$address['state'];
 			$model->city=$address['city'];
 			$model->scenery_id=$address['district'];
-			$model->cover_pic = $coverPic;
+			//$model->cover_pic = $coverPic;
 			//echo $model->content;
 			//echo iconv("UTF-8","GB2312",$_POST);
 			//$model->summary=$this->Generate_Brief($model->content);
@@ -229,8 +284,22 @@ class PostController extends Controller
 			$model->tags = ""; // Save for further use
 			$model->category_id = 0; // Save for further use
 			//$model->author_id = Yii::app()->user->getId();
-			if($model->save())
+			$images = $model->getImgs();
+			if(count($images) > 0){
+				$model->cover_pic = $images[0];
+			}
+
+			if($model->save()){
+				foreach($images as $img){
+					$sce_img = new SceneryImg;
+					$sce_img->pic = $img;
+					$sce_img->like = 0;
+					$sce_img->scenery_id = $model->scenery_id;
+					$sce_img->post_id = $model->id;
+					$sce_img->save(); 
+				}
 				$this->redirect(array('view','id'=>$model->id));
+			}
 		}
 
 		$this->render('create',array(
@@ -238,7 +307,7 @@ class PostController extends Controller
 			'default_scenery'=>$default_scenery,
 			'default_state'=>$default_state,
 			'default_city'=>$default_city,
-			'image'=>$image,
+			//'image'=>$image,
 			
 		));
 	}
@@ -338,33 +407,38 @@ class PostController extends Controller
 		$this->breadcrumbs[] = array(
 				'name' => '我游我记>> ', 'url' => Yii::app()->createUrl('/post/index'),
 		);
+		$area_id = 0;
+		$is_scenery = false;
 		if(!empty($_GET['country'])){
+			$area_id = $_GET['country'];
 			$criteria->addCondition("t.country = '{$_GET['country']}'");
-			$country = Area::model()->findByPk($_GET['country']);
-			$sceneries = $country->countrySceneries;
+			$country = Area::loadModel($_GET['country']);
 		}
 		if(!empty($_GET['state'])){
+			$area_id = $_GET['state'];
 			$criteria->addCondition("t.state = '{$_GET['state']}'");
-			$state = Area::model()->findByPk($_GET['state']);
-			$country = Area::model()->findByPk($state->parent_id);
-			$sceneries = $state->stateSceneries;
+			$state = Area::loadModel($_GET['state']);
+			$country = Area::loadModel($state->parent_id);
 		}
 		if(!empty($_GET['city'])){
+			$area_id = $_GET['city'];
 			$criteria->addCondition("t.city = '{$_GET['city']}'");
-			$city = Area::model()->findByPk($_GET['city']);
-			$state = Area::model()->findByPk($city->parent_id);
-			$country = Area::model()->findByPk($state->parent_id);
-			$sceneries = $city->citySceneries;
-		}
-		if(!empty($_GET['scenery'])){
-			$criteria->addCondition("t.scenery_id = '{$_GET['scenery']}'");
-			$scenery = Scenery::model()->findByPk($_GET['scenery']);
-			$country = Area::model()->findByPk($scenery->country);
-			$state = Area::model()->findByPk($scenery->state);
-			$city = Area::model()->findByPk($scenery->city);
-			$sceneries = $scenery->getAllChildren(8);
+			$city = Area::loadModel($_GET['city']);
+			$state = Area::loadModel($city->parent_id);
+			$country = Area::loadModel($state->parent_id);
 		}
 		
+		if(!empty($_GET['scenery'])){
+			$area_id = $_GET['scenery'];
+			$is_scenery = true;
+			$criteria->addCondition("t.scenery_id = '{$_GET['scenery']}'");
+			$scenery = Scenery::loadModel($_GET['scenery']);
+			$country = Area::loadModel($scenery->country);
+			$state = Area::loadModel($scenery->state);
+			$city = Area::loadModel($scenery->city);
+		}
+		
+		// Set the breadcrumb and scenery object
 		if($country){
 			if($country->name != '中国'){
 				$this->breadcrumbs[] = array('name' => $country->name. "旅游" .'>> ',
@@ -387,13 +461,33 @@ class PostController extends Controller
 			$this->breadcrumbs[] = array('name' => $scenery->name .'>> ',
 					'url' => Yii::app()->createUrl('/post/index', array('scenery' => $scenery->id)));
 			$scenery2 = $scenery;
-			$num_pics = $scenery->countSceneryPics();
 		}
 		
-		if(empty($_GET['scenery']) && !$sceneries){
-			$sceneries = Scenery::getSceneries(8);
-		}
+		// Set sceneries for the display of hot sceneries
+		$num_hot_sceneries = 8;
+		// Set num_travellings and num_pics and main_pic
+		$num_travel = 0;
+		$num_pics = 0;
+		$main_pic = "";
 		
+		if($area_id != 0){
+			if($is_scenery){
+				$sceneries = $scenery->getChildren($num_hot_sceneries);
+				$main_pic = $scenery->main_pic;
+			}
+			else{
+				$sceneries = Scenery::getAreaSceneries($area_id, false, $num_hot_sceneries);
+				$main_pic = $sceneries[0]->main_pic;
+			}
+			foreach(Scenery::getAreaSceneries($area_id, $is_scenery, 0) as $sce){
+				$num_travel += $sce->num_travel;
+				$num_pics += $sce->num_pics;
+			}
+		}
+		else{
+			$sceneries = Scenery::getHotSceneries($num_hot_sceneries);
+		}
+				
 		if (!empty($_GET['sort'])) {
 			switch ($_GET['sort']) {
 				case 'new':
@@ -411,11 +505,9 @@ class PostController extends Controller
 					break;
 			}
 		}
-		
-		if(isset($_GET['tag']))
-			$criteria->addSearchCondition('tags',$_GET['tag']);
-		
-		
+
+		//if(isset($_GET['tag']))
+		//	$criteria->addSearchCondition('tags',$_GET['tag']);
         $posts = Post::model()->findAll($criteria);
 
 		$dataProvider=new CActiveDataProvider('Post', array(
@@ -431,6 +523,9 @@ class PostController extends Controller
 			'scenery' => $scenery2,
 			'sceneries' => $sceneries,
 			'num_pics' => $num_pics,
+			'num_travel' => $num_travel,
+			'main_pic' => $main_pic,
+			'is_scenery' => $is_scenery,
 		));
 	}
 

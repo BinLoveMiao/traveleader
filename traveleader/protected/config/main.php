@@ -23,7 +23,7 @@ return array(
     'basePath' => $frontend,
     'name' => '领贤旅游',
     'language' => 'zh_cn',
-    'theme' => 'leather',
+    'theme' => 'basic',
     // preloading 'log' component
     'preload' => array('log'),//, 'translate'),
     // autoloading model and component classes

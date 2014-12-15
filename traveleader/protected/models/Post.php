@@ -60,7 +60,7 @@ class Post extends CActiveRecord
 			array('status', 'in', 'range'=>array(1,2,3)),
 			array('is_best', 'in', 'range'=>array(0,1)),
 			array('title', 'length', 'max'=>128),
-			array('cover_pic', 'length', 'max'=>128),
+			array('cover_pic', 'length', 'max'=>512),
 			array('language', 'length', 'max'=>45),
 			array('tags', 'match', 'pattern'=>'/^[\w\s,]+$/', 'message'=>'Tags can only contain word characters.'),
 			//array('tags', 'normalizeTags'),
@@ -86,6 +86,7 @@ class Post extends CActiveRecord
 			'area_state' => array(self::BELONGS_TO, 'Area', 'state'),
 			'area_city' => array(self::BELONGS_TO, 'Area', 'city'),
 			'scenery' => array(self::BELONGS_TO, 'Scenery', 'scenery_id'),
+			'sceneryImgs' => array(self::HAS_MANY, 'SceneryImg', 'post_id')
 		);
 	}
 	
@@ -196,6 +197,85 @@ class Post extends CActiveRecord
 			$comment->status=Comment::STATUS_APPROVED;
 		$comment->post_id=$this->id;
 		return $comment->save();
+	}
+	
+	/**
+	 * @author Mr. Box
+	 * @copyright 2014
+	 *
+	 * 百度富文本编辑器编辑出的内容转成数组。根据<p>元素
+	 * 分文本、图片两种
+	 */
+	/**
+	 * getImgs()
+	 *
+	 * @param integer $imgMaxWidth 限制显示图片的最大宽度。如果为0则输出原始大小。不为0等比缩放
+	 * @param string $imgBasePath 图片路径：源代码中类似 '/uploads/images/xxxx.jpg'，输出：$imgBasePath.'/uploads/images/xxxx.jpg'
+	 * @return Array
+	 */
+	public function getImgs($imgMaxWidth = 0, $imgBasePath = ''){
+		$content = preg_replace("/<p>\s*<br\s*\/>\s*<\/p>/U", '<p>--break--</p>', $this->content); //如果要忽略手动换行，把此行代码注释掉
+		$content = preg_replace("/<\/p>\s*<p[^>]*>/", '$$$###$$$', $content);
+		$content = preg_replace("/<p[^>]*>|<\/p>/", '', $content);
+		$matchs = explode('$$$###$$$', $content);
+		$data = array();
+		foreach($matchs as $key => $va){
+			$va = preg_replace("/&nbsp;|　/i", '', strip_tags($va,'<img>,<br>'));
+			$va = trim($va);
+			$va = preg_replace("/<br[^>]*>/", '<br>',$va);
+			if(strlen($va)){
+				$imgArr = array();
+				$imgPath = '';
+				$imgName = '';
+				$word = '';
+				$hasimg = strpos($va,'<img');
+				if($hasimg !== false){
+					preg_match("/<img.+src\s*=\s*\"([^\"]+)\"[^>]*>/i",$va,$imgArr);
+					if(isset($imgArr[1])){
+						$imgPath = $imgBasePath.$imgArr[1];
+						$imgLastA = strrpos($imgArr[1],"/");
+						$imgLastD = strrpos($imgArr[1],".");
+						$l = $imgLastD - strlen($imgArr[1]);
+						$imgName = substr($imgArr[1],$imgLastA+1, $l);
+						//下面两种方式，第二种根据本地路径，效率较快，第一种如果$imgBasePath为http远程路径，效率较慢
+						#$imgsize = @getimagesize($imgPath);
+						$imgsize = @getimagesize(getcwd().$imgArr[1]);
+						if($imgsize === false){
+							$imgHeight = 0;
+							$imgWidth = 0;
+						}else{
+							$picW = $imgsize[0];
+							$picH = $imgsize[1];
+							if($imgMaxWidth == 0){
+								//按实际高度输出
+								$imgHeight = $picH;
+								$imgWidth = $picW;
+							}else{
+								//根据宽度，等比输出高度
+								if($imgMaxWidth < $picW){
+									$imgHeight = round($imgsize[1]*$imgMaxWidth/$imgsize[0]);
+									$imgWidth = $imgMaxWidth;
+								}else{
+									$imgWidth = $picW;
+									$imgHeight = $picH;
+								}
+							}
+						}
+						$tmpArr = explode($imgArr[0], $va);
+						if(count($tmpArr) > 1){
+							if(preg_match('/\.(jpg|jpeg|png)(?:[\?\#].*)?$/i', $imgPath, $matches)){
+								$data[] = $imgPath;
+							}
+						}else{
+							//正常不会执行到此
+						}
+					}else{
+						//正常不会执行到此
+					}
+				}
+			}
+		}
+		return $data;
 	}
 
 	/**

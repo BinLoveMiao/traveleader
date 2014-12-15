@@ -62,9 +62,9 @@ class Area extends CActiveRecord
         	'statePosts' => array(self::HAS_MANY, 'Post', 'state'),
         	'cityPosts' => array(self::HAS_MANY, 'Post', 'city'),
         	// Return area's sceneries, Top10 most travelled
-        	'countrySceneries' => array(self::HAS_MANY, 'Scenery', 'country', 'order'=>'num_travel DESC', 'limit' => 8),
-        	'stateSceneries' => array(self::HAS_MANY, 'Scenery', 'state', 'order'=>'num_travel DESC', 'limit' => 8),
-        	'citySceneries' => array(self::HAS_MANY, 'Scenery', 'city', 'order'=>'num_travel DESC', 'limit' => 8),
+        	'countrySceneries' => array(self::HAS_MANY, 'Scenery', 'country', 'order'=>'num_travel DESC'),
+        	'stateSceneries' => array(self::HAS_MANY, 'Scenery', 'state', 'order'=>'num_travel DESC'),
+        	'citySceneries' => array(self::HAS_MANY, 'Scenery', 'city', 'order'=>'num_travel DESC'),
         );
     }
 
@@ -111,6 +111,14 @@ class Area extends CActiveRecord
         return new CActiveDataProvider($this, array(
             'criteria'=>$criteria,
         ));
+    }
+    
+    public static function loadModel($id){
+    	$area=Area::model()->findByPk($id);
+    	if($area == null){
+    		throw new CHttpException(404,'The area does not exist.');
+    	}
+    	return $area;
     }
 
     /**

@@ -16,13 +16,13 @@ class CatalogController extends YController
         
         if(!empty($_GET['country'])){
         	$criteria->addCondition("t.country = '{$_GET['country']}'");
-        	$country = Area::model()->findByPk($_GET['country']);
+        	$country = Area::loadModel($_GET['country']);
         	//$this->breadcrumbs[] = array('name' => $country->name. "旅游" .'>> ',
         	//		'url' => Yii::app()->createUrl('catalog/index', array('country' => $country->area_id)));
         }
         if(!empty($_GET['state'])){
         	$criteria->addCondition("t.state = '{$_GET['state']}'");
-        	$state = Area::model()->findByPk($_GET['state']);
+        	$state = Area::loadModel($_GET['state']);
         	//$country = Area::model()->findByPk($state->parent_id);
         	$country = $state->parentArea;
         	//$this->breadcrumbs[] = array('name' => $country->name. "旅游" .'>> ',
@@ -32,7 +32,7 @@ class CatalogController extends YController
         }
         if(!empty($_GET['city'])){
         	$criteria->addCondition("t.city = '{$_GET['city']}'");
-        	$city = Area::model()->findByPk($_GET['city']);
+        	$city = Area::loadModel($_GET['city']);
         	//$state = Area::model()->findByPk($city->parent_id);
         	$state = $city->parentArea;
         	//$country = Area::model()->findByPk($state->parent_id);
@@ -40,7 +40,7 @@ class CatalogController extends YController
         }
         if(!empty($_GET['scenery'])){
         	$criteria->addCondition("t.scenery_id = '{$_GET['scenery']}'");
-        	$scenery = Scenery::model()->findByPk($_GET['scenery']);
+        	$scenery = Scenery::loadModel($_GET['scenery']);
         	$city = $scenery->city;
         	$state = $scenery->state;
         	$country = $scenery->country;
