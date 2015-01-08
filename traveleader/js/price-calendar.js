@@ -825,10 +825,10 @@ Y.PriceCalendar = Y.extend(Calendar, Y.Base, {
          *
          * @attribute count
          * @type {Number}
-         * @default 1
+         * @default 2
          */         
         count: {
-            value: 1    
+            value: 2    
         },
 		
         /**
