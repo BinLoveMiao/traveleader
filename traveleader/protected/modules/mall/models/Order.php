@@ -42,8 +42,6 @@
 
  * // Order is marked as reviewed if all items under it has been reviewed
  * 
- * @property integer $whole_num_days
- * @property string $feature_item_name
  * 
  * @property string $create_time
  * @property string $update_time
@@ -120,7 +118,7 @@ class Order extends CActiveRecord
             'orderLogs' => array(self::HAS_MANY, 'OrderLog', 'order_id'),
             'payments' => array(self::HAS_MANY, 'Payment', 'order_id'),
             'refunds' => array(self::HAS_MANY, 'Refund', 'order_id'),
-            'users' => array(self::BELONGS_TO, 'Users', 'user_id'),
+            'user' => array(self::BELONGS_TO, 'Users', 'user_id'),
         );
     }
 
@@ -129,37 +127,37 @@ class Order extends CActiveRecord
      */
     public function attributeLabels(){
         return array(
-            'order_id' => Yii::t('Order', '订单号'),
-            'user_id' => Yii::t('Order', '会员'),
-            'status' => Yii::t('Order', '订单状态'),
-        	'review_status' => Yii::t('Order', '点评状态'),
-            'total_fee' => Yii::t('Order', '需付款'),
-            'pay_fee' => Yii::t('Order', '实付款'),
-            'pay_method' => Yii::t('Order', '付款方式'),
-            'receiver_name' => Yii::t('Order', '联系人'),
-            'receiver_country' => Yii::t('Order', '国家'),
-            'receiver_state' => Yii::t('Order', '省'),
-            'receiver_city' => Yii::t('Order', '市'),
-            'receiver_district' => Yii::t('Order', '区'),
-            'receiver_address' => Yii::t('Order', '详细地址'),
-            'receiver_zip' => Yii::t('Order', '邮编'),
-            'receiver_mobile' => Yii::t('Order', '手机'),
-        	'receiver_email' => Yii::t('Order', '电子邮件'),
-            'receiver_phone' => Yii::t('Order', '电话'),   		
-        	'is_children' => Yii::t('Order', '儿童'),
-        	'has_old_man' => Yii::t('Order', '有老人'),
-        	'has_foreigner' => Yii::t('Order', '有外国人'),
-        	'is_invoice' => Yii::t('Order', '需要发票'),
-            'memo' => Yii::t('Order', '备注'),
-            'pay_time' => Yii::t('Order', '付款时间'),
-            'create_time' => Yii::t('Order', '下单时间'),
-            'update_time' => Yii::t('Order', '更新时间'),
-            'payment_method_id' => Yii::t('Order', '付款方式'),
-            'detail_address' => Yii::t('Order', '具体地址'),
-        	'order_detail' => '订单号 | 下单时间 | 需付款',
-        	'ORDERITEM_title' => Yii::t('Order', '订单项目名称'),
-        	'ORDERITEM_is_review' => Yii::t('Order', '订单点评状态'),
-        	'ORDERITEM_status' => Yii::t('Order', '订单项目状态'),
+            'order_id' => Yii::t('order', 'order_id'),
+            'user_id' => Yii::t('order', 'user'),
+            'status' => Yii::t('order', 'status'),
+        	'review_status' => Yii::t('order', 'review_status'),
+            'total_fee' => Yii::t('order', 'total_fee'),
+            'pay_fee' => Yii::t('order', 'pay_fee'),
+            'pay_method' => Yii::t('order', 'pay_method'),
+            'receiver_name' => Yii::t('order', 'receiver_name'),
+            'receiver_country' => Yii::t('order', 'receiver_country'),
+            'receiver_state' => Yii::t('order', 'receiver_state'),
+            'receiver_city' => Yii::t('order', 'receiver_city'),
+            'receiver_district' => Yii::t('order', 'receiver_district'),
+            'receiver_address' => Yii::t('order', 'receiver_address'),
+            'receiver_zip' => Yii::t('order', 'receiver_zip'),
+            'receiver_mobile' => Yii::t('order', 'receiver_mobile'),
+        	'receiver_email' => Yii::t('order', 'receiver_email'),
+            'receiver_phone' => Yii::t('order', 'receiver_phone'),   		
+        	'is_children' => Yii::t('order', 'is_children'),
+        	'has_old_man' => Yii::t('order', 'has_old_man'),
+        	'has_foreigner' => Yii::t('order', 'has_foreigner'),
+        	'is_invoice' => Yii::t('order', 'is_invoice'),
+            'memo' => Yii::t('order', 'memo'),
+            'pay_time' => Yii::t('order', 'pay_time'),
+            'create_time' => Yii::t('order', 'create_time'),
+            'update_time' => Yii::t('order', 'update_time'),
+            'payment_method_id' => Yii::t('order', 'payment_method_id'),
+            'detail_address' => Yii::t('order', 'detail_address'),
+        	'order_detail' => Yii::t('order', 'order_detail'),
+        	'ORDERITEM_title' => Yii::t('order', 'ORDERITEM_title'),
+        	'ORDERITEM_is_review' => Yii::t('order', 'ORDERITEM_is_review'),
+        	'ORDERITEM_status' => Yii::t('order', 'ORDERITEM_status'),
         );
     }
 
@@ -209,6 +207,11 @@ class Order extends CActiveRecord
       		$this->getAttributeLabel('create_time'). ': ' . date("Y-m-d", $this->create_time). '<br>'.
       		$this->getAttributeLabel('total_fee'). ': ' . $data->total_fee;
     	return $detail;
+    }
+    
+	public function getCreateTime($withTime = false) {
+        // TODO: format date according to localization settings
+        return date(($withTime ? 'Y-m-d h:i:s' : 'Y-m-d'), strtotime($this->create_time));
     }
 
     protected function beforeSave() {
@@ -281,5 +284,20 @@ class Order extends CActiveRecord
         return new CActiveDataProvider($this, array(
             'criteria' => $criteria,
         ));
+    }
+    
+    public static function getOrdersTotal() {
+    	$order = Order::model()->findAll();
+    	$total = 0;
+    	foreach ($order as $o)
+    		$total += $o->total_fee;
+    
+    	return $total;
+    }
+    
+    public static function showOrderStatus($review_status){
+    	$reviewStatus=array('2' => '待支付', '3' => '已支付',
+    			'4' => '等待退款', '5' => '已退款', '6' =>'交易成功', '7' => '交易关闭', '8' => '已出游');
+    	return $reviewStatus[$review_status];
     }
 }

@@ -74,6 +74,34 @@ class OrderlistController extends Controller
     {
     	//$order = Order::model()->findByPk($id);
     	$order_item = OrderItem::model()->findByPk($id);
+    	if(!empty($_POST['overall-review-'.$order_item->item_id])){
+    		$review = new Review;
+    		$review->customer_id = $_POST['anony'] ? '0': Yii::app()->user->id;
+    		$review->entity_pk_value = $order_item->item_id;
+    		$review->content = $_POST['overall-review-'.$order_item->item_id];
+    		$review->rating = $_POST['rating-content-overall-'.$order_item->item_id];
+    		$review->guide_review = $_POST['guide-review-'.$order_item->item_id];
+    		$review->guide_rating = $_POST['rating-content-guide-'.$order_item->item_id];
+    		$review->schedule_review = $_POST['schedule-review-'.$order_item->item_id];
+    		$review->schedule_rating = $_POST['rating-content-schedule-'.$order_item->item_id];
+    		$review->meal_review = $_POST['meal-review-'.$order_item->item_id];
+    		$review->meal_rating = $_POST['rating-content-meal-'.$order_item->item_id];
+    		$review->transport_review = $_POST['guide-review-'.$order_item->item_id];
+    		$review->transport_rating = $_POST['rating-content-transport-'.$order_item->item_id];
+    		$review->entity_id = "1";
+    		$review->create_at = time();
+    		$review->photos_exit = "0";
+    		
+    		if($review->save()){
+    			if($order_item->is_review == 0){
+    				$order_item->is_review = 1;
+    				$order_item->save();
+    			}
+    		}
+    		else{
+    			throw new CHttpException(404, 'Review failed.');
+    		}
+    	}
     	//$order = $order_item->order;
     	if($order_item->status != strval(OrderItem::STATUS_TRAVELLED)){
     		throw new CHttpException(404, '未出游，不能评论');
@@ -82,56 +110,6 @@ class OrderlistController extends Controller
     	$this->render('create_review', array(
     			'order_id' => $order_item->order_id, 'order_item' => $order_item
     	));
-    }
-    
-    public function actionReviewSubmit($id){
-    	//$order = Order::model()->findByPk($id);
-    	//$order_items = $order->orderItems;
-		$order_item = OrderItem::model()->findByPk($id);
-
-    	$review = new Review;
-    	$review->customer_id = $_POST['anony'] ? '0': Yii::app()->user->id;
-    	$review->entity_pk_value = $order_item->item_id;
-    	$review->content = $_POST['overall-review-'.$order_item->item_id];
-    	$review->rating = $_POST['rating-content-overall-'.$order_item->item_id];
-    	$review->guide_review = $_POST['guide-review-'.$order_item->item_id];
-    	$review->guide_rating = $_POST['rating-content-guide-'.$order_item->item_id];
-    	$review->schedule_review = $_POST['schedule-review-'.$order_item->item_id];
-    	$review->schedule_rating = $_POST['rating-content-schedule-'.$order_item->item_id];
-    	$review->meal_review = $_POST['meal-review-'.$order_item->item_id];
-    	$review->meal_rating = $_POST['rating-content-meal-'.$order_item->item_id];
-    	$review->transport_review = $_POST['guide-review-'.$order_item->item_id];
-    	$review->transport_rating = $_POST['rating-content-transport-'.$order_item->item_id];
-    	$review->entity_id = "1";
-    	$review->create_at = time();
-    	$review->photos_exit = "0";
-    		
-    	if($review->save()){
-    		$item = Item::model()->findByPk($order_item->item_id);
-    		$item->review_count += 1; //Add the review count
-    		$item->save();			
-    		if($order_item->is_review == "0"){
-    			$order_item->is_review = "1";
-    			$order_item->save();
-    		}
-    	}
-    	else{
-    		throw new CHttpException(404, 'Review failed.');
-    	}
-    	//if($order->review_status == "0"){
-    	//	$order->review_status = "1";
-    	//	$order->save();
-    	//}
-    	// Should reconsider the redirecting page after review
-    	$model=new Order('search');
-    	$model->unsetAttributes();  // clear any default values
-    	if(isset($_GET['Order']))
-    		$model->attributes=$_GET['Order'];
-    	 
-    	$this->render('admin',array(
-    			'model'=>$model,
-    	));
-
     }
 
 	/**

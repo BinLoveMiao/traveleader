@@ -6,7 +6,8 @@
  * The followings are the available columns in table 'item_price':
  * @property string $item_price_id
  * @property string $item_id
- * @property string $date
+ * @property string $date // Begin Date
+ * @Property string $end_date // End Date
  * @property string $price_adult
  * @property string $price_child
  * @property string $create_time
@@ -35,7 +36,9 @@ class ItemPrice extends CActiveRecord
 		return array(
 				array('item_id, date, price_adult, price_child', 'required'),
 				array('item_id', 'length', 'max'=>10),
-				array('create_time, update_time', 'safe'),
+				array('price_adult, price_child', 'length', 'max'=>10),
+				array('date, end_date', 'date', 'format'=>'yyyy-mm-dd'),
+				array('end_date, create_time, update_time', 'safe'),
 				// The following rule is used by search().
 				// @todo Please remove those attributes that should not be searched.
 				array('item_price_id, item_id, date, create_time, update_time', 'safe', 'on'=>'search'),
@@ -61,11 +64,16 @@ class ItemPrice extends CActiveRecord
 	{
 		return array(
 				'item_price_id' => 'Item Price',
-				'item_id' => 'Item',
-				'date' => 'Date',
-				'price_adult' => 'Price Adult',
-				'price_child' => 'Price Child',
-				'create_time' => 'Create Time',
+				'item_id' => Yii::t('item', 'item_id'),
+				'date' => Yii::t('item', 'begin_date'),
+				'end_date' => Yii::t('item', 'end_date'),
+				'date_type' => Yii::t('item', 'date_type'),
+				'date_range' => Yii::t('item', 'date_range'),
+				'date_single' => Yii::t('item', 'date_single'),
+				'price_adult' => Yii::t('item', 'price_adult'),
+				'price_child' => Yii::t('item', 'price_child'),
+				'create_time' => Yii::t('main', 'Create Time'),
+				'price_calendar' => Yii::t('item', 'price_calendar'),
 		);
 	}
 
@@ -97,6 +105,92 @@ class ItemPrice extends CActiveRecord
 		return new CActiveDataProvider($this, array(
 				'criteria'=>$criteria,
 		));
+	}
+	
+	/**
+	 * Accept $itemPrices for specific item, 
+	 * return the formatted item calendar for calendar display.
+	 * Specific day may exist in several $itemPrices, in the form
+	 * or either date_range or date_single. If both exist, we tend to
+	 * use date_single. 
+	 * @param array[ItemPrice] $itemPrices
+	 * @param integer $day_limit
+	 * @param string $currency
+	 */
+	public static function getPriceCalendar($itemPrices, $day_limit=60, $currency='￥'){
+		$tomorrow =  (new DateTime('tomorrow'))->format('Y-m-d');
+		// First, indentify data_single itemPrice
+		$singleDatePrices = array();
+		//$prices[] = array();
+		foreach($itemPrices as $item_price){
+			if($item_price->date == $item_price->end_date){
+				$singleDatePrices[strtotime($item_price->date)] = array(
+						'price_id' => $item_price->item_price_id,
+						'title'=>''.$currency.$item_price->price_adult,
+						'start'=>''.$item_price->date,
+						'color'=>'gray',
+						'description'=>Yii::t('main', 'adult').':'.$currency.
+							$item_price->price_adult. '; '. Yii::t('main', 'child').
+							':'. $currency.$item_price->price_child,
+				);
+			}
+		}
+		$secsPerDay = 3600 * 24;
+		foreach($itemPrices as $item_price){
+			$begin_date = $item_price->date;
+			$end_date = $item_price->end_date;
+			
+			if($begin_date == $end_date){
+				continue;
+			}
+			$begin_date = (strtotime($begin_date) - strtotime($tomorrow) < 0) ?  
+				strtotime($tomorrow) : strtotime($begin_date);
+			$end_date = (strtotime($end_date) - (strtotime($tomorrow) + $secsPerDay * $day_limit) < 0 ? 
+				strtotime($end_date) : (strtotime($tomorrow) + $secsPerDay * $day_limit));
+			
+						
+			for($d = $begin_date - $secsPerDay; $d <= $end_date;){
+				$d += $secsPerDay;	
+				if($singleDatePrices[$d]){
+					$prices[$d] = $singleDatePrices[$d];
+					continue;
+				}
+				$prices[$d]=array(
+						'price_id' => $item_price->item_price_id,
+						'title'=>''.$currency.$item_price->price_adult,
+						'start'=>date('Y-m-d', $d),
+						'color'=>'green',
+						'description'=>Yii::t('main', 'adult').':'.$currency.
+							$item_price->price_adult. ';'. Yii::t('main', 'child').
+							':'. $currency. $item_price->price_child,
+				);
+			}
+		}
+		foreach($prices as $id => $value){
+			$price_cal[] = $value;
+		}
+		return $price_cal;
+	}
+	
+	/**
+	 * Get Price List from Item_Prices for droplist
+	 * @param unknown $itemPrices
+	 * @param number $day_limit
+	 * @param string $currency
+	 */
+	public static function getPriceList($price_cal, $day_limit=20){
+		$price_list = array();
+		$i = 0;
+		foreach($price_cal as $price){
+			if($i > $day_limit){
+				break;
+			}
+			else{
+				$price_list[$price["price_id"] . "|" . $price['start']] = $price['start']. " | " . $price['description'];
+			}
+			$i += 1;
+		}
+		return $price_list;
 	}
 
 	/**

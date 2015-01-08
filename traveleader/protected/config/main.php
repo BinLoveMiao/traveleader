@@ -16,6 +16,8 @@ Yii::setPathOfAlias('bootstrap', $extDir . DIRECTORY_SEPARATOR . 'bootstrap'); /
 Yii::setPathOfAlias('yiiwheels', $extDir . DIRECTORY_SEPARATOR . 'yiiwheels'); // Change if necessary
 // Xupload configuration
 Yii::setPathOfAlias('xupload', $extDir . DIRECTORY_SEPARATOR . 'xupload'); // Change if necessary
+//ecalendarview
+Yii::setPathOfAlias('ecalendarview', dirname(__FILE__) . '/../extensions/ecalendarview');
 
 // This is the main Web application configuration. Any writable
 // CWebApplication properties can be configured here.
@@ -80,9 +82,9 @@ return array(
         // uncomment the following to enable the Gii tool
         'member',
 //        'translate',
-        'cms' => array(
-            'class' => 'application.modules.cms.CmsModule'
-        ),
+        'admin' => array(
+			'class' => 'application.modules.admin.AdminModule',
+		),
         'user' => array(
             'class' => 'application.modules.user.UserModule',
             # encrypting method (php hash function)

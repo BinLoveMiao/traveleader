@@ -167,10 +167,15 @@ class OrderItem extends CActiveRecord
                 'condition'=> 'item_id=:item_id ',
                 'params'=> array(':item_id' =>$this->item_id),
             ));
-            $model=Item::model()->findByPk($this->item_id);
-            //print_r($model); exit;
-            $model->deal_count=$num;
-            $model->save();
+            $item=Item::model()->findByPk($this->item_id);
+            $item->deal_count=$num;
+            $item->save();
+            
+            //Save the scenery
+            $scenery = Scenery::model()->findByPk($item->scenery_id);
+            $scenery->num_travel = $scenery->num_travel + 1;
+            $scenery->save();
+            
             return parent::afterSave();
     }
 

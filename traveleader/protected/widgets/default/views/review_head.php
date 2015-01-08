@@ -11,8 +11,7 @@
             </label>
         </li>
         <li class="tb-long">
-            <labelfor
-            ="reviews-t-3">
+            <label for="reviews-t-3">
             <span class="r-c-title" value="2">一般 (<?php echo $ReviewNum[2] ?>)</span>
             </label>
         </li>

@@ -1,12 +1,11 @@
 <?php
 $this->breadcrumbs = array(
-    '我的订单' => array('admin'),
-    '管理',
+    Yii::t('main', 'my order') => array('admin'),
 );
 ?>
 
 <div class="box">
-    <div class="box-title">管理订单</div>
+    <div class="box-title"><?php echo Yii::t('main', 'order manager');?></div>
     <div class="box-content clearfix">
       <?php
       	    $order_columns=array(

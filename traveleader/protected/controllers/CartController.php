@@ -57,13 +57,17 @@ class CartController extends YController
         $child_num = empty($_POST['qty2']) ? 0 : intval($_POST['qty2']);
         $adult_price = $item->price;
         $child_price = $item->price;
-        $item_price_id = empty($_POST['item_price']) ? 0 : intval($_POST['item_price']);
-        $travel_date = '';
+    	$item_price_id = 0;
+        $travel_date = "";
+        if(!empty($_POST['item_price'])){
+            $item_price_item = $_POST['item_price'];
+            $item_price_id = intval(explode("|", $item_price_item)[0]);
+            $travel_date = explode("|", $item_price_item)[1];
+        }
         if($item_price_id != 0){
         	$item_price = ItemPrice::model()->findByPk($item_price_id);
         	$adult_price = $item_price->price_adult;
         	$child_price = $item_price->price_child;
-        	$travel_date = $item_price->date;
         }
         if(Yii::app()->cart->put($item, $adult_num, $child_num, $adult_price, $child_price, $travel_date))
             echo json_encode(array('status' => 'success','number' => count(Yii::app()->cart)));

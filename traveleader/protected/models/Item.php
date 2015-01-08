@@ -6,7 +6,6 @@
  * The followings are the available columns in table 'item':
  * @property string $item_id
  * @property string $category_id
- * @property string $outer_id
  * @property string $title
  * @property string $num_orders
  * @property string $min_number
@@ -19,7 +18,6 @@
  * @property string $cost_incl
  * @property string $cost_excl
  * @property string $departure
- * @property string $shipping_fee
  * @property integer $is_show
  * @property integer $is_promote
  * @property integer $is_new
@@ -27,6 +25,7 @@
  * @property integer $is_best
  * @property string $click_count
  * @property string $wish_count
+ * @property string $review_count
  * @property string $create_time
  * @property string $update_time
  * @property string $language
@@ -40,14 +39,6 @@
  * @property string $tag3
  *
  * The followings are the available model relations:
- * @property Category $category
- * @property Area $countryArea
- * @property Area $stateArea
- * @property Area $cityArea
- * @property ItemImg[] $itemImgs
- * @property OrderItem[] $orderItems
- * @property PropImg[] $propImgs
- * @property Sku[] $skus
  */
 class Item extends YActiveRecord
 {
@@ -67,20 +58,20 @@ class Item extends YActiveRecord
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
         return array(
-            array('category_id, title, price, currency, props, props_name, desc, language, country, state, city', 'required'),
-            array('is_show, is_promote, is_new, is_hot, is_best', 'numerical', 'integerOnly' => true),
-            array('category_id, min_number, price, discount_price, num_days, departure, shipping_fee, click_count,
-            		wish_count, review_count,deal_count,create_time,
+            array('category_id, title, price, currency, desc, schedule, language, country, state, city', 'required'),
+            array('is_show, is_promote, is_new, is_hot, is_best, click_count, wish_count, review_count, deal_count', 'numerical', 'integerOnly' => true),
+            array('category_id, min_number, price, discount_price, num_days, departure, click_count,
+            		wish_count, review_count, deal_count, create_time,
             		update_time, country, state, city, scenery_id, supplier, tag1, tag2, tag3', 'length', 'max' => 10),
-            array('outer_id, language', 'length', 'max' => 45),
-            array('title', 'length', 'max' => 255),
-        	array('desc', 'length', 'max' => 500),
-            array('currency', 'length', 'max' => 20),
+            array('language', 'length', 'max' => 45),
+            array('title', 'length', 'max' => 256),
+        	//array('desc', 'length', 'max' => 4096),
+            array('currency', 'length', 'max' => 10),
             array('create_time, update_time', 'safe'),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
             array('title, min_number, price, discount_price, num_days, is_show, is_promote, is_new, is_hot, is_best,
-            		click_count, wish_count, create_time, update_time, language, country, state, city, supplier, tag1, tag2, tag3', 'safe', 'on' => 'search'),
+            		click_count, wish_count, create_time, update_time, language, country, state, city, supplier', 'safe', 'on' => 'search'),
         );
     }
 
@@ -119,40 +110,38 @@ class Item extends YActiveRecord
     public function attributeLabels()
     {
         return array(
-            'item_id' => Yii::t('Item', '产品ID'),
-            'category_id' => Yii::t('Item', '类别'),
-            'outer_id' => Yii::t('Item', 'outer_id'),
-            'title' => Yii::t('Item', '产品名称'),
-            'num_orders' => Yii::t('Item', '出游人数'),
-            'min_number' => Yii::t('Item', '最少预订人数'),
-            'price' => Yii::t('Item', '价格'),
-        	'discount_price' =>Yii::t('Item', '折扣价'),
-            'currency' => Yii::t('Item', '货币'),
-            'props' => Yii::t('Item', '属性'),
-            'props_name' => Yii::t('Item', '属性名称'),
-            'desc' => Yii::t('Item', '商品描述'),
-        	'num_days' => Yii::t('Item', '旅游时间'),
-        	'cost_incl' => Yii::t('Item', '价格包含'),
-        	'cost_excl' =>  Yii::t('Item', '价格不包含'),
-        	'departure' =>  Yii::t('Item', '出发'),
-            'shipping_fee' => Yii::t('Item', 'Shipping Fee'),
-            'is_show' => Yii::t('Item', '是否显示'),
-            'is_promote' => Yii::t('Item', '是否推销'),
-            'is_new' => Yii::t('Item', '是否新品'),
-            'is_hot' => Yii::t('Item', '是否热销'),
-            'is_best' => Yii::t('Item', '是否精品'),
-            'click_count' => Yii::t('Item', '点击数量'),
-            'wish_count' => Yii::t('Item', '收藏数量'),
-            'create_time' => Yii::t('Item', '创建时间'),
-            'update_time' => Yii::t('Item', '更新时间'),
-            'language' => Yii::t('Item', '语言'),
-            'country' =>  Yii::t('Item', '国家'),
-            'state' =>  Yii::t('Item', '省'),
-            'city' =>  Yii::t('Item', '市'),
-        	'supplier' =>  Yii::t('Item', '供应商'),
-        	'tag1' => Yii::t('Item', '主标签'),
-        	'tag2' => Yii::t('Item', '副标签1'),
-        	'tag3' => Yii::t('Item', '副标签2'),
+            'item_id' => Yii::t('item', 'item_id'),
+            'category_id' => Yii::t('item', 'category_id'),
+            'title' => Yii::t('item', 'title'),
+            'price' => Yii::t('item', 'price'),
+        	'discount_price' =>Yii::t('item', 'discount_price'),
+            'currency' => Yii::t('item', 'currency'),
+            'props' => Yii::t('item', 'props'),
+            'props_name' => Yii::t('item', 'props_name'),
+            'desc' => Yii::t('item', 'desc'),
+        	'schedule' => Yii::t('item', 'schedule'),
+        	'num_days' => Yii::t('item', 'num_days'),
+        	'cost_incl' => Yii::t('item', 'cost_incl'),
+        	'cost_excl' =>  Yii::t('item', 'cost_excl'),
+        	'departure' =>  Yii::t('item', 'departure'),
+            'is_show' => Yii::t('item', 'is_show'),
+            'is_promote' => Yii::t('item', 'is_promote'),
+            'is_new' => Yii::t('item', 'is_new'),
+            'is_hot' => Yii::t('item', 'is_hot'),
+            'is_best' => Yii::t('item', 'is_best'),
+            'click_count' => Yii::t('item', 'click_count'),
+            'wish_count' => Yii::t('item', 'wish_count'),
+        	'review_count' => Yii::t('item', 'review_count'),
+            'create_time' => Yii::t('item', 'create_time'),
+            'update_time' => Yii::t('item', 'update_time'),
+            'language' => Yii::t('item', 'language'),
+            'country' =>  Yii::t('item', 'country'),
+            'state' =>  Yii::t('item', 'state'),
+            'city' =>  Yii::t('item', 'city'),
+        	'supplier' =>  Yii::t('item', 'supplier'),
+        	'tag1' => Yii::t('item', 'tag1'),
+        	'tag2' => Yii::t('item', 'tag2'),
+        	'tag3' => Yii::t('item', 'tag3'),
         );
     }
 
@@ -327,6 +316,16 @@ class Item extends YActiveRecord
         $cri->limit = $limit;
         return self::model()->findAll($cri);
     }
+    
+    public static function getBestItemsByCategory($category, $limit = -1)
+    {
+    	$categoryIds = $category->getDescendantIds();
+    	$cri = new CDbCriteria();
+    	$cri->addInCondition('category_id', $categoryIds);
+    	$cri->addCondition('t.is_best=1');
+    	$cri->limit = $limit;
+    	return self::model()->findAll($cri);
+    }
 
     /**
      * get item pic url list
@@ -468,25 +467,6 @@ class Item extends YActiveRecord
         return 'holder.js/' . $width . 'x' . $height . '/text:' . $text;
     }
 
-    /**
-     * get item main picture
-     * @param string $width
-     * @param string $height
-     * @return mixed
-     * @author milkyway(yhxxlm@gmail.com)
-     */
-//    public function getMainPic($width = '310', $height = '310')
-//    {
-//        $img = $this->getMainPicPath();
-//        if (file_exists($this->getMainPicOriginalPath())) {
-//            $img_thumb = F::baseUrl() . ImageHelper::thumb($width, $height, $img, array('method' => 'resize'));
-//            $img_thumb = str_replace('/upload', 'http://' . F::sg('site', 'imageDomain'), $img_thumb);
-//            $img_thumb_now = CHtml::image($img_thumb, $this->title);
-//            return CHtml::link($img_thumb_now, $this->getUrl(), array('title' => $this->title));
-//        } else {
-//            return CHtml::link(CHtml::image($this->getHolderJs($width, $height)), $this->getUrl(), array('title' => $this->title));
-//        }
-//    }
 
     /**
      * get item image gallery
@@ -500,6 +480,17 @@ class Item extends YActiveRecord
             $imageList[] = 'http://' . F::sg('site', 'imageDomain') . '/store/' . $v->store_id . '/item/image/' . $v['url'];
         }
         return $imageList;
+    }
+    
+    public function getSatisfactionRate(){
+    	$reviewNum=Review::model()->reviewSummary($this->item_id,'1','1');
+    	$num_reviews = $reviewNum[1] + $reviewNum[2] + $reviewNum[3];
+    	if($num_reviews == 0){
+    		return 0;
+    	}
+    	else{
+    		return round(100*($reviewNum[1])/$num_reviews);
+    	}
     }
 
     /**
@@ -535,8 +526,10 @@ class Item extends YActiveRecord
     public function afterDelete()
     {
     	parent::afterDelete();
+    	// Remove ItemPrice, ItemImg, and Review associated with this Item
     	ItemPrice::model()->deleteAll('t.item_id='.$this->item_id);
     	ItemImg::model()->deleteAll('t.item_id='.$this->item_id);
+    	Review::model()->deleteAll('t.entity_pk_value='.$this->item_id);
     	Tag::model()->updateFrequency($this->tags, '');
     }
 

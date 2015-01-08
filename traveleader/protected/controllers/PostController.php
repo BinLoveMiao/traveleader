@@ -124,32 +124,43 @@ class PostController extends Controller
 		$post->views = $post->views + 1;
 		$post->save();
 		
-		$this->breadcrumbs[] = array(
-				'name' => '我游我记>> ', 'url' => Yii::app()->createUrl('/post/index'),
+		$this->breadcrumbs = array(
+				 Yii::t('main', 'my post') => Yii::app()->createUrl('/post/index'),
 		);
 		
 		//$country = Area::model()->findByPk($post->country);
 		$state = Area::loadModel($post->state);
 		$scenery = Scenery::loadModel($post->scenery_id);
-		$parent = $scenery->parentScenery;
+		$parentScenery = $scenery->parentScenery;
 		//$city = Area::model()->findByPk($post->city);
 		if($state){
-			$this->breadcrumbs[] = array('name' => $state->name. "旅游" .'>> ',
-				'url' => Yii::app()->createUrl('/post/index', array('state' => $state->area_id)));
+			//$this->breadcrumbs[] = array('name' => $state->name. "旅游" .'>> ',
+			//	'url' => Yii::app()->createUrl('/post/index', array('state' => $state->area_id)));
+			$this->breadcrumbs = array_merge($this->breadcrumbs, array(
+					$state->name. Yii::t('main', 'travel') => 
+					Yii::app()->createUrl('/post/index', array('state' => $state->area_id))));
 		}
 		
 		if($scenery){
 			if($parentScenery){
-				$this->breadcrumbs[] = array('name' => $parentScenery->name.'>> ',
-					'url' => Yii::app()->createUrl('/post/index', array('scenery' => $parentScenery->id)));
+				//$this->breadcrumbs[] = array('name' => $parentScenery->name.'>> ',
+				//	'url' => Yii::app()->createUrl('/post/index', array('scenery' => $parentScenery->id)));
+				$this->breadcrumbs = array_merge($this->breadcrumbs, array(
+						$parentScenery->name =>
+						Yii::app()->createUrl('/post/index', array('scenery' => $parentScenery->id))));
 				
 			}
 		
-			$this->breadcrumbs[] = array('name' => $scenery->name. "旅游攻略" .'>> ',
-				'url' => Yii::app()->createUrl('/post/index', array('scenery' => $scenery->id)));
+			//$this->breadcrumbs[] = array('name' => $scenery->name. "旅游攻略" .'>> ',
+			//	'url' => Yii::app()->createUrl('/post/index', array('scenery' => $scenery->id)));
+			$this->breadcrumbs = array_merge($this->breadcrumbs, array(
+					$scenery->name =>
+					Yii::app()->createUrl('/post/index', array('scenery' => $scenery->id))));
 		}
 		
-		$this->breadcrumbs[] = array('name' => $post->title);
+		//$this->breadcrumbs[] = array('name' => $post->title);
+		$this->breadcrumbs = array_merge($this->breadcrumbs, array(
+				$post->title => $post->getUrl()));
 
 		$this->render('view',array(
 			'model'=>$post,
@@ -187,25 +198,31 @@ class PostController extends Controller
 		// Setup the breadcrumb
 		if($country){
 			if($country->name != '中国'){
-				$this->breadcrumbs[] = array('name' => $country->name. "旅游" .'>> ',
-						'url' => Yii::app()->createUrl('/post/gallary', array('country' => $country->area_id)));
+				$this->breadcrumbs = array($country->name. Yii::t('main', 'travel')
+						 => Yii::app()->createUrl('/post/gallary', array('country' => $country->area_id)));
 			}
 		}
 		if($state){
-			$this->breadcrumbs[] = array('name' => $state->name. "旅游" .'>> ',
-					'url' => Yii::app()->createUrl('/post/gallary', array('state' => $state->area_id)));
+			//$this->breadcrumbs[] = array('name' => $state->name. "旅游" .'>> ',
+			//		'url' => Yii::app()->createUrl('/post/gallary', array('state' => $state->area_id)));
+			$this->breadcrumbs = array_merge($this->breadcrumbs, array( $state->name. Yii::t('main', 'travel')
+				=> Yii::app()->createUrl('/post/gallary', array('state' => $state->area_id))));
 		}
 		
 		if($city){
-			$this->breadcrumbs[] = array('name' => $city->name. "旅游" .'>> ',
-					'url' => Yii::app()->createUrl('/post/gallary', array('city' => $city->area_id)));
+			//$this->breadcrumbs[] = array('name' => $city->name. "旅游" .'>> ',
+			//		'url' => Yii::app()->createUrl('/post/gallary', array('city' => $city->area_id)));
+			$this->breadcrumbs = array_merge($this->breadcrumbs, array( $city->name. Yii::t('main', 'travel')
+					=> Yii::app()->createUrl('/post/gallary', array('city' => $city->area_id))));
 		}
 		if($scenery){
-			$this->breadcrumbs[] = array('name' => $scenery->name .'>> ',
-					'url' => Yii::app()->createUrl('/post/gallary', array('scenery' => $scenery->id)));
+			//$this->breadcrumbs[] = array('name' => $scenery->name .'>> ',
+			//		'url' => Yii::app()->createUrl('/post/gallary', array('scenery' => $scenery->id)));
+			$this->breadcrumbs = array_merge($this->breadcrumbs, array( $scenery->name
+					=> Yii::app()->createUrl('/post/gallary', array('scenery' => $scenery->id))));
 		}
 		
-		$this->breadcrumbs[] = array('name' => '浏览图片');
+		$this->breadcrumbs = array_merge($this->breadcrumbs, (array(Yii::t('main', 'gallary'))));
 
 		$gallary = Scenery::getAllSceneryPictures($area_id, $is_scenery, 0);
 		
@@ -321,12 +338,12 @@ class PostController extends Controller
 		$model=$this->loadModel();
 		if(isset($_POST['Post']))
 		{
-			if($model->image_id != 0){
-				$image2 = ImageTemp::model()->findByPk($model->image_id);
-			} else{
-				$image2 = ImageTemp::model()->findByPk($_POST['image_id']);
-			}
-			$coverPic = $image2->coverBehavior->getUrl('small');
+			//if($model->image_id != 0){
+			//	$image2 = ImageTemp::model()->findByPk($model->image_id);
+			//} else{
+			//	$image2 = ImageTemp::model()->findByPk($_POST['image_id']);
+			//}
+			//$coverPic = $image2->coverBehavior->getUrl('small');
 			$model->status = $_POST['Post']['status'];
 			$model->content = $_POST['Post']['content'];
 			$model->title= $_POST['Post']['title'];
@@ -334,7 +351,7 @@ class PostController extends Controller
 			$model->state=$address['state'];
 			$model->city=$address['city'];
 			$model->scenery_id=$address['district'];
-			$model->cover_pic = $coverPic;
+			//$model->cover_pic = $coverPic;
 			//echo $model->content;
 			//echo iconv("UTF-8","GB2312",$_POST);
 			$model->summary=$this->Generate_Brief($model->content);
@@ -346,15 +363,15 @@ class PostController extends Controller
 				$this->redirect(array('view','id'=>$model->id));
 		}
 		
-		if($model->image_id != 0){
-			$image=ImageTemp::model()->findByPk($model->image_id);
-		}
-		else{
-			$image=new ImageTemp;
-			$image->id=time();
-			$image->name="test";
-			$image->save();
-		}
+		//if($model->image_id != 0){
+		//	$image=ImageTemp::model()->findByPk($model->image_id);
+		//}
+		//else{
+		//	$image=new ImageTemp;
+		//	$image->id=time();
+		//	$image->name="test";
+		//	$image->save();
+		//}
 		
 		$default_state=$model->area_state;
 		$default_city=$model->area_city;
@@ -362,7 +379,7 @@ class PostController extends Controller
 
 		$this->render('update',array(
 			'model'=>$model,
-			'image'=>$image,
+			//'image'=>$image,
 			'default_scenery'=>$default_scenery,
 			'default_state'=>$default_state,
 			'default_city'=>$default_city,
@@ -404,9 +421,10 @@ class PostController extends Controller
 				//'with'=>'commentCount',
 		));
 		
-		$this->breadcrumbs[] = array(
-				'name' => '我游我记>> ', 'url' => Yii::app()->createUrl('/post/index'),
-		);
+		//$this->breadcrumbs[] = array(
+		//		'name' => '我游我记>>', 'url' => Yii::app()->createUrl('/post/index'),
+		//);
+		$this->breadcrumbs = array(Yii::t('main', 'my post')=> Yii::app()->createUrl('/post/index'));
 		$area_id = 0;
 		$is_scenery = false;
 		if(!empty($_GET['country'])){
@@ -441,25 +459,33 @@ class PostController extends Controller
 		// Set the breadcrumb and scenery object
 		if($country){
 			if($country->name != '中国'){
-				$this->breadcrumbs[] = array('name' => $country->name. "旅游" .'>> ',
-						'url' => Yii::app()->createUrl('/post/index', array('country' => $country->area_id)));
+				//$this->breadcrumbs[] = array('name' => $country->name. "旅游" .'>> ',
+						//'url' => Yii::app()->createUrl('/post/index', array('country' => $country->area_id)));
+				$this->breadcrumbs = array_merge($this->breadcrumbs, array($country->name. Yii::t('main', 'travel') 
+						=> Yii::app()->createUrl('/post/index', array('country' => $country->area_id))));
 			}
 			$scenery2 = $country;
 		}
 		if($state){
-			$this->breadcrumbs[] = array('name' => $state->name. "旅游" .'>> ',
-					'url' => Yii::app()->createUrl('/post/index', array('state' => $state->area_id)));
+			//$this->breadcrumbs[] = array('name' => $state->name. "旅游" .'>> ',
+			//		'url' => Yii::app()->createUrl('/post/index', array('state' => $state->area_id)));
+			$this->breadcrumbs = array_merge($this->breadcrumbs, array($state->name. Yii::t('main', 'travel')
+					 => Yii::app()->createUrl('/post/index', array('state' => $state->area_id))));
 			$scenery2 = $state;
 		}
 		
 		if($city){
-			$this->breadcrumbs[] = array('name' => $city->name. "旅游" .'>> ',
-					'url' => Yii::app()->createUrl('/post/index', array('city' => $city->area_id)));
+			//$this->breadcrumbs[] = array('name' => $city->name. "旅游" .'>> ',
+			//		'url' => Yii::app()->createUrl('/post/index', array('city' => $city->area_id)));
+			$this->breadcrumbs = array_merge($this->breadcrumbs, array($city->name. Yii::t('main', 'travel') 
+					=> Yii::app()->createUrl('/post/index', array('city' => $city->area_id))));
 			$scenery2 = $city;
 		}
 		if($scenery){
-			$this->breadcrumbs[] = array('name' => $scenery->name .'>> ',
-					'url' => Yii::app()->createUrl('/post/index', array('scenery' => $scenery->id)));
+			//$this->breadcrumbs[] = array('name' => $scenery->name .'>> ',
+			//		'url' => Yii::app()->createUrl('/post/index', array('scenery' => $scenery->id)));
+			$this->breadcrumbs = array_merge($this->breadcrumbs, array($scenery->name => Yii::app()->createUrl
+					('/post/index', array('scenery' => $scenery->id))));
 			$scenery2 = $scenery;
 		}
 		

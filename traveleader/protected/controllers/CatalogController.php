@@ -47,17 +47,17 @@ class CatalogController extends YController
         }
         if($country){
         	if($country->name != '中国'){
-        		$this->breadcrumbs[] = array('name' => $country->name. "旅游" .'>> ',
-        				'url' => Yii::app()->createUrl('catalog/index', array('country' => $country->area_id)));
+        		$this->breadcrumbs = array($country->name. Yii::t('main', 'travel') 
+        			 => Yii::app()->createUrl('catalog/index', array('country' => $country->area_id)));
         	}
         }
         if($state){
-        	$this->breadcrumbs[] = array('name' => $state->name. "旅游" .'>> ',
-        				'url' => Yii::app()->createUrl('catalog/index', array('state' => $state->area_id)));
+        	$this->breadcrumbs = array_merge($this->breadcrumbs, array($state->name. Yii::t('main', 'travel')
+        		=> Yii::app()->createUrl('catalog/index', array('state' => $state->area_id))));
         }
         if($city){
-        	$this->breadcrumbs[] = array('name' => $city->name. "旅游" .'>> ',
-        			'url' => Yii::app()->createUrl('catalog/index', array('city' => $city->area_id)));
+        	$this->breadcrumbs = array_merge($this->breadcrumbs, array($city->name. Yii::t('main', 'travel')
+        		 => Yii::app()->createUrl('catalog/index', array('city' => $city->area_id))));
         }
         
         if(!empty($_GET['tag'])){

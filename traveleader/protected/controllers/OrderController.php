@@ -64,15 +64,21 @@ class OrderController extends Controller
             $item->detachBehavior("CartPosition");
             $item->attachBehavior("CartPosition", new ECartPositionBehaviour());
             $item->setRefresh(true);
-            //$quantity = empty($_POST['qty']) ? 1 : intval($_POST['qty']);
             $adult_num = empty($_POST['qty']) ? 1 : intval($_POST['qty']);
             $child_num = empty($_POST['qty2']) ? 0 : intval($_POST['qty2']);
-            $item_price_id = empty($_POST['item_price']) ? 0 : intval($_POST['item_price']);
+            $item_price_id = 0;
+            $travel_date = "";
+            if(!empty($_POST['item_price'])){
+            	$item_price_item = $_POST['item_price'];
+            	$item_price_id = intval(explode("|", $item_price_item)[0]);
+            	$travel_date = explode("|", $item_price_item)[1];
+            }
+            
             if($item_price_id != 0){
             	$item_price = ItemPrice::model()->findByPk($item_price_id);
             	$item->setChildPrice($item_price->price_child);
             	$item->setAdultPrice($item_price->price_adult);
-            	$item->setDate($item_price->date);
+            	$item->setDate($travel_date);
             }
             
             //$item->setQuantity($quantity);
@@ -172,18 +178,6 @@ class OrderController extends Controller
                     if ($model->save()) {
                         if(empty($_POST['keys']))
                         {
-                        	//echo "check4";
-                            $item = Item::model()->findBypk($_POST['item_id']);
-                           // $sku = Sku::model()->findByPk($_POST['sku_id']);
-                            //if($sku->stock < $_POST['quantity'])
-                            //{
-                            //    throw new Exception('stock is not enough!');
-                           // }
-                           //$model->whole_num_days = $item->num_days;
-                           //$model->feature_item_name = $item->title;
-                           //if(!$model->save()){
-                           //    throw new Exception('save order item fail');
-                          // }
                             $orderItem = new OrderItem;
 					
                             if (!OrderItem::model()->saveOrderItem($orderItem, $model->order_id, $item, $_POST['adult_number'],
@@ -195,29 +189,13 @@ class OrderController extends Controller
                         {
                         	 $i = 0;
                              foreach ($_POST['keys'] as $key){
-                                $item= $cart->itemAt($key);
-                                //print_r($item); 
-                                // $sku=Sku::model()->findByPk($item['sku']['sku_id']);
-                                //if($sku->stock<$item['quantity']){
-                                // throw new Exception('stock is not enough!');
-                               // }
-                                // $sku->stock-=$item['quantity'];
-                               // if(!$sku->save()) {
-                                // throw new Exception('cut down stock fail');
-                               //  }
-                    
-                                //$sum_days += $item->num_days;
-                               // if($i == 0 && $item->num_days != 0){
-                                //	$item_name = $item->title;
-                                //	$i = $i + 1;
-                               // }
-                                
+                                $item= $cart->itemAt($key);                  
                                 $orderItem = new OrderItem;
-                            	 if (!OrderItem::model()->saveOrderItem($orderItem, $model->order_id, $item, $item->getAdultNumber(),
+                            	if (!OrderItem::model()->saveOrderItem($orderItem, $model->order_id, $item, $item->getAdultNumber(),
                         			$item->getAdultPrice(), $item->getChildNumber(), $item->getChildPrice(), $item->getDate())) {
-                                		//throw new Exception('save order item fail');
-                            	}
-                               $cart->remove($key);
+                                		throw new Exception('save order item fail');
+                				}
+                                $cart->remove($key);
                              }
                             // $model->whole_num_days = $sum_days;
                              //$model->feature_item_name = $item_name;

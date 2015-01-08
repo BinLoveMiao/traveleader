@@ -122,4 +122,22 @@ class Wishlist extends CActiveRecord
             'criteria'=>$criteria,
         ));
     }
+    
+    public function afterSave(){
+    	$item = Item::model()->findByPk($this->item_id);
+    	if($this->isNewRecord){
+    		$item->wish_count = $item->wish_count + 1;
+    		$item->save();
+    	}
+    	parent::afterSave();
+    }
+    
+    public function afterDelete(){
+    	$item = Item::model()->findByPk($this->item_id);
+    	if($item->wish_count > 0){
+    		$item->wish_count = $item->wish_count - 1;
+    	}
+    	$item->save();
+    	parent::afterSave();
+    }
 }

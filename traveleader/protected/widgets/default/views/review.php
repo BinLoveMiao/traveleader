@@ -82,12 +82,14 @@ else{
                 </dd>
             </dl>
         </div>
+        <?php if(!$this->_isOrderItem){?>
         <div class="rep_review">
         <p>出游归来可点评产品</p>
         <p class="btn_review">
         	<?php echo CHtml::link("发表点评", Yii::app()->createUrl('member/orderlist/admin'))?>
         </p>
         </div>
+        <?php }?>
         <div class="clr"></div>
     </div>
     <?php

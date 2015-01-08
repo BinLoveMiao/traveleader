@@ -88,7 +88,6 @@ class Review extends CActiveRecord
 			'customer_id' => 'Customer',
 			'entity_id' => 'Entity',
 			'entity_pk_value' => 'Entity Pk Value',
-
             'photos_exit'=>'Photos_exit',
 		);
 	}
@@ -211,13 +210,14 @@ class Review extends CActiveRecord
 
     public function afterSave(){
         if($this->entity_id==1){
-            $num=self::model()->count(array(
-                'condition'=>'entity_pk_value=:entity_pk_value and entity_id=:entity_id ',
-                'params'=> array(':entity_pk_value' =>$this->entity_pk_value, ':entity_id' =>1),
-            ));
-            $model=Item::model()->findByPk($this->entity_pk_value);
-            $model->review_count=$num;
-            $model->save();
+            //$num=self::model()->count(array(
+            ////    'condition'=>'entity_pk_value=:entity_pk_value and entity_id=:entity_id ',
+            //    'params'=> array(':entity_pk_value' =>$this->entity_pk_value, ':entity_id' =>1),
+            //));
+            if($this->isNewRecord){
+            	$model=Item::model()->findByPk($this->entity_pk_value);
+            	$model->review_count =  $model->review_count + 1;
+            }
             return parent::afterSave();
         }
     }

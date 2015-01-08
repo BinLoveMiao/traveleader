@@ -18,6 +18,11 @@
  */
 class Area extends CActiveRecord
 {
+	const LEVEL_COUNTRY=0;
+	const LEVEL_STATE=1;
+	const LEVEL_CITY=2;
+	const LEVEL_DISTRICT=3;
+	const LEVEL_SCENERY=4;
     /**
      * @return string the associated database table name
      */

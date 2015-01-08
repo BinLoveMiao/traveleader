@@ -14,6 +14,7 @@ class WReview extends CWidget
      * 1:product;2:article
      */
     public $_entityId;
+    public $_isOrderItem=false;
     public $_rating;
     public $_strOutput;
     public $_strData;
