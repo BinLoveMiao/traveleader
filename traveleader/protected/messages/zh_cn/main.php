@@ -29,7 +29,7 @@ return array (
   'Assigned items' => '',
   'Assignments' => '',
   'Business rule' => '',
-  'Cancel' => '撤销',
+  'Cancel' => '取消',
   'Create' => '创建',
   'Create Time' => '创建时间',
   'Data' => '数据',
@@ -54,6 +54,7 @@ return array (
   'Remove' => '移除',
   'Return' => '返回',
   'Revoke' => '',
+  'Save' => '保存',
   'Select item' => '',
   'System name' => '',
   'System name cannot be changed after creation.' => '',
@@ -95,4 +96,6 @@ return array (
   'hot sceneries' => '热门景点',
   'adult' => '成人',
   'child' => '儿童',
+  'Add Item' => '发布新产品',
+  'Delete Item' => '删除产品',
 );

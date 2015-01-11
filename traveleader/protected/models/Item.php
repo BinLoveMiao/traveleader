@@ -58,9 +58,11 @@ class Item extends YActiveRecord
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
         return array(
-            array('category_id, title, price, currency, desc, schedule, language, country, state, city', 'required'),
-            array('is_show, is_promote, is_new, is_hot, is_best, click_count, wish_count, review_count, deal_count', 'numerical', 'integerOnly' => true),
-            array('category_id, min_number, price, discount_price, num_days, departure, click_count,
+            array('category_id, title, price, currency, desc, language, country, state, city', 'required'),
+            array(' is_show, is_promote, is_new, 
+            		is_hot, is_best, click_count, wish_count, review_count,
+            		deal_count', 'numerical', 'integerOnly' => true),
+            array('category_id, price, discount_price, num_days, departure, click_count,
             		wish_count, review_count, deal_count, create_time,
             		update_time, country, state, city, scenery_id, supplier, tag1, tag2, tag3', 'length', 'max' => 10),
             array('language', 'length', 'max' => 45),
@@ -93,8 +95,8 @@ class Item extends YActiveRecord
         	'itemPrices' => array(self::HAS_MANY, 'ItemPrice', 'item_id', 'condition' => 'date>NOW()'),
             'orderItems' => array(self::HAS_MANY, 'OrderItem', 'item_id'),
         	'travelCount' => array(self::STAT, 'OrderItem', 'item_id', 'condition' => 't.status='.OrderItem::STATUS_TRAVELLED),
-            'propImgs' => array(self::HAS_MANY, 'PropImg', 'item_id'),
-            'skus' => array(self::HAS_MANY, 'Sku', 'item_id'),
+            //'propImgs' => array(self::HAS_MANY, 'PropImg', 'item_id'),
+            //'skus' => array(self::HAS_MANY, 'Sku', 'item_id'),
         	'tag1' => array(self::BELONGS_TO, 'MoodTag', 'tag1'),
         	'tag2' => array(self::BELONGS_TO, 'MoodTag', 'tag2'),
         	'tag3' => array(self::BELONGS_TO, 'MoodTag', 'tag3'),
@@ -138,7 +140,9 @@ class Item extends YActiveRecord
             'country' =>  Yii::t('item', 'country'),
             'state' =>  Yii::t('item', 'state'),
             'city' =>  Yii::t('item', 'city'),
+        	'scenery_id' => Yii::t('item', 'scenery_id'),
         	'supplier' =>  Yii::t('item', 'supplier'),
+        	'tag' => Yii::t('item', 'tag'),
         	'tag1' => Yii::t('item', 'tag1'),
         	'tag2' => Yii::t('item', 'tag2'),
         	'tag3' => Yii::t('item', 'tag3'),
@@ -168,7 +172,7 @@ class Item extends YActiveRecord
        // $criteria->compare('outer_id', $this->outer_id, true);
         $criteria->compare('title', $this->title, true);
         //$criteria->compare('num_orders', $this->num_orders, true);
-        $criteria->compare('min_number', $this->min_number, true);
+        //$criteria->compare('min_number', $this->min_number, true);
         $criteria->compare('price', $this->price, true);
         $criteria->compare('discount_price', $this->discount_price, true);
         //$criteria->compare('currency', $this->currency, true);
@@ -197,6 +201,23 @@ class Item extends YActiveRecord
             'criteria' => $criteria,
         ));
     }
+    
+    /**
+     * Initiate some parameters that is not needed in create stage. 
+     * parameters: is_show, is_promote, is_new, is_hot, is_best
+     * click_count, wish_count, review_count, language
+     */
+    public function initParam(){
+    	$this->is_show = 1;
+    	$this->is_promote = 0;
+    	$this->is_new = 0;
+    	$this->is_hot = 0;
+    	$this->is_best= 0;
+    	$this->click_count = 0;
+    	$this->wish_count = 0;
+    	$this->review_count = 0;
+    	$this->language = Yii::app()->language;
+    }
 
     /**
      * Returns the static model of the specified AR class.
@@ -218,31 +239,6 @@ class Item extends YActiveRecord
         return parent::beforeSave();
     }
 
-    /**
-     * delete  Relational Active Record
-     * @return bool
-     */
-    public function beforeDelete(){
-        self::deleteRelationData($this->itemImgs);
-        self::deleteRelationData($this->orderItems);
-        self::deleteRelationData($this->propImgs);
-        self::deleteRelationData($this->skus);
-        return parent::beforeDelete();
-    }
-
-
-    public function deleteRelationData($data){
-        $num=count($data);
-        if($num>0){
-            if($num>1){
-                for($i=0;$i<$num;$i++){
-                    $data[$i]->delete();
-                }
-            }else
-                $data->delete();
-        }
-
-    }
     /**
      * @param string $name
      * @param array $parameters
@@ -346,8 +342,12 @@ class Item extends YActiveRecord
     public function getMainPic($width = 200, $height = 200)
     {
         $itemImg = ItemImg::model()->findByAttributes(array('item_id' => $this->item_id, 'position' => 0));
-        return $itemImg->pic;
         return ImageHelper::thumb($width, $height, $itemImg->pic);
+    }
+    
+    public function getPicInPos($pos){
+    	$itemImg = ItemImg::model()->findByAttributes(array('item_id' => $this->item_id, 'position' => $pos));
+    	return (empty($itemImg)) ? new ItemImg : $itemImg;
     }
 
 //    public function defaultScope()
@@ -467,20 +467,6 @@ class Item extends YActiveRecord
         return 'holder.js/' . $width . 'x' . $height . '/text:' . $text;
     }
 
-
-    /**
-     * get item image gallery
-     * @return array
-     * @author milkyway(yhxxlm@gmail.com)
-     */
-    public function getItemGallery()
-    {
-        $images = ItemImg::model()->findAllByAttributes(array('item_id' => $this->item_id));
-        foreach ($images as $k => $v) {
-            $imageList[] = 'http://' . F::sg('site', 'imageDomain') . '/store/' . $v->store_id . '/item/image/' . $v['url'];
-        }
-        return $imageList;
-    }
     
     public function getSatisfactionRate(){
     	$reviewNum=Review::model()->reviewSummary($this->item_id,'1','1');
@@ -527,10 +513,9 @@ class Item extends YActiveRecord
     {
     	parent::afterDelete();
     	// Remove ItemPrice, ItemImg, and Review associated with this Item
-    	ItemPrice::model()->deleteAll('t.item_id='.$this->item_id);
-    	ItemImg::model()->deleteAll('t.item_id='.$this->item_id);
-    	Review::model()->deleteAll('t.entity_pk_value='.$this->item_id);
-    	Tag::model()->updateFrequency($this->tags, '');
+    	ItemPrice::model()->deleteAll('item_id='.$this->item_id);
+    	ItemImg::model()->deleteAll('item_id='.$this->item_id);
+    	Review::model()->deleteAll('entity_pk_value='.$this->item_id);
     }
 
     /**

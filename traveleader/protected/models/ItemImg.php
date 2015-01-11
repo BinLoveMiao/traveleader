@@ -61,8 +61,8 @@ class ItemImg extends CActiveRecord
     {
         return array(
             'item_img_id' => 'Item Img',
-            'item_id' => 'Item',
-            'pic' => 'Pic',
+            'item_id' => Yii::t('item', 'item_id'),
+            'pic' => Yii::t('item', 'Image'),
             'position' => 'Position',
             'create_time' => 'Create Time',
         );
@@ -117,5 +117,9 @@ class ItemImg extends CActiveRecord
     public function defaultScope()
     {
         return array('order' => 'position');
+    }
+    
+    public function getImageWithSize($width=200, $height=200){
+    	return ImageHelper::thumb($width, $height, $this->pic);
     }
 } 

@@ -42,12 +42,23 @@ class PostController extends Controller
 		);
 	}
 	
-	public function actions()
+	public function actionUpload()
 	{
-		return array(
-				'saveImageAttachment' => 'ext.imageAttachment.ImageAttachmentAction',
-		);
+        Yii::import("ext.EAjaxUpload.qqFileUploader");
+ 
+        $folder='upload/post/tmp/';// folder for uploaded files
+        $allowedExtensions = array("jpg", "jpeg", "png");//array("jpg","jpeg","gif","exe","mov" and etc...
+        $sizeLimit = 5 * 1024 * 1024;// maximum file size in bytes
+        $uploader = new qqFileUploader($allowedExtensions, $sizeLimit);
+        $result = $uploader->handleUpload($folder);
+        $return = htmlspecialchars(json_encode($result), ENT_NOQUOTES);
+ 
+        $fileSize=filesize($folder.$result['filename']);//GETTING FILE SIZE
+        $fileName=$result['filename'];//GETTING FILE NAME
+ 
+        echo $return;// it's array
 	}
+	
 	
 	public function actionUploadAdditional(){
 		header( 'Vary: Accept' );
@@ -266,46 +277,25 @@ class PostController extends Controller
 		
 		if(isset($_POST['Post']))
 		{
-			//$model->attributes=$_POST['Post'];
-			//print_r($image->coverBehavior);
-			//$image2 = ImageTemp::model()->findByPk($_POST['image_id']);
-			//$coverPic = $image2->coverBehavior->getUrl('small');
-			//$model->image_id=$_POST['image_id'];
 			if(!empty($_GET['item'])){
-				$model->item_id=$_GET['item'];
+				$model->item_id = $_GET['item'];
 			}
 			else{
-				$model->item_id=0;
+				$model->item_id = 0;
 			}
-			//echo $coverPic;
-			//echo $image->id;
-			//print_r($_POST);
-			//echo($image->coverBehavior->getUrl('small'));
-			//print_r($_POST);exit;
-			//exit;
 			$model->status = $_POST['Post']['status'];
-			$model->views = 0;
-			$model->ding = 0;
-			$model->is_best = 0;
 			$model->content = $_POST['Post']['content'];
 			$model->title= $_POST['Post']['title'];
 			$address=$_POST['AddressResult'];
 			$model->state=$address['state'];
 			$model->city=$address['city'];
 			$model->scenery_id=$address['district'];
-			//$model->cover_pic = $coverPic;
-			//echo $model->content;
-			//echo iconv("UTF-8","GB2312",$_POST);
-			//$model->summary=$this->Generate_Brief($model->content);
+			$model->cover_pic = $_POST['cover_pic'];
+
 			$model->summary=$_POST['Post']['summary'];
 			$model->tags = ""; // Save for further use
 			$model->category_id = 0; // Save for further use
-			//$model->author_id = Yii::app()->user->getId();
 			$images = $model->getImgs();
-			if(count($images) > 0){
-				$model->cover_pic = $images[0];
-			}
-
 			if($model->save()){
 				foreach($images as $img){
 					$sce_img = new SceneryImg;
@@ -338,12 +328,6 @@ class PostController extends Controller
 		$model=$this->loadModel();
 		if(isset($_POST['Post']))
 		{
-			//if($model->image_id != 0){
-			//	$image2 = ImageTemp::model()->findByPk($model->image_id);
-			//} else{
-			//	$image2 = ImageTemp::model()->findByPk($_POST['image_id']);
-			//}
-			//$coverPic = $image2->coverBehavior->getUrl('small');
 			$model->status = $_POST['Post']['status'];
 			$model->content = $_POST['Post']['content'];
 			$model->title= $_POST['Post']['title'];
@@ -351,27 +335,13 @@ class PostController extends Controller
 			$model->state=$address['state'];
 			$model->city=$address['city'];
 			$model->scenery_id=$address['district'];
-			//$model->cover_pic = $coverPic;
-			//echo $model->content;
-			//echo iconv("UTF-8","GB2312",$_POST);
 			$model->summary=$this->Generate_Brief($model->content);
 			$model->tags = ""; // Save for further use
 			$model->category_id = 0; // Save for further use
-			
-			//$model->attributes=$_POST['Post'];
+
 			if($model->save())
 				$this->redirect(array('view','id'=>$model->id));
 		}
-		
-		//if($model->image_id != 0){
-		//	$image=ImageTemp::model()->findByPk($model->image_id);
-		//}
-		//else{
-		//	$image=new ImageTemp;
-		//	$image->id=time();
-		//	$image->name="test";
-		//	$image->save();
-		//}
 		
 		$default_state=$model->area_state;
 		$default_city=$model->area_city;
@@ -731,4 +701,5 @@ class PostController extends Controller
 			}
 		}
 	}
+	
 }

@@ -265,5 +265,8 @@ return array(
     'params' => array(
         // this is used in contact page
         'adminEmail' => 'webmaster@example.com',
+        'plupload_dir' => '/upload/image',
+        'editor_upload_dir' => '/upload/editors',
+        'item_image_dir' => '/upload/item',
     ),
 );

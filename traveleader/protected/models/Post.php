@@ -99,28 +99,6 @@ class Post extends CActiveRecord
 						// name of column to related model id in mapTable
 					'mapRelatedColumn' => 'postId'
 			),
-			/*
-			'coverBehavior' => array(
-					'class' => 'ext.imageAttachment.ImageAttachmentBehavior',
-						// size for image preview in widget
-					'previewHeight' => 200,
-					'previewWidth' => 300,
-						// extension for image saving, can be also tiff, png or gif
-					'extension' => 'jpg,png,jpeg',
-					// folder to store images
-					'directory' => '/traveleader/upload/postcover/preview',
-					// url for images folder
-					'url' => Yii::app()->baseUrl.'/upload/postcover/preview',
-					// image versions
-					'versions' => array(
-						'small' => array(
-								'resize' => array(200, null),
-					),
-							//'medium' => array(
-							//			'resize' => array(800, null),
-							//)
-					)
-				)*/
 		);
 	}
 
@@ -130,27 +108,26 @@ class Post extends CActiveRecord
 	public function attributeLabels()
 	{
 		return array(
-			'id' => Yii::t('Post', 'Id'),
-			'category_id' => Yii::t('Post', '类别'),
-			'title' => Yii::t('Post', '标题'),
-			'summary' => Yii::t('Post', '摘要'),
-			'content' => Yii::t('Post', '我游我记'),
-			'tags' => Yii::t('Post', '标签'),
-			'status' => Yii::t('Post', '状态'),
-			'views' => Yii::t('Post', '浏览次数'),
-			'ding' => Yii::t('Post', '顶'),
-			'create_time' => Yii::t('Post', '创建时间'),
-			'update_time' => Yii::t('Post', '更新时间'),
-			'author_id' => Yii::t('Post', '作者'),
-			'language' => Yii::t('Post', '语言'),
-			'cover_pic' => Yii::t('Post', '封面图片'),
-			'is_best' => Yii::t('Post', '精品'),
-			'item_id' => Yii::t('Post', '旅游产品'),
-			'country' => Yii::t('Post', '国家/洲'),
-			'state' => Yii::t('Post', '省/国家'),
-			'city' => Yii::t('Post', '城市'),
-			'scenery_id' => Yii::t('Post', '景点'),
-			'image_id' => Yii::t('Post', 'ImageAttachement'),
+			'id' => Yii::t('post', 'id'),
+			'category_id' => Yii::t('post', 'category_id'),
+			'title' => Yii::t('post', 'title'),
+			'summary' => Yii::t('post', 'summary'),
+			'content' => Yii::t('post', 'content'),
+			'tags' => Yii::t('post', 'tags'),
+			'status' => Yii::t('post', 'status'),
+			'views' => Yii::t('post', 'views'),
+			'ding' => Yii::t('post', 'ding'),
+			'create_time' => Yii::t('post', 'create_time'),
+			'update_time' => Yii::t('post', 'update_time'),
+			'author_id' => Yii::t('post', 'author_id'),
+			'language' => Yii::t('post', 'language'),
+			'cover_pic' => Yii::t('post', 'cover_pic'),
+			'is_best' => Yii::t('post', 'is_best'),
+			'item_id' => Yii::t('post', 'item_id'),
+			'country' => Yii::t('post', 'country'),
+			'state' => Yii::t('post', 'state'),
+			'city' => Yii::t('post', 'city'),
+			'scenery_id' => Yii::t('post', 'scenery_id'),
 		);
 	}
 
@@ -297,6 +274,9 @@ class Post extends CActiveRecord
 		{
 			if($this->isNewRecord)
 			{
+				$this->views = 0;
+				$this->ding = 0;
+				$this->is_best = 0;
 				$this->create_time=$this->update_time=time();
 				$this->author_id=Yii::app()->user->id;
 			}
@@ -354,9 +334,9 @@ class Post extends CActiveRecord
 	public function getStatusOptions()
 	{
 		return array(
-				self::STATUS_DRAFT      => Yii::t('Post','草稿'),
-				self::STATUS_PUBLISHED  => Yii::t('Post','发布'),
-				self::STATUS_ARCHIVED   => Yii::t('Post','存档'),
+				self::STATUS_DRAFT      => Yii::t('post','Draft'),
+				self::STATUS_PUBLISHED  => Yii::t('post','Publish'),
+				self::STATUS_ARCHIVED   => Yii::t('post','Archieve'),
 		);
 	}
 }

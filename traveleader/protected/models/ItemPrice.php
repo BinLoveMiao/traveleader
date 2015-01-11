@@ -124,6 +124,9 @@ class ItemPrice extends CActiveRecord
 		//$prices[] = array();
 		foreach($itemPrices as $item_price){
 			if($item_price->date == $item_price->end_date){
+				if(!empty($singleDatePrices[strtotime($item_price->date)])){
+					continue;
+				}
 				$singleDatePrices[strtotime($item_price->date)] = array(
 						'price_id' => $item_price->item_price_id,
 						'title'=>''.$currency.$item_price->price_adult,
@@ -137,6 +140,7 @@ class ItemPrice extends CActiveRecord
 		}
 		$secsPerDay = 3600 * 24;
 		foreach($itemPrices as $item_price){
+			//print_r($item_price);
 			$begin_date = $item_price->date;
 			$end_date = $item_price->end_date;
 			
@@ -153,21 +157,32 @@ class ItemPrice extends CActiveRecord
 				$d += $secsPerDay;	
 				if($singleDatePrices[$d]){
 					$prices[$d] = $singleDatePrices[$d];
+					$singleDatePrices[$d] = 0;
+					continue;
+				}
+				if(!empty($prices[$d])){
 					continue;
 				}
 				$prices[$d]=array(
 						'price_id' => $item_price->item_price_id,
 						'title'=>''.$currency.$item_price->price_adult,
 						'start'=>date('Y-m-d', $d),
-						'color'=>'green',
+						'color'=>'#42B312',
 						'description'=>Yii::t('main', 'adult').':'.$currency.
 							$item_price->price_adult. ';'. Yii::t('main', 'child').
 							':'. $currency. $item_price->price_child,
 				);
 			}
 		}
-		foreach($prices as $id => $value){
-			$price_cal[] = $value;
+		foreach($singleDatePrices as $d=>$single){
+			if($single != 0){
+				$prices[$d] = $single;
+			}
+		}
+		if(count($prices) > 0){
+			foreach($prices as $id => $value){
+				$price_cal[] = $value;
+			}
 		}
 		return $price_cal;
 	}
@@ -180,6 +195,9 @@ class ItemPrice extends CActiveRecord
 	 */
 	public static function getPriceList($price_cal, $day_limit=20){
 		$price_list = array();
+		if(count($price_cal) == 0){
+			return $price_list;
+		}
 		$i = 0;
 		foreach($price_cal as $price){
 			if($i > $day_limit){

@@ -8,6 +8,7 @@
  */
 
 class Tbfunction {
+	
     static public function add_button()
     {
         echo '<button class="btn btn-primary">Add</button>';
