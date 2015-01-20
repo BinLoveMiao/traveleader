@@ -45,7 +45,7 @@ class Post extends CActiveRecord
 	 */
 	public function tableName()
 	{
-		return 'post';
+		return '{{post}}';
 	}
 
 	/**
@@ -56,16 +56,16 @@ class Post extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('title, content, status, scenery_id', 'required'),
+			array('title, content, status', 'required'),
 			array('status', 'in', 'range'=>array(1,2,3)),
-			array('is_best', 'in', 'range'=>array(0,1)),
+			//array('is_best', 'in', 'range'=>array(0,1)),
 			array('title', 'length', 'max'=>128),
 			array('cover_pic', 'length', 'max'=>512),
 			array('language', 'length', 'max'=>45),
-			array('tags', 'match', 'pattern'=>'/^[\w\s,]+$/', 'message'=>'Tags can only contain word characters.'),
+			//array('tags', 'match', 'pattern'=>'/^[\w\s,]+$/', 'message'=>'Tags can only contain word characters.'),
 			//array('tags', 'normalizeTags'),
 			array('views, ding, item_id, scenery_id, country, state, city', 'numerical', 'integerOnly' => true),
-			array('views, ding, scenery_id, country, state, city,image_id', 'length', 'max' => 10),
+			array('views, ding, scenery_id, country, state, city, image_id', 'length', 'max' => 10),
 			array('title, status, views, ding, create_time', 'safe', 'on'=>'search'),
 		);
 	}
@@ -274,6 +274,7 @@ class Post extends CActiveRecord
 		{
 			if($this->isNewRecord)
 			{
+				$this->language = Yii::app()->language;
 				$this->views = 0;
 				$this->ding = 0;
 				$this->is_best = 0;

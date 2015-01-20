@@ -47,7 +47,7 @@ class Item extends YActiveRecord
      */
     public function tableName()
     {
-        return 'item';
+        return '{{item}}';
     }
 
     /**
@@ -58,7 +58,7 @@ class Item extends YActiveRecord
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
         return array(
-            array('category_id, title, price, currency, desc, language, country, state, city', 'required'),
+            array('category_id, title, price, currency, desc, language, num_days, country, state, city', 'required'),
             array(' is_show, is_promote, is_new, 
             		is_hot, is_best, click_count, wish_count, review_count,
             		deal_count', 'numerical', 'integerOnly' => true),
@@ -67,7 +67,7 @@ class Item extends YActiveRecord
             		update_time, country, state, city, scenery_id, supplier, tag1, tag2, tag3', 'length', 'max' => 10),
             array('language', 'length', 'max' => 45),
             array('title', 'length', 'max' => 256),
-        	//array('desc', 'length', 'max' => 4096),
+        	//array('schedule', 'length', 'max' => 4096),
             array('currency', 'length', 'max' => 10),
             array('create_time, update_time', 'safe'),
             // The following rule is used by search().
@@ -166,9 +166,7 @@ class Item extends YActiveRecord
         // @todo Please modify the following code to remove attributes that should not be searched.
 
         $criteria = new CDbCriteria;
-
-        //$criteria->compare('item_id', $this->item_id, true);
-       // $criteria->compare('category_id', $this->category_id, true);
+        $criteria->compare('category_id', $this->category_id, true);
        // $criteria->compare('outer_id', $this->outer_id, true);
         $criteria->compare('title', $this->title, true);
         //$criteria->compare('num_orders', $this->num_orders, true);
@@ -277,6 +275,7 @@ class Item extends YActiveRecord
         }
         return $areasData;
     }
+    
     public function showIsShow($is_show){
         $isShow=array('0'=>'待展示','1'=>'已展示');
         return $isShow[$is_show];
@@ -341,13 +340,19 @@ class Item extends YActiveRecord
      */
     public function getMainPic($width = 200, $height = 200)
     {
-        $itemImg = ItemImg::model()->findByAttributes(array('item_id' => $this->item_id, 'position' => 0));
-        return ImageHelper::thumb($width, $height, $itemImg->pic);
+        $itemImg = ItemImg::model()->findByAttributes(array('item_id' => $this->item_id, 'position' => 0)); 
+        return empty($itemImg) ? ImageHelper::thumb($width, $height, Yii::app()->params['default_image_dir'])
+        		: ImageHelper::thumb($width, $height, $itemImg->pic);
     }
     
     public function getPicInPos($pos){
     	$itemImg = ItemImg::model()->findByAttributes(array('item_id' => $this->item_id, 'position' => $pos));
     	return (empty($itemImg)) ? new ItemImg : $itemImg;
+    }
+    
+    public function getItemSchedules(){
+    	$schedules = Schedule::model()->findAllByAttributes(array('item_id' => $id));
+    	return (empty($schedules)) ? new Schedule : $schedules;
     }
 
 //    public function defaultScope()
@@ -414,45 +419,6 @@ class Item extends YActiveRecord
         ));
     }
 
-    /**
-     * get main picture path
-     * @return string
-     * @author milkyway(yhxxlm@gmail.com)
-     */
-    public function getMainPicPath()
-    {
-        $images = ItemImg::model()->findAllByAttributes(array('item_id' => $this->item_id));
-        foreach ($images as $k => $v) {
-            if ($v['position'] == 0) {
-                return '/upload/item/image/' . $v['url'];
-            }
-        }
-    }
-
-    /**
-     * get main picture original path
-     * @return string
-     * @author milkyway(yhxxlm@gmail.com)
-     */
-    public function getMainPicOriginalPath()
-    {
-        $images = ItemImg::model()->findAllByAttributes(array('item_id' => $this->item_id));
-        foreach ($images as $k => $v) {
-            if ($v['position'] == 0) {
-                return dirname(F::basePath()) . '/upload/item/image/' . $v['url'];
-            }
-        }
-    }
-
-    /**
-     * get main picture url
-     * @return string
-     * @author milkyway(yhxxlm@gmail.com)
-     */
-    public function getMainPicUrl()
-    {
-        return F::baseUrl() . $this->getMainPicPath();
-    }
 
     /**
      * get holder js
@@ -464,7 +430,7 @@ class Item extends YActiveRecord
      */
     public function getHolderJs($width, $height , $text = 'No Pic')
     {
-        return 'holder.js/' . $width . 'x' . $height . '/text:' . $text;
+        return 'js/holder.js/' . $width . 'x' . $height . '/text:' . $text;
     }
 
     

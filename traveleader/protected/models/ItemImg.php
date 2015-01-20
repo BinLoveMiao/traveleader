@@ -120,6 +120,8 @@ class ItemImg extends CActiveRecord
     }
     
     public function getImageWithSize($width=200, $height=200){
-    	return ImageHelper::thumb($width, $height, $this->pic);
+        return empty($this->pic) ? ImageHelper::thumb($width, $height, Yii::app()->params['default_image_dir'])
+        		: ImageHelper::thumb($width, $height, $this->pic);
+    
     }
 } 

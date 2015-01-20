@@ -41,12 +41,12 @@ class CatalogController extends YController
         if(!empty($_GET['scenery'])){
         	$criteria->addCondition("t.scenery_id = '{$_GET['scenery']}'");
         	$scenery = Scenery::loadModel($_GET['scenery']);
-        	$city = $scenery->city;
-        	$state = $scenery->state;
-        	$country = $scenery->country;
+        	$city = $scenery->cityArea;
+        	$state = $scenery->stateArea;
+        	$country = $scenery->countryArea;
         }
         if($country){
-        	if($country->name != '中国'){
+        	if($country->name != Yii::t('main', 'China')){    		
         		$this->breadcrumbs = array($country->name. Yii::t('main', 'travel') 
         			 => Yii::app()->createUrl('catalog/index', array('country' => $country->area_id)));
         	}
@@ -58,6 +58,11 @@ class CatalogController extends YController
         if($city){
         	$this->breadcrumbs = array_merge($this->breadcrumbs, array($city->name. Yii::t('main', 'travel')
         		 => Yii::app()->createUrl('catalog/index', array('city' => $city->area_id))));
+        }
+        
+        if($scenery){
+        	$this->breadcrumbs = array_merge($this->breadcrumbs, array($scenery->name
+        			=> Yii::app()->createUrl('catalog/index', array('scenery' => $scenery->id))));
         }
         
         if(!empty($_GET['tag'])){

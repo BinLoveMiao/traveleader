@@ -276,27 +276,34 @@ class PostController extends Controller
 		}
 		
 		if(isset($_POST['Post']))
-		{
+		{			
+			$model->status = $_POST['Post']['status'];
+			$model->content = $_POST['Post']['content'];
+			$model->title= $_POST['Post']['title'];
+			//$address=$_POST['AddressResult'];
+			$model->country=empty($_POST['Post']['country'])? 
+				100000 : $_POST['Post']['country'];
+			$model->state=$_POST['Post']['state'];
+			$model->city=$_POST['Post']['city'];
+			$model->scenery_id=$_POST['Post']['scenery_id'];
+			
+			
+			//$model->attributes = $_Post['Post'];
+			
 			if(!empty($_GET['item'])){
 				$model->item_id = $_GET['item'];
 			}
 			else{
 				$model->item_id = 0;
 			}
-			$model->status = $_POST['Post']['status'];
-			$model->content = $_POST['Post']['content'];
-			$model->title= $_POST['Post']['title'];
-			$address=$_POST['AddressResult'];
-			$model->state=$address['state'];
-			$model->city=$address['city'];
-			$model->scenery_id=$address['district'];
 			$model->cover_pic = $_POST['cover_pic'];
-
-			$model->summary=$_POST['Post']['summary'];
+			$model->summary = $this->Generate_Brief($model->content);
 			$model->tags = ""; // Save for further use
 			$model->category_id = 0; // Save for further use
-			$images = $model->getImgs();
-			if($model->save()){
+			
+			if($model->validate()){
+				$model->save();
+				$images = $model->getImgs();
 				foreach($images as $img){
 					$sce_img = new SceneryImg;
 					$sce_img->pic = $img;
@@ -306,6 +313,9 @@ class PostController extends Controller
 					$sce_img->save(); 
 				}
 				$this->redirect(array('view','id'=>$model->id));
+			}
+			else{
+				throw new Exception("Create Post Error!");
 			}
 		}
 
@@ -331,16 +341,32 @@ class PostController extends Controller
 			$model->status = $_POST['Post']['status'];
 			$model->content = $_POST['Post']['content'];
 			$model->title= $_POST['Post']['title'];
-			$address=$_POST['AddressResult'];
-			$model->state=$address['state'];
+			$model->country=empty($_POST['Post']['country'])?
+				100000 : $_POST['Post']['country'];
+			$model->state=$_POST['Post']['state'];
 			$model->city=$address['city'];
 			$model->scenery_id=$address['district'];
 			$model->summary=$this->Generate_Brief($model->content);
 			$model->tags = ""; // Save for further use
 			$model->category_id = 0; // Save for further use
+			if(!empty($_POST['cover_pic'])){
+				$model->cover_pic = $_POST['cover_pic'];
+			}
+			//$model->attributes = $_POST['Post'];
+			
+			$model->tags = ""; // Save for further use
+			$model->category_id = 0; // Save for further use
+			if(!empty($_POST['cover_pic'])){
+				$model->cover_pic = $_POST['cover_pic'];
+			}
 
-			if($model->save())
+			if($model->validate()){
+				$model->save();
 				$this->redirect(array('view','id'=>$model->id));
+			}
+			else{
+				throw new Exception("Update Post Error!");
+			}
 		}
 		
 		$default_state=$model->area_state;

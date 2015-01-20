@@ -308,7 +308,7 @@ EOP;
         if($this->hasModel()) {
             $html = CHtml::activeTextArea($this->model, $this->attribute, $this->htmlOptions);
         }
-	else {
+		else {
             $html = CHtml::textArea($name, $this->value, $this->htmlOptions);
         }
 

@@ -22,12 +22,17 @@
  */
 class Category extends CActiveRecord
 {
+	public $parent;
+	
+	const LABEL_NONE = 0;
+	const LABEL_NEW = 1;
+	const LABEL_HOT = 2;
     /**
      * @return string the associated database table name
      */
     public function tableName()
     {
-        return 'category';
+        return '{{category}}';
     }
 
     /**
@@ -38,15 +43,16 @@ class Category extends CActiveRecord
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
         return array(
-            array('name', 'required'),
+            array('name, label, is_show', 'required'),
             array('label, is_show', 'numerical', 'integerOnly' => true),
-            array('left, right, root, level', 'length', 'max' => 10),
-            array('name, url', 'length', 'max' => 200),
-            array('pic', 'pic2', 'length', 'max' => 255),
-            array('left, right, root, level,pic,pic2', 'safe'),
+        	array('label', 'in', 'range'=>array(0,1,2)),
+        	array('is_show', 'in', 'range'=>array(0,1)),
+            //array('root', 'length', 'max' => 10),
+            array('name, url', 'length', 'max' => 512),
+            array('pic, pic2', 'length', 'max' => 512),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            array('category_id, left, right, root, level, name, label, url, is_show', 'safe', 'on' => 'search'),
+            array('name, label, url, is_show', 'safe', 'on' => 'search'),
         );
     }
 
@@ -59,7 +65,6 @@ class Category extends CActiveRecord
         // class name for the relations automatically generated below.
         return array(
             'items' => array(self::HAS_MANY, 'Item', 'category_id'),
-            'itemProps' => array(self::HAS_MANY, 'ItemProp', 'category_id'),
         );
     }
 
@@ -69,17 +74,18 @@ class Category extends CActiveRecord
     public function attributeLabels()
     {
         return array(
-            'category_id' => 'Category',
-            'left' => 'Left',
-            'right' => 'Right',
-            'root' => 'Root',
-            'level' => 'Level',
-            'name' =>Yii::t('backend','名字'),
-            'label' => 'Label',
-            'url' => 'Url',
-            'pic' => 'Pic',
-        	'pic2' => 'Pic2',
-            'is_show' => 'Is Show',
+            'category_id' => Yii::t('category', 'category_id'),
+            'left' => Yii::t('category', 'left'),
+            'right' => Yii::t('category', 'right'),
+            'root' =>  Yii::t('category', 'root'),
+            'level' => Yii::t('category', 'level'),
+            'name' =>  Yii::t('category', 'name'),
+            'label' =>  Yii::t('category', 'label'),
+            'url' =>  Yii::t('category', 'url'),
+            'pic' =>  Yii::t('category', 'pic'),
+        	'pic2' =>  Yii::t('category', 'pic2'),
+            'is_show' =>  Yii::t('category', 'is_show'),
+        	'parent' => Yii::t('category', 'parent'),
         );
     }
 
@@ -100,12 +106,7 @@ class Category extends CActiveRecord
         // @todo Please modify the following code to remove attributes that should not be searched.
 
         $criteria = new CDbCriteria;
-
-        $criteria->compare('category_id', $this->category_id, true);
-        $criteria->compare('left', $this->left, true);
-        $criteria->compare('right', $this->right, true);
-        $criteria->compare('root', $this->root, true);
-        $criteria->compare('level', $this->level, true);
+        //$criteria->compare('level', $this->level, true);
         $criteria->compare('name', $this->name, true);
         $criteria->compare('label', $this->label);
         $criteria->compare('url', $this->url, true);
@@ -135,6 +136,7 @@ class Category extends CActiveRecord
                 'leftAttribute' => 'left',
                 'rightAttribute' => 'right',
                 'levelAttribute' => 'level',
+            	'rootAttribute' => 'root',
                 'hasManyRoots' => true,
             ),
             'NestedSetExtBehavior' => array(
@@ -152,9 +154,9 @@ class Category extends CActiveRecord
     public function getLabel()
     {
         switch ($this->label) {
-            case 1:
+            case self::LABEL_NEW:
                 return '<span class="label label-info" style="margin-right:5px">New</span>' . $this->name;
-            case 2:
+            case self::LABEL_HOT:
                 return '<span class="label label-important" style="margin-right:5px">Hot!</span>' . $this->name;
             default:
                 return $this->name;
@@ -185,12 +187,22 @@ class Category extends CActiveRecord
     {
         return array(
             'new' => array(
-                'condition' => 't.label = 1'
+                'condition' => 't.label = '.self::LABEL_NEW
             ),
             'hot' => array(
-                'condition' => 't.label = 2'
+                'condition' => 't.label = '.self::LABEL_HOT
             ),
         );
+    }
+    
+    public function getImages(){
+    	if(!empty($this->pic)){
+    		$images[]=$this->pic;
+    	}
+    	if(!empty($this->pic2)){
+    		$images[]=$this->pic2;
+    	}
+    	return $images;	
     }
 
     public function limit($limit = 3)
@@ -207,5 +219,34 @@ class Category extends CActiveRecord
             'condition' => 't.level = ' . $level
         ));
         return $this;
+    }
+    
+    /**
+     * Return the maximal right value for the children. 
+     * If current lavel is already the maximal level (3), we return -1 for exception process. 
+     * @return number
+     */
+    public function currentMaxRightValue(){
+    	if($this->level >= 3){
+    		return -1;
+    	}
+    	else{
+    		$max_right_value_child = $this->children()->findAll(array('order'=>'t.right DESC'))[0];
+    		if(empty($max_right_value_child)){
+    			return $this->left;
+    		}
+    		else{
+    			return $max_right_value_child->right;
+    		}
+    	}
+    }
+
+    
+    public function afterDelete(){
+    	//$children = $this->children()->findAll();
+    	//foreach($children as $child){
+    	//	$child->delete();
+    	//}
+    	parent::afterDelete();
     }
 }

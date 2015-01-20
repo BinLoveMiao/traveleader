@@ -23,7 +23,7 @@ Yii::setPathOfAlias('ecalendarview', dirname(__FILE__) . '/../extensions/ecalend
 // CWebApplication properties can be configured here.
 return array(
     'basePath' => $frontend,
-    'name' => '领贤旅游',
+    'name' => '擎梦国旅',
     'language' => 'zh_cn',
     'theme' => 'basic',
     // preloading 'log' component
@@ -268,5 +268,6 @@ return array(
         'plupload_dir' => '/upload/image',
         'editor_upload_dir' => '/upload/editors',
         'item_image_dir' => '/upload/item',
+        'default_image_dir' => '/upload/image/default.jpg',
     ),
 );

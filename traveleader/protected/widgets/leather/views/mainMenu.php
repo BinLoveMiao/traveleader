@@ -1,6 +1,6 @@
 <?php
 $menu = Menu::model()->findByPk(4);
-$descendants = $menu->children()->findAll();
+$descendants = $menu->children()->findAll(array('condition'=>'if_show=1'));
 
 
 /*

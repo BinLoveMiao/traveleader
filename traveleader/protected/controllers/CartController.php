@@ -21,7 +21,7 @@ class CartController extends YController
 	public function accessRules()
 	{
 		return array(
-				array('allow', // allow authenticated user to perform 'create' and 'update' actions
+				array('allow',
 						'users' => array('@'),
 				),
 				array('deny',  // deny all users

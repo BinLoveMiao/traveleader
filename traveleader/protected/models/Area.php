@@ -120,9 +120,9 @@ class Area extends CActiveRecord
     
     public static function loadModel($id){
     	$area=Area::model()->findByPk($id);
-    	if($area == null){
-    		throw new CHttpException(404,'The area does not exist.');
-    	}
+    	//if($area == null){
+    	//	throw new CHttpException(404,'The area does not exist.');
+    	//}
     	return $area;
     }
 
