@@ -9,19 +9,22 @@ class CatalogController extends YController
         if (empty($category) || $category->root != 3) {
             throw new CHttpException(404, 'The requested page does not exist.');
         }
-
-        $descendantIds = $category->getDescendantIds();
         $criteria = new CDbCriteria();
-        $criteria->addInCondition('category_id', $descendantIds);
-        
+        if($category->level != 1){
+        	$descendantIds = $category->getDescendantIds();
+        	$criteria->addInCondition('category_id', $descendantIds);
+        	$this->breadcrumbs = array_merge($this->breadcrumbs, array($category->name
+        			=> Yii::app()->createUrl('catalog/index', array('cat' => $category->getUrl()))));
+        }
+	     
         if(!empty($_GET['country'])){
-        	$criteria->addCondition("t.country = '{$_GET['country']}'");
+        	$criteria->addCondition("t.country =".$_GET['country']);
         	$country = Area::loadModel($_GET['country']);
         	//$this->breadcrumbs[] = array('name' => $country->name. "旅游" .'>> ',
         	//		'url' => Yii::app()->createUrl('catalog/index', array('country' => $country->area_id)));
         }
         if(!empty($_GET['state'])){
-        	$criteria->addCondition("t.state = '{$_GET['state']}'");
+        	$criteria->addCondition("t.state=".$_GET['state']);
         	$state = Area::loadModel($_GET['state']);
         	//$country = Area::model()->findByPk($state->parent_id);
         	$country = $state->parentArea;
@@ -31,7 +34,7 @@ class CatalogController extends YController
         	//		'url' => Yii::app()->createUrl('catalog/index', array('state' => $state->area_id)));
         }
         if(!empty($_GET['city'])){
-        	$criteria->addCondition("t.city = '{$_GET['city']}'");
+        	$criteria->addCondition("t.city =".$_GET['city']);
         	$city = Area::loadModel($_GET['city']);
         	//$state = Area::model()->findByPk($city->parent_id);
         	$state = $city->parentArea;
@@ -39,21 +42,24 @@ class CatalogController extends YController
         	$country = $state->parentArea;
         }
         if(!empty($_GET['scenery'])){
-        	$criteria->addCondition("t.scenery_id = '{$_GET['scenery']}'");
+        	$criteria->addCondition("t.scenery_id =".$_GET['scenery']);
         	$scenery = Scenery::loadModel($_GET['scenery']);
         	$city = $scenery->cityArea;
         	$state = $scenery->stateArea;
         	$country = $scenery->countryArea;
         }
+        
         if($country){
-        	if($country->name != Yii::t('main', 'China')){    		
+        	if($country->name != Yii::t('main', 'China')){        		    		
         		$this->breadcrumbs = array($country->name. Yii::t('main', 'travel') 
-        			 => Yii::app()->createUrl('catalog/index', array('country' => $country->area_id)));
+        			 => Yii::app()->createUrl('catalog/index', array(
+        			 		'country' => $country->area_id)));
         	}
         }
         if($state){
         	$this->breadcrumbs = array_merge($this->breadcrumbs, array($state->name. Yii::t('main', 'travel')
-        		=> Yii::app()->createUrl('catalog/index', array('state' => $state->area_id))));
+        		=> Yii::app()->createUrl('catalog/index', array(
+        				'state' => $state->area_id))));
         }
         if($city){
         	$this->breadcrumbs = array_merge($this->breadcrumbs, array($city->name. Yii::t('main', 'travel')
@@ -65,14 +71,14 @@ class CatalogController extends YController
         			=> Yii::app()->createUrl('catalog/index', array('scenery' => $scenery->id))));
         }
         
-        if(!empty($_GET['tag'])){
-        	$criteria->addCondition("t.tag1 = '{$_GET['tag']}' 
-        			OR t.tag2 = '{$_GET['tag']}'
-        			OR t.tag3 = '{$_GET['tag']}'");
-        	$tag=MoodTag::model()->findByPk($_GET['tag']);
-        	$tag->frequency += 1;
-        	$tag->save();
-        }
+        //if(!empty($_GET['tag'])){
+        //	$criteria->addCondition("t.tag1 = '{$_GET['tag']}' 
+        //			OR t.tag2 = '{$_GET['tag']}'
+        //			OR t.tag3 = '{$_GET['tag']}'");
+        //	$tag=MoodTag::model()->findByPk($_GET['tag']);
+        //	$tag->frequency += 1;
+        ////	$tag->save();
+      //  }
 
         if (!empty($_GET['key'])) {
             $criteria->addCondition("(t.title LIKE '%{$_GET['key']}%')");
@@ -118,38 +124,11 @@ class CatalogController extends YController
         	$criteria->order = 't.click_count desc';
         }
 
-        if (!empty($_GET['props'])) {
-            $pvids = array();
-            $props = explode(';', $_GET['props']);
-            foreach ($props as $p) {
-                $ids = explode(':', $p);
-                if (count($ids) >= 2) {
-                    if (isset($pvids[$ids[0]])) {
-                        if (!is_array($pvids[$ids[0]]))
-                            $pvids[$ids[0]] = array($pvids[$ids[0]]);
-                        $pvids[$ids[0]][] = $ids[1];
-                    } else {
-                        $pvids[$ids[0]] = $ids[1];
-                    }
-                }
-            }
-            foreach ($pvids as $pid => $vids) {
-                if (is_array($vids)) {
-                    $where = array();
-                    foreach ($vids as $vid) {
-                        $where[] = "props like '%$pid:$vid%'";
-                    }
-                    $where = '(' . implode(' OR ', $where) . ')';
-                    $criteria->addCondition($where);
-                } else {
-                    $criteria->addSearchCondition('props', $pid . ':' . $vids);
-                }
-            }
-        }
         $count = Item::model()->count($criteria);
         $pager = new CPagination($count);
         $pager->pageSize =8;
         $pager->applyLimit($criteria);
+
         $items = Item::model()->findAll($criteria);
 //        var_dump($criteria);die;
         $parentCategories = $category->parent()->findAll();
